@@ -9,8 +9,8 @@ import "hardhat/console.sol";
 contract MarketPlace is Ownable {
     using Counters for Counters.Counter;
 
-    Counters.Counter private _collectionIds;
-    Counters.Counter private _itemIds;
+    Counters.Counter private _collectionId;
+    Counters.Counter private _itemId;
     Counters.Counter private _itemsSold;
 
     uint256 private constant TRANSACTION_FEE = 0.075 ether;
@@ -25,7 +25,7 @@ contract MarketPlace is Ownable {
         uint256 collectionId;
         string name;
         string description;
-        string createdOn;
+        uint256 createdOn;
         address creator;
     }
 
@@ -53,7 +53,7 @@ contract MarketPlace is Ownable {
         uint256 indexed collectionId,
         string name,
         string description,
-        string createdOn,
+        uint256 createdOn,
         address creator
     );
 
@@ -72,4 +72,37 @@ contract MarketPlace is Ownable {
     );
 
     event CancelSale(uint256 itemId, address seller);
+
+    function createCollection(string calldata name, string calldata description)
+        public
+        payable
+    {
+        _collectionId.increment();
+        uint256 collectionId = _collectionId.current();
+        uint256 createdOn = block.timestamp;
+
+        console.log(123, createdOn);
+
+        collections[collectionId] = Collection(
+            collectionId,
+            name,
+            description,
+            createdOn,
+            msg.sender
+        );
+
+        collectionsIds.push(collectionId);
+
+        emit CollectionCreated(
+            collectionId,
+            name,
+            description,
+            createdOn,
+            msg.sender
+        );
+    }
+
+    function getCollectionLength() external view returns (uint256) {
+        return collectionsIds.length;
+    }
 }

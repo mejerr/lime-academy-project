@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 import "hardhat/console.sol";
+import "./NFTMarketItem.sol";
 
 contract NFTMarketPlace is Ownable {
     using Counters for Counters.Counter;
@@ -65,5 +66,29 @@ contract NFTMarketPlace is Ownable {
 
     function getCollectionLength() external view returns (uint256) {
         return collectionsIds.length;
+    }
+
+    /* Creates the sale of a marketplace item */
+    /* Transfers ownership of the item, as well as funds between parties */
+    function createMarketSale(
+        address nftContract,
+        uint256 itemId,
+        address add
+    ) public payable {
+        NFTMarketItem marketItem = NFTMarketItem(add);
+        uint256 price = marketItem.getNFTMarketItem(itemId).price;
+        uint256 itemId = marketItem.getNFTMarketItem(itemId).itemId;
+        require(
+            msg.value == price,
+            "Please submit the asking price in order to complete the purchase"
+        );
+
+        marketItem.getNFTMarketItem(itemId).owner.transfer(msg.value);
+        IERC721(nftContract).transferFrom(
+            marketItem.getNFTMarketItem(itemId).owner,
+            msg.sender,
+            itemId
+        );
+        marketItem.getNFTMarketItem(itemId).owner = payable(msg.sender);
     }
 }

@@ -72,20 +72,20 @@ contract NFTMarketPlace is Ownable {
     /* Transfers ownership of the item, as well as funds between parties */
     function createMarketSale(
         address nftContract,
-        uint256 itemId,
+        uint256 tokenId,
         address add
     ) public payable {
         NFTMarketItem marketItem = NFTMarketItem(add);
-        uint256 price = marketItem.getNFTMarketItem(itemId).price;
-        uint256 itemId = marketItem.getNFTMarketItem(itemId).itemId;
+        uint256 price = marketItem.getNFTMarketItem(tokenId).price;
+        uint256 itemId = marketItem.getNFTMarketItem(tokenId).itemId;
         require(
             msg.value == price,
             "Please submit the asking price in order to complete the purchase"
         );
 
-        marketItem.getNFTMarketItem(itemId).owner.transfer(msg.value);
+        marketItem.getNFTMarketItem(tokenId).owner.transfer(msg.value);
         IERC721(nftContract).transferFrom(
-            marketItem.getNFTMarketItem(itemId).owner,
+            marketItem.getNFTMarketItem(tokenId).owner,
             msg.sender,
             itemId
         );

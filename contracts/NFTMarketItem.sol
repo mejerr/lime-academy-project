@@ -103,17 +103,14 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         return marketItemsIds.length;
     }
 
-    function getNFTMarketItem(uint256 itemId)
-        public
-        view
-        returns (MarketItem memory)
-    {
-        return marketItems[itemId];
-    }
-
     function addAllowance(uint256 itemId) internal {
         allowance[itemId] = address(this);
         emit AllowanceChanged(address(this), msg.sender, itemId);
+    }
+
+    function removeAllowance(uint256 itemId) internal {
+        allowance[itemId] = address(0);
+        emit AllowanceChanged(address(0), msg.sender, itemId);
     }
 
     function setMarketItemForSale(uint256 itemId, uint256 _price)
@@ -130,6 +127,25 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         marketItems[itemId].status = ItemListingStatus.ForSale;
     }
 
+    function cancelMarketItemSale(uint256 itemId) external onlyOwner {
+        require(marketItems[itemId].itemId != NULL, "No such item");
+        require(
+            marketItems[itemId].status != ItemListingStatus.NotForSale,
+            "Item is not for sale"
+        );
+        removeAllowance(itemId);
+        marketItems[itemId].price = 0;
+        marketItems[itemId].status = ItemListingStatus.NotForSale;
+    }
+
+    function getNFTMarketItem(uint256 itemId)
+        external
+        view
+        returns (MarketItem memory)
+    {
+        return marketItems[itemId];
+    }
+
     function changeOwner(uint256 itemId, address newOwner) external {
         marketItems[itemId].owner = payable(newOwner);
     }
@@ -138,5 +154,9 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         external
     {
         marketItems[itemId].status = _status;
+    }
+
+    function changeItemPrice(uint256 itemId, uint256 _price) external {
+        marketItems[itemId].price = _price;
     }
 }

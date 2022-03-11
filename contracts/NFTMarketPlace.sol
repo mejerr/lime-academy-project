@@ -13,6 +13,7 @@ contract NFTMarketPlace is NFTMarketItem {
     using Counters for Counters.Counter;
 
     Counters.Counter private _collectionId;
+    uint256 private constant TRANSACTION_FEE = 0.075 ether;
 
     struct Collection {
         uint256 collectionId;
@@ -73,7 +74,6 @@ contract NFTMarketPlace is NFTMarketItem {
         payable
     {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
-        console.log(marketItem.getNFTMarketItem(tokenId).owner, msg.sender);
         require(
             marketItem.getNFTMarketItem(tokenId).owner != msg.sender,
             "You can not buy your own item"
@@ -105,5 +105,6 @@ contract NFTMarketPlace is NFTMarketItem {
         marketItem.getNFTMarketItem(tokenId).owner.transfer(msg.value);
         marketItem.changeOwner(itemId, msg.sender);
         marketItem.changeItemStatus(itemId, ItemListingStatus.NotForSale);
+        marketItem.changeItemPrice(itemId, 0);
     }
 }

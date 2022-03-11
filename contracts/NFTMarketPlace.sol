@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "hardhat/console.sol";
 import "./NFTMarketItem.sol";
 
-contract NFTMarketPlace is Ownable {
+contract NFTMarketPlace is NFTMarketItem {
     using Counters for Counters.Counter;
 
     Counters.Counter private _collectionId;
@@ -39,7 +39,6 @@ contract NFTMarketPlace is Ownable {
     /* Creates a collection of future NFTs */
     function createCollection(string calldata name, string calldata description)
         public
-        payable
     {
         _collectionId.increment();
         uint256 collectionId = _collectionId.current();
@@ -68,27 +67,43 @@ contract NFTMarketPlace is Ownable {
         return collectionsIds.length;
     }
 
-    /* Creates the sale of a marketplace item */
     /* Transfers ownership of the item, as well as funds between parties */
-    function createMarketSale(
-        address nftContract,
-        uint256 tokenId,
-        address add
-    ) public payable {
-        NFTMarketItem marketItem = NFTMarketItem(add);
+    function buyMarketItem(address nftContract, uint256 tokenId)
+        public
+        payable
+    {
+        NFTMarketItem marketItem = NFTMarketItem(nftContract);
+        console.log(marketItem.getNFTMarketItem(tokenId).owner, msg.sender);
+        require(
+            marketItem.getNFTMarketItem(tokenId).owner != msg.sender,
+            "You can not buy your own item"
+        );
+        require(
+            marketItem.allowance(tokenId) == address(this),
+            "Marketplace is not allowed to sell this item"
+        );
+        require(
+            marketItem.getNFTMarketItem(tokenId).status ==
+                ItemListingStatus.ForSale,
+            "Item is not for sale"
+        );
+
         uint256 price = marketItem.getNFTMarketItem(tokenId).price;
         uint256 itemId = marketItem.getNFTMarketItem(tokenId).itemId;
+
         require(
             msg.value == price,
             "Please submit the asking price in order to complete the purchase"
         );
 
-        marketItem.getNFTMarketItem(tokenId).owner.transfer(msg.value);
-        IERC721(nftContract).transferFrom(
+        _transfer(
             marketItem.getNFTMarketItem(tokenId).owner,
             msg.sender,
             itemId
         );
-        marketItem.getNFTMarketItem(itemId).owner = payable(msg.sender);
+
+        marketItem.getNFTMarketItem(tokenId).owner.transfer(msg.value);
+        marketItem.changeOwner(itemId, msg.sender);
+        marketItem.changeItemStatus(itemId, ItemListingStatus.NotForSale);
     }
 }

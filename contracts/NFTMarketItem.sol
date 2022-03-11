@@ -4,8 +4,11 @@ pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFTMarketItem is ERC721URIStorage {
+import "hardhat/console.sol";
+
+contract NFTMarketItem is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIds;
@@ -13,9 +16,8 @@ contract NFTMarketItem is ERC721URIStorage {
     uint256 private constant NULL = 0;
 
     enum ItemListingStatus {
-        Active,
-        Sold,
-        Cancelled
+        ForSale,
+        NotForSale
     }
 
     struct MarketItem {
@@ -33,6 +35,7 @@ contract NFTMarketItem is ERC721URIStorage {
     uint256[] public marketItemsIds;
 
     mapping(uint256 => MarketItem) public marketItems;
+    mapping(uint256 => address) public allowance;
 
     event MarketItemListed(
         uint256 indexed itemId,
@@ -42,9 +45,14 @@ contract NFTMarketItem is ERC721URIStorage {
         uint256 collectionId,
         uint256 bid,
         address owner,
-        address seller,
         uint256 createdOn,
         ItemListingStatus status
+    );
+
+    event AllowanceChanged(
+        address indexed _forWho,
+        address indexed _fromWhom,
+        uint256 tokenId
     );
 
     constructor() ERC721("LimeBlock", "LMB") {}
@@ -53,31 +61,40 @@ contract NFTMarketItem is ERC721URIStorage {
         string memory tokenURI,
         string calldata name,
         string calldata description,
-        uint256 price,
         uint256 collectionId
     ) public returns (uint256) {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
-
         uint256 createdOn = block.timestamp;
 
         _mint(msg.sender, newTokenId);
+        _setTokenURI(newTokenId, tokenURI);
 
         marketItems[newTokenId] = MarketItem(
             newTokenId,
             name,
             description,
-            price,
+            0,
             collectionId,
             NULL,
             payable(msg.sender),
             createdOn,
-            ItemListingStatus.Active
+            ItemListingStatus.NotForSale
         );
 
         marketItemsIds.push(newTokenId);
 
-        _setTokenURI(newTokenId, tokenURI);
+        emit MarketItemListed(
+            newTokenId,
+            name,
+            description,
+            0,
+            collectionId,
+            NULL,
+            payable(msg.sender),
+            createdOn,
+            ItemListingStatus.NotForSale
+        );
 
         return newTokenId;
     }
@@ -92,5 +109,34 @@ contract NFTMarketItem is ERC721URIStorage {
         returns (MarketItem memory)
     {
         return marketItems[itemId];
+    }
+
+    function addAllowance(uint256 itemId) internal {
+        allowance[itemId] = address(this);
+        emit AllowanceChanged(address(this), msg.sender, itemId);
+    }
+
+    function setMarketItemForSale(uint256 itemId, uint256 _price)
+        external
+        onlyOwner
+    {
+        require(marketItems[itemId].itemId != NULL, "No such item");
+        require(
+            marketItems[itemId].status != ItemListingStatus.ForSale,
+            "Item is already for sale"
+        );
+        addAllowance(itemId);
+        marketItems[itemId].price = _price;
+        marketItems[itemId].status = ItemListingStatus.ForSale;
+    }
+
+    function changeOwner(uint256 itemId, address newOwner) external {
+        marketItems[itemId].owner = payable(newOwner);
+    }
+
+    function changeItemStatus(uint256 itemId, ItemListingStatus _status)
+        external
+    {
+        marketItems[itemId].status = _status;
     }
 }

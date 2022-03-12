@@ -12,7 +12,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIds;
-    uint256 private constant TRANSACTION_FEE = 0.075 ether;
+    uint256 private listingFee = 0.025 ether;
     uint256 private constant NULL = 0;
 
     enum ItemListingStatus {
@@ -113,10 +113,24 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         emit AllowanceChanged(address(0), msg.sender, itemId);
     }
 
-    function setMarketItemForSale(uint256 itemId, uint256 _price)
+    function getListingPrice() public view returns (uint256) {
+        return listingFee;
+    }
+
+    function updateListingPrice(uint256 _listingFee) public payable onlyOwner {
+        listingFee = _listingFee;
+        //Event
+    }
+
+    function createMarketItemSale(uint256 itemId, uint256 _price)
         external
+        payable
         onlyOwner
     {
+        require(
+            msg.value == listingFee,
+            "Price must be equal to listing price"
+        );
         require(marketItems[itemId].itemId != NULL, "No such item");
         require(
             marketItems[itemId].status != ItemListingStatus.ForSale,
@@ -125,6 +139,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         addAllowance(itemId);
         marketItems[itemId].price = _price;
         marketItems[itemId].status = ItemListingStatus.ForSale;
+        //Event
     }
 
     function cancelMarketItemSale(uint256 itemId) external onlyOwner {
@@ -136,6 +151,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         removeAllowance(itemId);
         marketItems[itemId].price = 0;
         marketItems[itemId].status = ItemListingStatus.NotForSale;
+        //Event
     }
 
     function getNFTMarketItem(uint256 itemId)

@@ -13,7 +13,6 @@ contract NFTMarketPlace is NFTMarketItem {
     using Counters for Counters.Counter;
 
     Counters.Counter private _collectionId;
-    uint256 private constant TRANSACTION_FEE = 0.075 ether;
 
     struct Collection {
         uint256 collectionId;
@@ -106,5 +105,23 @@ contract NFTMarketPlace is NFTMarketItem {
         marketItem.changeOwner(itemId, msg.sender);
         marketItem.changeItemStatus(itemId, ItemListingStatus.NotForSale);
         marketItem.changeItemPrice(itemId, 0);
+        // Event
+    }
+
+    function getBalance() external view onlyOwner returns (uint256) {
+        return address(this).balance;
+    }
+
+    function transferListingFee() external onlyOwner {
+        // Event
+        payable(msg.sender).transfer(address(this).balance);
+    }
+
+    function getBalanceOwner() external view onlyOwner returns (uint256) {
+        return (msg.sender).balance;
+    }
+
+    receive() external payable {
+        //Event
     }
 }

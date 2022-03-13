@@ -113,6 +113,7 @@ contract NFTMarketPlace is NFTMarketItem {
         );
     }
 
+    /* Gets collection array length */
     function getCollectionLength() external view returns (uint256) {
         return collectionsIds.length;
     }
@@ -222,6 +223,7 @@ contract NFTMarketPlace is NFTMarketItem {
         marketItem.removeBid(tokenId, bidId);
     }
 
+    /* Cancels bid from bidder for specific market item */
     function cancelItemBid(
         uint256 tokenId,
         uint256 bidId,

@@ -68,6 +68,35 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
 
     event ListingFeeUpdated(uint256 newListingFee);
 
+    modifier itemExists(uint256 itemId) {
+        require(marketItems[itemId].itemId == itemId, "No such item");
+        _;
+    }
+
+    modifier isForSale(uint256 itemId) {
+        require(
+            marketItems[itemId].status == ItemListingStatus.ForSale,
+            "Item is not for sale"
+        );
+        _;
+    }
+
+    modifier isItemOwner(uint256 itemId) {
+        require(
+            marketItems[itemId].owner == msg.sender,
+            "Item is not owned by you"
+        );
+        _;
+    }
+
+    modifier isValueEnough() {
+        require(
+            msg.value == listingFee,
+            "Price must be equal to listing price"
+        );
+        _;
+    }
+
     constructor() ERC721("LimeBlock", "LMB") {}
 
     function setOwner(uint256 itemId, address newOwner) external {
@@ -82,13 +111,11 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         marketItems[itemId].price = _price;
     }
 
-    /* Adds allowance to contract to use token */
     function addAllowance(uint256 itemId) internal {
         allowance[itemId] = address(this);
         emit AllowanceChanged(address(this), msg.sender, itemId);
     }
 
-    /* Removes allowance to contract to use token */
     function removeAllowance(uint256 itemId) internal {
         allowance[itemId] = address(0);
         emit AllowanceChanged(address(0), msg.sender, itemId);
@@ -169,22 +196,14 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         return marketItems[itemId];
     }
 
-    /* Puts NFT token for sale */
-    function createSale(uint256 itemId, uint256 _price) external payable {
-        require(marketItems[itemId].itemId == itemId, "No such item");
-        require(
-            marketItems[itemId].owner == msg.sender,
-            "Item is not owned by you"
-        );
-        require(
-            msg.value == listingFee,
-            "Price must be equal to listing price"
-        );
-        require(
-            marketItems[itemId].status != ItemListingStatus.ForSale,
-            "Item is already for sale"
-        );
-
+    function createSale(uint256 itemId, uint256 _price)
+        external
+        payable
+        itemExists(itemId)
+        isForSale(itemId)
+        isItemOwner(itemId)
+        isValueEnough
+    {
         addAllowance(itemId);
         collectedListingFee += msg.value;
         marketItems[itemId].price = _price;
@@ -193,13 +212,13 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         emit CreateMarketSale(itemId, _price);
     }
 
-    function cancelSale(uint256 itemId) external onlyOwner {
-        require(marketItems[itemId].itemId != 0, "No such item");
-        require(
-            marketItems[itemId].status == ItemListingStatus.ForSale,
-            "Item is not for sale"
-        );
-
+    function cancelSale(uint256 itemId)
+        external
+        onlyOwner
+        itemExists(itemId)
+        isForSale(itemId)
+        isItemOwner(itemId)
+    {
         removeAllowance(itemId);
         marketItems[itemId].price = 0;
         marketItems[itemId].status = ItemListingStatus.NotForSale;
@@ -207,19 +226,21 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         emit CancelMarketSale(itemId);
     }
 
-    /* Adds bid from user to specific token */
     function addBid(
         uint256 itemId,
         uint256 price,
         address bidder
-    ) external {
+    ) external itemExists(itemId) {
         _bidIds.increment();
         uint256 newBidId = _bidIds.current();
 
         itemBids[itemId][newBidId] = Bid(newBidId, price, bidder);
     }
 
-    function removeBid(uint256 itemId, uint256 bidId) external {
+    function removeBid(uint256 itemId, uint256 bidId)
+        external
+        itemExists(itemId)
+    {
         delete itemBids[itemId][bidId];
     }
 
@@ -230,6 +251,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
     function getItemBid(uint256 itemId, uint256 bidId)
         external
         view
+        itemExists(itemId)
         returns (Bid memory)
     {
         return itemBids[itemId][bidId];

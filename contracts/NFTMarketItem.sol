@@ -12,8 +12,10 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIds;
+    Counters.Counter private _bidIds;
+
     uint256 private listingFee = 0.025 ether;
-    uint256 private constant NULL = 0;
+    uint256 private collectedListingFee = 0;
 
     enum ItemListingStatus {
         ForSale,
@@ -26,15 +28,22 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         string description;
         uint256 price;
         uint256 collectionId;
-        uint256 bid; // could be []/mapping of bids
         address payable owner;
         uint256 createdOn;
         ItemListingStatus status;
     }
 
+    struct Bid {
+        uint256 bidId;
+        uint256 amount;
+        address bidder;
+    }
+
     uint256[] public marketItemsIds;
+    uint256[] public bidsIds;
 
     mapping(uint256 => MarketItem) public marketItems;
+    mapping(uint256 => Bid) public itemBids;
     mapping(uint256 => address) public allowance;
 
     event MarketItemListed(
@@ -43,11 +52,13 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         string description,
         uint256 price,
         uint256 collectionId,
-        uint256 bid,
         address owner,
         uint256 createdOn,
         ItemListingStatus status
     );
+
+    event CreateMarketSale(uint256 itemId, uint256 price);
+    event CancelMarketSale(uint256 itemId);
 
     event AllowanceChanged(
         address indexed _forWho,
@@ -55,14 +66,63 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         uint256 tokenId
     );
 
+    event ListingFeeUpdated(uint256 newListingFee);
+
     constructor() ERC721("LimeBlock", "LMB") {}
 
-    function awardItem(
+    function setOwner(uint256 itemId, address newOwner) external {
+        marketItems[itemId].owner = payable(newOwner);
+    }
+
+    function setStatus(uint256 itemId, ItemListingStatus _status) external {
+        marketItems[itemId].status = _status;
+    }
+
+    function setPrice(uint256 itemId, uint256 _price) external {
+        marketItems[itemId].price = _price;
+    }
+
+    /* Adds allowance to contract to use token */
+    function addAllowance(uint256 itemId) internal {
+        allowance[itemId] = address(this);
+        emit AllowanceChanged(address(this), msg.sender, itemId);
+    }
+
+    /* Removes allowance to contract to use token */
+    function removeAllowance(uint256 itemId) internal {
+        allowance[itemId] = address(0);
+        emit AllowanceChanged(address(0), msg.sender, itemId);
+    }
+
+    function getListingFee() public view returns (uint256) {
+        return listingFee;
+    }
+
+    function updateListingFee(uint256 _listingFee) external payable onlyOwner {
+        listingFee = _listingFee;
+        emit ListingFeeUpdated(_listingFee);
+    }
+
+    function getCollectedListingFee()
+        external
+        view
+        onlyOwner
+        returns (uint256)
+    {
+        return collectedListingFee;
+    }
+
+    function resetCollectedListingFee() external onlyOwner {
+        collectedListingFee = 0;
+    }
+
+    /* Mints an unique NFT token */
+    function mintItem(
         string memory tokenURI,
         string calldata name,
         string calldata description,
         uint256 collectionId
-    ) public returns (uint256) {
+    ) external returns (uint256) {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
         uint256 createdOn = block.timestamp;
@@ -76,7 +136,6 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
             description,
             0,
             collectionId,
-            NULL,
             payable(msg.sender),
             createdOn,
             ItemListingStatus.NotForSale
@@ -90,7 +149,6 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
             description,
             0,
             collectionId,
-            NULL,
             payable(msg.sender),
             createdOn,
             ItemListingStatus.NotForSale
@@ -103,26 +161,16 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         return marketItemsIds.length;
     }
 
-    function addAllowance(uint256 itemId) internal {
-        allowance[itemId] = address(this);
-        emit AllowanceChanged(address(this), msg.sender, itemId);
+    function getMarketItem(uint256 itemId)
+        external
+        view
+        returns (MarketItem memory)
+    {
+        return marketItems[itemId];
     }
 
-    function removeAllowance(uint256 itemId) internal {
-        allowance[itemId] = address(0);
-        emit AllowanceChanged(address(0), msg.sender, itemId);
-    }
-
-    function getListingPrice() public view returns (uint256) {
-        return listingFee;
-    }
-
-    function updateListingPrice(uint256 _listingFee) public payable onlyOwner {
-        listingFee = _listingFee;
-        //Event
-    }
-
-    function createMarketItemSale(uint256 itemId, uint256 _price)
+    /* Puts NFT token for sale */
+    function createSale(uint256 itemId, uint256 _price)
         external
         payable
         onlyOwner
@@ -131,48 +179,51 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
             msg.value == listingFee,
             "Price must be equal to listing price"
         );
-        require(marketItems[itemId].itemId != NULL, "No such item");
+        require(marketItems[itemId].itemId != 0, "No such item");
         require(
             marketItems[itemId].status != ItemListingStatus.ForSale,
             "Item is already for sale"
         );
+
         addAllowance(itemId);
+        collectedListingFee += msg.value;
         marketItems[itemId].price = _price;
         marketItems[itemId].status = ItemListingStatus.ForSale;
-        //Event
+
+        emit CreateMarketSale(itemId, _price);
     }
 
-    function cancelMarketItemSale(uint256 itemId) external onlyOwner {
-        require(marketItems[itemId].itemId != NULL, "No such item");
+    function cancelSale(uint256 itemId) external onlyOwner {
+        require(marketItems[itemId].itemId != 0, "No such item");
         require(
-            marketItems[itemId].status != ItemListingStatus.NotForSale,
+            marketItems[itemId].status == ItemListingStatus.ForSale,
             "Item is not for sale"
         );
+
         removeAllowance(itemId);
         marketItems[itemId].price = 0;
         marketItems[itemId].status = ItemListingStatus.NotForSale;
-        //Event
+
+        emit CancelMarketSale(itemId);
     }
 
-    function getNFTMarketItem(uint256 itemId)
-        external
-        view
-        returns (MarketItem memory)
-    {
-        return marketItems[itemId];
+    /* Adds bid from user to specific token */
+    function addBid(
+        uint256 itemId,
+        uint256 price,
+        address bidder
+    ) external {
+        _bidIds.increment();
+        uint256 newBidId = _bidIds.current();
+
+        itemBids[itemId] = Bid(newBidId, price, bidder);
     }
 
-    function changeOwner(uint256 itemId, address newOwner) external {
-        marketItems[itemId].owner = payable(newOwner);
+    function getItemBidsLength() public view returns (uint256) {
+        return bidsIds.length;
     }
 
-    function changeItemStatus(uint256 itemId, ItemListingStatus _status)
-        external
-    {
-        marketItems[itemId].status = _status;
-    }
-
-    function changeItemPrice(uint256 itemId, uint256 _price) external {
-        marketItems[itemId].price = _price;
+    function getItemBid(uint256 bidId) external view returns (Bid memory) {
+        return itemBids[bidId];
     }
 }

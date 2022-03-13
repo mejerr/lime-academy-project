@@ -1,15 +1,14 @@
-
 // tslint:disable-next-line: no-var-requires
 const hre = require("hardhat");
 const { ethers } = hre;
 
 async function main() {
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  await hre.run('compile');
 
-  await greeter.deployed();
-
-  console.log("Greeter deployed to:", greeter.address);
+  const NFTMarketPlace = await ethers.getContractFactory("NFTMarketPlace");
+  const marketPlace = await NFTMarketPlace.deploy();
+  await marketPlace.deployed();
+  console.log("NFTMarketPlace deployed to:", marketPlace.address);
 }
 
 main().catch((error) => {

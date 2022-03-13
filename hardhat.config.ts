@@ -16,16 +16,43 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+task('deployMarketPlace', 'Deploys marketplace on a provided network').setAction(
+  async (taskArguments, hre) => {
+    const deployToken = require('./scripts/deploy');
+    await deployToken(taskArguments);
+  },
+);
+
 const config: HardhatUserConfig = {
-  solidity: "0.8.4",
+  solidity: {
+    compilers: [
+    {
+      version: "0.8.0",
+    },
+    {
+      version: "0.8.1",
+    },
+  ],
+  settings: {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    }
+  }},
   networks: {
+    hardhat: {
+      chainId: 1337
+    },
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
       accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        process.env.WALLET_PRIVATE_KEY !== undefined ? [process.env.WALLET_PRIVATE_KEY] : [],
+    },
+    rinkeby: {
+      url: process.env.RINKEBY_URL || "",
+      accounts: process.env.WALLET_PRIVATE_KEY !== undefined ? [process.env.WALLET_PRIVATE_KEY] : [],
     },
   },
-
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",

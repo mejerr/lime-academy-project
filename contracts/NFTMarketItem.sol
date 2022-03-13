@@ -19,7 +19,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
 
     enum ItemListingStatus {
         ForSale,
-        NotForSale
+        Idle
     }
 
     struct MarketItem {
@@ -28,7 +28,6 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         string description;
         uint256 price;
         uint256 collectionId;
-        address payable owner;
         uint256 createdOn;
         ItemListingStatus status;
     }
@@ -44,7 +43,6 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
 
     mapping(uint256 => MarketItem) public marketItems;
     mapping(uint256 => mapping(uint256 => Bid)) public itemBids;
-    mapping(uint256 => address) public allowance;
 
     event MarketItemListed(
         uint256 indexed itemId,
@@ -52,19 +50,12 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         string description,
         uint256 price,
         uint256 collectionId,
-        address owner,
         uint256 createdOn,
         ItemListingStatus status
     );
 
     event CreateMarketSale(uint256 itemId, uint256 price);
     event CancelMarketSale(uint256 itemId);
-
-    event AllowanceChanged(
-        address indexed _forWho,
-        address indexed _fromWhom,
-        uint256 tokenId
-    );
 
     event ListingFeeUpdated(uint256 newListingFee);
 
@@ -75,16 +66,8 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
 
     modifier isForSale(uint256 itemId) {
         require(
-            marketItems[itemId].status == ItemListingStatus.ForSale,
-            "Item is not for sale"
-        );
-        _;
-    }
-
-    modifier isItemOwner(uint256 itemId) {
-        require(
-            marketItems[itemId].owner == msg.sender,
-            "Item is not owned by you"
+            marketItems[itemId].status != ItemListingStatus.ForSale,
+            "Item is already for sale"
         );
         _;
     }
@@ -97,28 +80,23 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         _;
     }
 
+    modifier isItemOwner(uint256 itemId) {
+        require(
+            ERC721.ownerOf(itemId) == msg.sender,
+            "Item is not owned by you"
+        );
+        _;
+    }
+
     constructor() ERC721("LimeBlock", "LMB") {}
 
-    function setOwner(uint256 itemId, address newOwner) external {
-        marketItems[itemId].owner = payable(newOwner);
-    }
-
-    function setStatus(uint256 itemId, ItemListingStatus _status) external {
-        marketItems[itemId].status = _status;
-    }
-
-    function setPrice(uint256 itemId, uint256 _price) external {
+    function setPrice(
+        uint256 itemId,
+        uint256 _price,
+        ItemListingStatus _status
+    ) external {
         marketItems[itemId].price = _price;
-    }
-
-    function addAllowance(uint256 itemId) internal {
-        allowance[itemId] = address(this);
-        emit AllowanceChanged(address(this), msg.sender, itemId);
-    }
-
-    function removeAllowance(uint256 itemId) internal {
-        allowance[itemId] = address(0);
-        emit AllowanceChanged(address(0), msg.sender, itemId);
+        marketItems[itemId].status = _status;
     }
 
     function getListingFee() public view returns (uint256) {
@@ -163,9 +141,8 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
             description,
             0,
             collectionId,
-            payable(msg.sender),
             createdOn,
-            ItemListingStatus.NotForSale
+            ItemListingStatus.Idle
         );
 
         marketItemsIds.push(newTokenId);
@@ -176,9 +153,8 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
             description,
             0,
             collectionId,
-            payable(msg.sender),
             createdOn,
-            ItemListingStatus.NotForSale
+            ItemListingStatus.Idle
         );
 
         return newTokenId;
@@ -200,11 +176,10 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         external
         payable
         itemExists(itemId)
-        isForSale(itemId)
         isItemOwner(itemId)
         isValueEnough
     {
-        addAllowance(itemId);
+        approve(address(this), itemId);
         collectedListingFee += msg.value;
         marketItems[itemId].price = _price;
         marketItems[itemId].status = ItemListingStatus.ForSale;
@@ -214,14 +189,17 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
 
     function cancelSale(uint256 itemId)
         external
-        onlyOwner
         itemExists(itemId)
-        isForSale(itemId)
         isItemOwner(itemId)
     {
-        removeAllowance(itemId);
+        require(
+            marketItems[itemId].status == ItemListingStatus.ForSale,
+            "Item is not for sale"
+        );
+
+        approve(address(0), itemId);
         marketItems[itemId].price = 0;
-        marketItems[itemId].status = ItemListingStatus.NotForSale;
+        marketItems[itemId].status = ItemListingStatus.Idle;
 
         emit CancelMarketSale(itemId);
     }

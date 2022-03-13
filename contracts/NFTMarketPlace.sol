@@ -124,13 +124,10 @@ contract NFTMarketPlace is NFTMarketItem {
         payable
     {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
-        address payable itemOwner = marketItem.getMarketItem(tokenId).owner;
+        address itemOwner = ERC721.ownerOf(tokenId);
 
+        ERC721._isApprovedOrOwner(address(this), tokenId);
         require(itemOwner != msg.sender, "You can not buy your own item");
-        require(
-            marketItem.allowance(tokenId) == address(this),
-            "Marketplace is not allowed to sell this item"
-        );
         require(
             marketItem.getMarketItem(tokenId).status ==
                 ItemListingStatus.ForSale,
@@ -143,10 +140,8 @@ contract NFTMarketPlace is NFTMarketItem {
 
         _transfer(itemOwner, msg.sender, tokenId);
 
-        itemOwner.transfer(msg.value);
-        marketItem.setOwner(tokenId, msg.sender);
-        marketItem.setStatus(tokenId, ItemListingStatus.NotForSale);
-        marketItem.setPrice(tokenId, 0);
+        payable(itemOwner).transfer(msg.value);
+        marketItem.setPrice(tokenId, 0, ItemListingStatus.Idle);
 
         emit ItemBought(tokenId, msg.sender, itemOwner, msg.value);
     }
@@ -172,7 +167,7 @@ contract NFTMarketPlace is NFTMarketItem {
             "Item is not for sale"
         );
         require(
-            marketItem.getMarketItem(itemId).owner != msg.sender,
+            ERC721.ownerOf(itemId) != msg.sender,
             "You can not bid your own item"
         );
 
@@ -187,13 +182,8 @@ contract NFTMarketPlace is NFTMarketItem {
         uint256 tokenId,
         uint256 bidId,
         address nftContract
-    ) external payable {
+    ) external payable isItemOwner(tokenId) {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
-
-        require(
-            marketItem.getMarketItem(tokenId).owner == msg.sender,
-            "Item is not owned buy you"
-        );
 
         require(
             marketItem.getItemBid(tokenId, bidId).bidId == bidId,
@@ -214,9 +204,7 @@ contract NFTMarketPlace is NFTMarketItem {
         address(this).balance - amount;
         payable(msg.sender).transfer(amount);
 
-        marketItem.setOwner(tokenId, bidder);
-        marketItem.setStatus(tokenId, ItemListingStatus.NotForSale);
-        marketItem.setPrice(tokenId, 0);
+        marketItem.setPrice(tokenId, 0, ItemListingStatus.Idle);
 
         emit BidAccepted(tokenId, bidId, amount, bidder);
 

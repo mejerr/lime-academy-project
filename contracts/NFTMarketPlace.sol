@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -75,6 +75,7 @@ contract NFTMarketPlace is NFTMarketItem {
         external
         payable
         onlyOwner
+        nonReentrant
     {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
 
@@ -122,6 +123,7 @@ contract NFTMarketPlace is NFTMarketItem {
     function buyMarketItem(address nftContract, uint256 tokenId)
         external
         payable
+        nonReentrant
     {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
         address itemOwner = ERC721.ownerOf(tokenId);
@@ -151,7 +153,7 @@ contract NFTMarketPlace is NFTMarketItem {
         uint256 itemId,
         uint256 price,
         address nftContract
-    ) external payable {
+    ) external payable nonReentrant {
         require(
             msg.value >= price,
             "You have to send enough money to bid on this item"
@@ -182,7 +184,7 @@ contract NFTMarketPlace is NFTMarketItem {
         uint256 tokenId,
         uint256 bidId,
         address nftContract
-    ) external payable isItemOwner(tokenId) {
+    ) external payable isItemOwner(tokenId) nonReentrant {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
 
         require(
@@ -216,7 +218,7 @@ contract NFTMarketPlace is NFTMarketItem {
         uint256 tokenId,
         uint256 bidId,
         address nftContract
-    ) external payable {
+    ) external payable nonReentrant {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
 
         require(

@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "hardhat/console.sol";
 
-contract NFTMarketItem is ERC721URIStorage, Ownable {
+contract NFTMarketItem is ERC721URIStorage, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIds;
@@ -127,7 +128,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         string calldata name,
         string calldata description,
         uint256 collectionId
-    ) external returns (uint256) {
+    ) external nonReentrant returns (uint256) {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
         uint256 createdOn = block.timestamp;
@@ -178,6 +179,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         itemExists(itemId)
         isItemOwner(itemId)
         isValueEnough
+        nonReentrant
     {
         approve(address(this), itemId);
         collectedListingFee += msg.value;

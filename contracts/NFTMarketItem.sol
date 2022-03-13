@@ -43,7 +43,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
     uint256[] public bidsIds;
 
     mapping(uint256 => MarketItem) public marketItems;
-    mapping(uint256 => Bid) public itemBids;
+    mapping(uint256 => mapping(uint256 => Bid)) public itemBids;
     mapping(uint256 => address) public allowance;
 
     event MarketItemListed(
@@ -112,7 +112,7 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         return collectedListingFee;
     }
 
-    function resetCollectedListingFee() external onlyOwner {
+    function resetCollectedListingFee() external {
         collectedListingFee = 0;
     }
 
@@ -170,16 +170,16 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
     }
 
     /* Puts NFT token for sale */
-    function createSale(uint256 itemId, uint256 _price)
-        external
-        payable
-        onlyOwner
-    {
+    function createSale(uint256 itemId, uint256 _price) external payable {
+        require(marketItems[itemId].itemId == itemId, "No such item");
+        require(
+            marketItems[itemId].owner == msg.sender,
+            "Item is not owned by you"
+        );
         require(
             msg.value == listingFee,
             "Price must be equal to listing price"
         );
-        require(marketItems[itemId].itemId != 0, "No such item");
         require(
             marketItems[itemId].status != ItemListingStatus.ForSale,
             "Item is already for sale"
@@ -216,14 +216,22 @@ contract NFTMarketItem is ERC721URIStorage, Ownable {
         _bidIds.increment();
         uint256 newBidId = _bidIds.current();
 
-        itemBids[itemId] = Bid(newBidId, price, bidder);
+        itemBids[itemId][newBidId] = Bid(newBidId, price, bidder);
+    }
+
+    function removeBid(uint256 itemId, uint256 bidId) external {
+        delete itemBids[itemId][bidId];
     }
 
     function getItemBidsLength() public view returns (uint256) {
         return bidsIds.length;
     }
 
-    function getItemBid(uint256 bidId) external view returns (Bid memory) {
-        return itemBids[bidId];
+    function getItemBid(uint256 itemId, uint256 bidId)
+        external
+        view
+        returns (Bid memory)
+    {
+        return itemBids[itemId][bidId];
     }
 }

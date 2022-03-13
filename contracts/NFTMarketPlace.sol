@@ -49,6 +49,11 @@ contract NFTMarketPlace is NFTMarketItem {
         uint256 amount,
         address bidder
     );
+    event BidCancelled(
+        uint256 indexed tokenId,
+        uint256 indexed bidId,
+        address canceller
+    );
 
     event ListingFeeToOwner(uint256 listingFee);
     event Deposit(uint256 price);
@@ -66,10 +71,15 @@ contract NFTMarketPlace is NFTMarketItem {
     }
 
     /* Transfers collected listing fees to owner */
-    function transferListingFee(address nftContract) external onlyOwner {
+    function transferListingFee(address nftContract)
+        external
+        payable
+        onlyOwner
+    {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
 
-        payable(msg.sender).transfer(address(this).balance - lockedBidAmount);
+        address(this).balance - marketItem.getCollectedListingFee();
+        payable(msg.sender).transfer(marketItem.getCollectedListingFee());
 
         emit ListingFeeToOwner(marketItem.getCollectedListingFee());
 
@@ -148,10 +158,13 @@ contract NFTMarketPlace is NFTMarketItem {
     ) external payable {
         require(
             msg.value >= price,
-            "You do not have enough money to bid on this item"
+            "You have to send enough money to bid on this item"
         );
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
-
+        require(
+            marketItem.getMarketItem(itemId).itemId == itemId,
+            "No such item"
+        );
         require(
             marketItem.getMarketItem(itemId).status ==
                 ItemListingStatus.ForSale,
@@ -162,7 +175,7 @@ contract NFTMarketPlace is NFTMarketItem {
             "You can not bid your own item"
         );
 
-        lockedBidAmount = lockedBidAmount + msg.value;
+        lockedBidAmount += msg.value;
         marketItem.addBid(itemId, price, msg.sender);
 
         emit BidCreated(itemId, price, msg.sender);
@@ -173,16 +186,21 @@ contract NFTMarketPlace is NFTMarketItem {
         uint256 tokenId,
         uint256 bidId,
         address nftContract
-    ) external payable onlyOwner {
+    ) external payable {
         NFTMarketItem marketItem = NFTMarketItem(nftContract);
 
         require(
-            marketItem.getItemBid(bidId).bidId == bidId,
+            marketItem.getMarketItem(tokenId).owner == msg.sender,
+            "Item is not owned buy you"
+        );
+
+        require(
+            marketItem.getItemBid(tokenId, bidId).bidId == bidId,
             "No such bid for this item"
         );
 
-        address bidder = marketItem.getItemBid(bidId).bidder;
-        uint256 amount = marketItem.getItemBid(bidId).amount;
+        address bidder = marketItem.getItemBid(tokenId, bidId).bidder;
+        uint256 amount = marketItem.getItemBid(tokenId, bidId).amount;
 
         require(
             lockedBidAmount >= amount,
@@ -191,7 +209,7 @@ contract NFTMarketPlace is NFTMarketItem {
 
         _transfer(msg.sender, bidder, tokenId);
 
-        lockedBidAmount = lockedBidAmount - amount;
+        lockedBidAmount -= amount;
         address(this).balance - amount;
         payable(msg.sender).transfer(amount);
 
@@ -200,6 +218,41 @@ contract NFTMarketPlace is NFTMarketItem {
         marketItem.setPrice(tokenId, 0);
 
         emit BidAccepted(tokenId, bidId, amount, bidder);
+
+        marketItem.removeBid(tokenId, bidId);
+    }
+
+    function cancelItemBid(
+        uint256 tokenId,
+        uint256 bidId,
+        address nftContract
+    ) external payable {
+        NFTMarketItem marketItem = NFTMarketItem(nftContract);
+
+        require(
+            marketItem.getMarketItem(tokenId).itemId == tokenId,
+            "No such item"
+        );
+
+        require(
+            marketItem.getItemBid(tokenId, bidId).bidId == bidId,
+            "No such bid for this item"
+        );
+
+        address bidder = marketItem.getItemBid(tokenId, bidId).bidder;
+        uint256 amount = marketItem.getItemBid(tokenId, bidId).amount;
+
+        require(
+            lockedBidAmount >= amount,
+            "Transaction failed. Contract has not enough wei"
+        );
+        lockedBidAmount -= amount;
+        address(this).balance - amount;
+        payable(bidder).transfer(amount);
+
+        marketItem.removeBid(tokenId, bidId);
+
+        emit BidCancelled(tokenId, bidId, msg.sender);
     }
 
     receive() external payable {

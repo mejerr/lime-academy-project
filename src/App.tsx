@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { Suspense } from 'react';
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Web3Modal from 'web3modal';
@@ -11,6 +12,8 @@ import ConnectButton from './components/ConnectButton';
 
 import { Web3Provider } from '@ethersproject/providers';
 import { getChainData } from './helpers/utilities';
+
+import Homepage from './view/Homepage';
 
 const SLayout = styled.div`
   position: relative;
@@ -183,6 +186,19 @@ class App extends React.Component<any, any> {
 
   };
 
+  public routes = () => (
+    <StyledContent>
+      <Switch>
+        <Route
+          path='/home'
+          component={Homepage}
+        />
+        <Route path='/' exact component={Homepage} />
+        <Redirect to='/' />
+      </Switch>
+    </StyledContent>
+  );
+
   public render = () => {
     const {
       address,
@@ -191,15 +207,19 @@ class App extends React.Component<any, any> {
       fetching
     } = this.state;
     return (
-      <SLayout>
-        <Column maxWidth={1000} spanHeight>
-          <Header
+      <StyledApp>
+        <Suspense fallback={<p>...Loading</p>}>{this.routes()}</Suspense>
+      </StyledApp>
+    );
+      // <SLayout>
+      //   <Column maxWidth={1000} spanHeight>
+          {/* <Header
             connected={connected}
             address={address}
             chainId={chainId}
             killSession={this.resetApp}
-          />
-          <SContent>
+          /> */}
+          {/* <SContent>
             {fetching ? (
               <Column center>
                 <SContainer>
@@ -211,11 +231,13 @@ class App extends React.Component<any, any> {
                   {!this.state.connected && <ConnectButton onClick={this.onConnect} />}
                 </SLanding>
               )}
-          </SContent>
-        </Column>
-      </SLayout>
-    );
+          </SContent> */}
+        {/* </Column>
+      </SLayout> */}
   };
 }
+
+const StyledApp = styled.div``;
+const StyledContent = styled.div``;
 
 export default App;

@@ -30,14 +30,14 @@ const config: HardhatUserConfig = {
     },
     {
       version: "0.8.1",
-    },
-  ],
-  settings: {
-    optimizer: {
-      enabled: true,
-      runs: 200
-    }
-  }},
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200
+        }
+      }
+    }],
+  },
   networks: {
     hardhat: {
       chainId: 1337

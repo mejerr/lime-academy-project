@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "esnext",
+    "module": "commonJS",
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
@@ -9,7 +9,6 @@
     "outDir": "build/dist",
     "lib": ["es7", "dom"],
     "sourceMap": true,
-    "allowJs": true,
     "jsx": "react",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
@@ -25,7 +24,7 @@
     "skipLibCheck": true
   },
   "include": ["./scripts", "./test", "./typechain"],
-  "files": ["./hardhat.config.ts"],
+  "files": ["hardhat.config.ts"],
   "exclude": [
     "node_modules",
     "build",

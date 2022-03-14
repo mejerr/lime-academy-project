@@ -15,9 +15,9 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-task('deployMarketPlace', 'Deploys marketplace on a provided network').setAction(
+task('deployNFTMarketItem', 'Deploys market item on a provided network').setAction(
   async (taskArguments, hre) => {
-    const deployToken = require('./scripts/deploy');
+    const deployToken = require('./scripts/deployNFTMarketItem');
     await deployToken(taskArguments);
   },
 );

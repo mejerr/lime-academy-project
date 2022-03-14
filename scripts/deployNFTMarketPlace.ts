@@ -1,8 +1,9 @@
+
 // tslint:disable-next-line: no-var-requires
 const hre = require("hardhat");
 const { ethers } = hre;
 
-async function main() {
+async function deployNFTMarketPlace() {
   await hre.run('compile');
 
   const NFTMarketPlace = await ethers.getContractFactory("NFTMarketPlace");
@@ -10,8 +11,9 @@ async function main() {
   await marketPlace.deployed();
   console.log("NFTMarketPlace deployed to:", marketPlace.address);
 }
-
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+deployNFTMarketPlace()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });

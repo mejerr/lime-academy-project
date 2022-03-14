@@ -16,7 +16,6 @@
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
-    "@typechain/hardhat": "^4.0.0",
     "@types/ethereumjs-util": "^5.2.0",
     "@types/jest": "^23.3.12",
     "@types/node": "^10.12.18",

@@ -2,18 +2,36 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
-import limeblockLogo from "../assets/limeblock-logo.png";
-import Button from './Button';
+import limeblockLogo from "../../assets/limeblock-logo.png";
+import Button from '../Button';
+import Menu from './Menu';
 
 const Header: FC<RouteComponentProps> = ({ history} ) => {
   const { location, push } = history;
   const { pathname } = location;
-  console.log(pathname);
+
   return (
     <HeaderWrapper >
       <Logo />
-      <Button title={'Marketplace'} isActive={pathname === "/marketplace"} width={110} onClick={() => history.push('/marketplace')} />
-      <Button title={'Create'} isActive ={pathname === "/create"} width={80} onClick={() => history.push('/create')} />
+      <Menu />
+      <NavBar>
+        <Button
+          title={'Marketplace'}
+          isActive={pathname === "/marketplace"}
+          width={"110px"}
+          onClick={() => push('/marketplace')}
+          alignItems={"center"}
+          justifyContent={"center"}
+        />
+        <Button
+          title={'Create'}
+          isActive ={pathname === "/create"}
+          width={"80px"}
+          onClick={() => push('/create')}
+          alignItems={"center"}
+          justifyContent={"center"}
+        />
+      </NavBar>
       <SiteTitle>{"Limeblock"}</SiteTitle>
     </HeaderWrapper>
   )
@@ -35,6 +53,14 @@ const Logo = styled.div`
   margin-right: 10px;
   background: transparent url(${limeblockLogo}) top center no-repeat;
   background-size: contain;
+`;
+
+const NavBar = styled.div`
+  display: flex;
+
+  @media (max-width: 1100px) {
+    display: none;
+  }
 `;
 
 const SiteTitle = styled.div`

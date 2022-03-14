@@ -6,7 +6,7 @@ import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Column from './components/Column';
 import Wrapper from './components/Wrapper';
-import Header from './components/Header';
+import Header from './components/Header1';
 import Loader from './components/Loader';
 import ConnectButton from './components/ConnectButton';
 
@@ -193,6 +193,14 @@ class App extends React.Component<any, any> {
           path='/home'
           component={Homepage}
         />
+        <Route
+          path='/marketplace'
+          component={Homepage}
+        />
+        <Route
+          path='/create'
+          component={Homepage}
+        />
         <Route path='/' exact component={Homepage} />
         <Redirect to='/' />
       </Switch>
@@ -213,31 +221,34 @@ class App extends React.Component<any, any> {
     );
       // <SLayout>
       //   <Column maxWidth={1000} spanHeight>
-          {/* <Header
-            connected={connected}
-            address={address}
-            chainId={chainId}
-            killSession={this.resetApp}
-          /> */}
-          {/* <SContent>
-            {fetching ? (
-              <Column center>
-                <SContainer>
-                  <Loader />
-                </SContainer>
-              </Column>
-            ) : (
-                <SLanding center>
-                  {!this.state.connected && <ConnectButton onClick={this.onConnect} />}
-                </SLanding>
-              )}
-          </SContent> */}
-        {/* </Column>
-      </SLayout> */}
+      //     <Header
+      //       connected={connected}
+      //       address={address}
+      //       chainId={chainId}
+      //       killSession={this.resetApp}
+      //     />
+      //     <SContent>
+      //       {fetching ? (
+      //         <Column center>
+      //           <SContainer>
+      //             <Loader />
+      //           </SContainer>
+      //         </Column>
+      //       ) : (
+      //           <SLanding center>
+      //             {!this.state.connected && <ConnectButton onClick={this.onConnect} />}
+      //           </SLanding>
+      //         )}
+      //     </SContent>
+      //   </Column>
+      // </SLayout>
   };
 }
 
-const StyledApp = styled.div``;
+const StyledApp = styled.div`
+  width: 100%;
+  height: 100%;
+`;
 const StyledContent = styled.div``;
 
 export default App;

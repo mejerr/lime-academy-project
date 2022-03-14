@@ -1,10 +1,11 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
+import Header from '../components/Header';
 
 const Homepage: FC = () => {
   return (
     <HomepageWrapper >
-      123
+      <Header />
     </HomepageWrapper>
   )
 }

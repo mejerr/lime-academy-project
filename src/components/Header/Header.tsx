@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useCallback, useContext } from 'react'
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
@@ -7,10 +7,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignIn } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Button';
 import Menu from './Menu';
+import { AppStateContext } from '../../App';
+import { ellipseAddress } from '../../helpers/utilities';
 
-const Header: FC<RouteComponentProps> = ({ history} ) => {
-  const { location, push } = history;
+const Header: FC<RouteComponentProps> = ( props ) => {
+  const { state, onConnect, killSession } = useContext(AppStateContext);
+  const { connected, address } = state;
+  const { location, push } = props.history;
   const { pathname } = location;
+
+  const onLogin = useCallback(() => {
+    onConnect();
+    push('/marketplace');
+  }, []);
 
   return (
     <HeaderWrapper >
@@ -43,16 +52,27 @@ const Header: FC<RouteComponentProps> = ({ history} ) => {
         />
       </NavBar>
       <SiteTitle>{"Limeblock Marketplace"}</SiteTitle>
-      <ButtonWrapper>
-        <LoginIcon icon={faSignIn}/>
-        <Button
-          title={'Login'}
-          width={"60px"}
-          onClick={() => push('/collection')}
-          alignItems={"center"}
-          justifyContent={"center"}
-        />
-      </ButtonWrapper>
+      {connected ? (
+        address && (
+          <ActiveAccount>
+            <Address connected={connected}>{ellipseAddress(address)}</Address>
+            <DisconnectButton onClick={killSession}>
+              {'Disconnect'}
+            </DisconnectButton>
+          </ActiveAccount>
+        )
+      ) :
+        <ButtonWrapper>
+          <LoginIcon icon={faSignIn}/>
+          <Button
+            title={'Login'}
+            width={"60px"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            onClick={onLogin}
+          />
+        </ButtonWrapper>
+      }
     </HeaderWrapper>
   )
 }
@@ -110,5 +130,32 @@ const LoginIcon = styled(FontAwesomeIcon)`
   margin-left: 10px;
 `;
 
+const ActiveAccount = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-right: 10px;
+  font-weight: 500;
+`
+
+const Address = styled.p<{ connected: boolean }>`
+  font-size: 12px;
+  font-weight: bold;
+  margin: ${({ connected }) => (connected ? '-2px auto 0.7em' : '0')};
+`
+const DisconnectButton = styled.div`
+  font-size: 9px;
+  font-family: monospace;
+  position: absolute;
+  right: 0;
+  top: 20px;
+  opacity: 0.7;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-1px);
+    opacity: 0.5;
+  }
+`
 
 export default withRouter(Header);

@@ -74,6 +74,12 @@ const INITIAL_STATE: IAppState = {
   info: null
 };
 
+export const AppStateContext = React.createContext({
+  state: INITIAL_STATE,
+  killSession: () => {},
+  onConnect: () => {}
+});
+
 class App extends React.Component<any, any> {
   public web3Modal: Web3Modal;
   public state: IAppState;
@@ -115,7 +121,6 @@ class App extends React.Component<any, any> {
     });
 
     await this.subscribeToProviderEvents(this.provider);
-
   };
 
   public subscribeToProviderEvents = async (provider:any) => {
@@ -219,9 +224,17 @@ class App extends React.Component<any, any> {
       fetching
     } = this.state;
     return (
+      <AppStateContext.Provider
+        value={{
+          state: this.state,
+          killSession: () => this.resetApp(),
+          onConnect: () => this.onConnect()
+        }}
+      >
       <StyledApp>
-        <Suspense fallback={<p>...Loading</p>}>{this.routes()}</Suspense>
+        <Suspense fallback={<p>...Loading</p>} >{this.routes()}</Suspense>
       </StyledApp>
+      </AppStateContext.Provider>
     );
       // <SLayout>
       //   <Column maxWidth={1000} spanHeight>

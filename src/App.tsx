@@ -201,6 +201,10 @@ class App extends React.Component<any, any> {
           path='/create'
           component={Homepage}
         />
+        <Route
+          path='/collection'
+          component={Homepage}
+        />
         <Route path='/' exact component={Homepage} />
         <Redirect to='/' />
       </Switch>

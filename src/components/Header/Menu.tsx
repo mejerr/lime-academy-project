@@ -36,6 +36,14 @@ const Menu: FC<RouteComponentProps> = ({ history} ) => {
             justifyContent={"flex-start"}
             arrow={true}
           />
+            <Button
+              title={'My Collection'}
+              width={"100%"}
+              onClick={() => push('/collection')}
+              alignItems={"center"}
+              justifyContent={"flex-start"}
+              arrow={true}
+          />
         </MenuContent>}
     </MenuWrapper>
   )
@@ -51,7 +59,6 @@ const MenuWrapper = styled.div`
 
   @media (min-width: 1100px) {
     display: none;
-    visibility: none;
   }
 `;
 

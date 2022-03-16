@@ -19,8 +19,8 @@ const Button: FC<IProps> = ({
   isActive = false,
   width = "70px",
   height = "70px",
-  alignItems,
-  justifyContent,
+  alignItems = "center",
+  justifyContent = "center",
   arrow = false,
   onClick
 }) => {
@@ -41,11 +41,7 @@ const Button: FC<IProps> = ({
 
 export default Button;
 
-const Title = styled.div`
-  font-size: 16px;
-`;
-
-export const StyledButton = styled.div<{
+const StyledButton = styled.div<{
   active: boolean,
   width: string,
   height: string,
@@ -76,10 +72,13 @@ export const StyledButton = styled.div<{
   }
 `;
 
+const Title = styled.div`
+  font-size: 16px;
+`;
+
 const ArrowIcon = styled(FontAwesomeIcon)`
   width: 20px;
   height: 20px;
   position: absolute;
   right: 20px;
 `;
-

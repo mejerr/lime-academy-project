@@ -24,7 +24,6 @@ const Menu: FC<RouteComponentProps> = ({ history} ) => {
             title={'Marketplace'}
             width={"100%"}
             onClick={() => push('/marketplace')}
-            alignItems={"center"}
             justifyContent={"flex-start"}
             arrow={true}
           />
@@ -32,7 +31,6 @@ const Menu: FC<RouteComponentProps> = ({ history} ) => {
             title={'Create'}
             width={"100%"}
             onClick={() => push('/create')}
-            alignItems={"center"}
             justifyContent={"flex-start"}
             arrow={true}
           />
@@ -40,7 +38,6 @@ const Menu: FC<RouteComponentProps> = ({ history} ) => {
               title={'My Collection'}
               width={"100%"}
               onClick={() => push('/collection')}
-              alignItems={"center"}
               justifyContent={"flex-start"}
               arrow={true}
           />

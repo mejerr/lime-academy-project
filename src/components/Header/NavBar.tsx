@@ -1,33 +1,65 @@
-import React, { FC } from 'react'
+import React, { FC, useCallback, useContext } from 'react'
+import { AppStateContext } from 'App';
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import Button from '../Button';
 
-const NavBar: FC<RouteComponentProps> = ( props ) => {
-  const { location, push } = props.history;
-  const { pathname } = location;
+interface INavButtons {
+  title: string,
+  isActive: boolean,
+  width: string,
+  onClick: () => void
+}
+
+const NavBar: FC<RouteComponentProps> = ({ history }) => {
+  const { pathname } = history.location;
+  const { state, onConnect } = useContext(AppStateContext);
+  const { connected } = state;
+
+  const onClick = useCallback((pathname) => {
+    if (!connected) {
+        onConnect({ onSuccess: () => history.push(pathname) });
+        return;
+     }
+
+     history.push(pathname);
+  }, [connected]);
+
+  const NAV_BUTTONS =  [
+    {
+      title: 'Marketplace',
+      isActive: pathname === "/marketplace",
+      width: "110px",
+      onClick: () => onClick("/marketplace")
+    },
+    {
+      title: 'Create',
+      isActive: pathname === "/create",
+      width: "80px",
+      onClick: () => onClick("/create")
+    },
+    {
+      title: 'My Collection',
+      isActive: pathname === "/collection",
+      width: "100px",
+      onClick: () => onClick("/collection")
+    }
+  ];
+
+  const renderNavButtons = useCallback(({ title, isActive, width, onClick }, index) => (
+    <Button
+      key={index}
+      title={title}
+      isActive={isActive}
+      width={width}
+      onClick={onClick}
+    />
+  ), []);
 
   return (
     <NavBarWrapper>
-      <Button
-        title={'Marketplace'}
-        isActive={pathname === "/marketplace"}
-        width={"110px"}
-        onClick={() => push('/marketplace')}
-      />
-      <Button
-        title={'Create'}
-        isActive ={pathname === "/create"}
-        width={"80px"}
-        onClick={() => push('/create')}
-      />
-      <Button
-          title={'My Collection'}
-          isActive ={pathname === "/collection"}
-          width={"100px"}
-          onClick={() => push('/collection')}
-      />
+      {NAV_BUTTONS.map(renderNavButtons)}
     </NavBarWrapper>
   )
 }
@@ -35,7 +67,7 @@ const NavBar: FC<RouteComponentProps> = ( props ) => {
 const NavBarWrapper = styled.div`
   display: flex;
 
-  @media (max-width: 1100px) {
+  @media (max-width: 900px) {
     display: none;
   }
 `;

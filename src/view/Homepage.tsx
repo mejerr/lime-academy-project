@@ -45,7 +45,7 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
           </ButtonsWrapper>
         </LeftPanel>
         <RightPanel>
-          <ImageWrapper>
+          <ImageWrapper onClick={() => onClick("/marketplace")}>
             <NFTImage />
           </ImageWrapper>
         </RightPanel>
@@ -139,6 +139,7 @@ const RightPanel = styled.div`
 const ImageWrapper = styled.div`
   width: 550px;
   height: 550px;
+  cursor: pointer;
 
   @media (max-width: 1300px) {
     max-width: 550px;

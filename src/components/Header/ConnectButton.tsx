@@ -8,7 +8,7 @@ import { AppStateContext } from '../../App';
 import { ellipseAddress } from '../../helpers/utilities';
 import Button from '../Button';
 
-const ActiveAccount: FC<RouteComponentProps> = ({ history }) => {
+const ConnectButton: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect, killSession } = useContext(AppStateContext);
   const { connected, address } = state;
 
@@ -21,7 +21,7 @@ const ActiveAccount: FC<RouteComponentProps> = ({ history }) => {
   }, [killSession, history]);
 
   return (
-    <ActiveAccountWrapper >
+    <ConnectButtonWrapper >
       {connected ? (
         address && (
           <Account>
@@ -42,13 +42,13 @@ const ActiveAccount: FC<RouteComponentProps> = ({ history }) => {
           </LoginButton>
         </ButtonWrapper>
       }
-    </ActiveAccountWrapper>
+    </ConnectButtonWrapper>
   )
 }
 
-export default withRouter(ActiveAccount);
+export default withRouter(ConnectButton);
 
-const ActiveAccountWrapper = styled.div`
+const ConnectButtonWrapper = styled.div`
   display: flex;
   height: 100%;
   justify-content: center;
@@ -61,7 +61,7 @@ const ButtonWrapper = styled.div`
   align-items: center;
   cursor: pointer;
 
-  @media (max-width: 700px) {
+  @media (max-width: 1000px) {
     width: 60px;
     height: 70px;
     justify-content: center;
@@ -79,7 +79,7 @@ const LoginIcon = styled(FontAwesomeIcon)`
   color: white;
   margin-left: 10px;
 
-  @media (max-width: 700px) {
+  @media (max-width: 1000px) {
     margin-left: 0;
   }
 `;
@@ -95,7 +95,7 @@ const LoginButton = styled.div`
     }
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 1000px) {
     display: none;
   }
 `;

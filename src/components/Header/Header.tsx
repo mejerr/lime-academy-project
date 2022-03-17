@@ -2,8 +2,8 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import Menu from './Menu';
 import NavBar from './NavBar';
-import Account from './Account';
-import { LimeblockLogo } from "assets";
+import ConnectButton from './ConnectButton';
+import { limeblockLogo } from "assets";
 
 const Header: FC = () => {
   return (
@@ -12,7 +12,7 @@ const Header: FC = () => {
       <Menu />
       <NavBar />
       <Title>{"Limeblock Marketplace"}</Title>
-      <Account />
+      <ConnectButton />
     </HeaderWrapper>
   )
 }
@@ -33,7 +33,7 @@ const Logo = styled.div`
   width: 50px;
   height: 50px;
   margin-right: 10px;
-  background: transparent url(${LimeblockLogo}) top center no-repeat;
+  background: transparent url(${limeblockLogo}) top center no-repeat;
   background-size: contain;
   flex-shrink: 0;
 `;

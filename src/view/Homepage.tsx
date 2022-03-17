@@ -4,27 +4,19 @@ import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Button } from "components";
 import { AppStateContext } from 'App';
+import { nftImage } from 'assets';
 
 const Homepage: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect } = useContext(AppStateContext);
   const { connected } = state;
 
-  const onExploreClick = useCallback(() => {
+  const onClick = useCallback((pathname) => {
     if (!connected) {
-        onConnect({ onSuccess: () => history.push('/marketplace') });
+        onConnect({ onSuccess: () => history.push(pathname) });
         return;
      }
 
-     history.push('/marketplace');
-  }, [connected]);
-
-  const onCreateClick = useCallback(() => {
-    if (!connected) {
-        onConnect({ onSuccess: () => history.push('/create') });
-        return;
-     }
-
-     history.push('/create');
+     history.push(pathname);
   }, [connected]);
 
   return (
@@ -39,7 +31,7 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
                 title={'Explore'}
                 width={"100%"}
                 height={"50px"}
-                onClick={onExploreClick}
+                onClick={() => onClick("/marketplace")}
               />
             </ExploreButtonWrapper>
             <ButtonWrapper>
@@ -47,12 +39,16 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
                 title={'Create'}
                 width={"100%"}
                 height={"50px"}
-                onClick={onCreateClick}
+                onClick={() => onClick("/create")}
               />
             </ButtonWrapper>
           </ButtonsWrapper>
         </LeftPanel>
-        <RightPanel />
+        <RightPanel>
+          <ImageWrapper>
+            <NFTImage />
+          </ImageWrapper>
+        </RightPanel>
       </HomepageContent>
     </HomepageWrapper>
   )
@@ -137,6 +133,39 @@ const RightPanel = styled.div`
   flex-direction: column;
   width: 50%;
   height: 50%;
-  background-color: green;
-  padding: 10px;
+  padding-top: 50px;
+`;
+
+const ImageWrapper = styled.div`
+  width: 550px;
+  height: 550px;
+
+  @media (max-width: 1300px) {
+    max-width: 550px;
+    max-height: 440px;
+  }
+
+  @media (max-width: 1100px) {
+    max-width: 460px;
+    max-height: 400px;
+    margin-top: 30px;
+  }
+
+  @media (max-width: 1000px) {
+    max-width: 360px;
+    max-height: 370px;
+    margin-top: 30px;
+  }
+`;
+
+const NFTImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  background: transparent url(${nftImage}) top center no-repeat;
+  background-size: cover;
+  object-fit: cover;
+  flex-shrink: 0;
 `;

@@ -1,5 +1,7 @@
-import LimeblockLogo from './limeblock-logo.png';
+import limeblockLogo from './limeblock-logo.png';
+import nftImage from './nft-homepage.png';
 
 export {
-  LimeblockLogo
+  limeblockLogo,
+  nftImage
 }

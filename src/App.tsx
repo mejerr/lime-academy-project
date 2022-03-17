@@ -1,3 +1,4 @@
+  // tslint:disable: no-empty
 import React, { Suspense } from 'react';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
@@ -76,10 +77,8 @@ const INITIAL_STATE: IAppState = {
 
 export const AppStateContext = React.createContext({
   state: INITIAL_STATE,
-  // tslint:disable-next-line: no-empty
-  killSession: () => {},
-  // tslint:disable-next-line: no-empty
-  onConnect: () => {}
+  killSession: ({ onSuccess = () => {} }): void => {},
+  onConnect: ({ onSuccess = () => {} }): void => {}
 });
 
 class App extends React.Component<any, any> {
@@ -100,13 +99,13 @@ class App extends React.Component<any, any> {
     });
   }
 
-  public componentDidMount() {
-    if (this.web3Modal.cachedProvider) {
-      this.onConnect();
-    }
-  }
+  // public componentDidMount() {
+  //   if (this.web3Modal.cachedProvider) {
+  //     this.onConnect();
+  //   }
+  // }
 
-  public onConnect = async () => {
+  public onConnect = async ({ onSuccess = () => {} } = {}) => {
     this.provider = await this.web3Modal.connect();
 
     const library = new Web3Provider(this.provider);
@@ -123,6 +122,8 @@ class App extends React.Component<any, any> {
     });
 
     await this.subscribeToProviderEvents(this.provider);
+
+    onSuccess();
   };
 
   public subscribeToProviderEvents = async (provider:any) => {
@@ -183,10 +184,13 @@ class App extends React.Component<any, any> {
     return providerOptions;
   };
 
-  public resetApp = async () => {
+  public resetApp = async ({ onSuccess = () => {} } = {}) => {
     await this.web3Modal.clearCachedProvider();
     localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
     localStorage.removeItem("walletconnect");
+
+    onSuccess();
+
     await this.unSubscribe(this.provider);
 
     this.setState({ ...INITIAL_STATE });
@@ -223,8 +227,8 @@ class App extends React.Component<any, any> {
       <AppStateContext.Provider
         value={{
           state: this.state,
-          killSession: () => this.resetApp(),
-          onConnect: () => this.onConnect()
+          killSession: ({ onSuccess }) => this.resetApp({ onSuccess }),
+          onConnect: ({ onSuccess }) => this.onConnect({ onSuccess })
         }}
       >
       <StyledApp>

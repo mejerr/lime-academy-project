@@ -8,15 +8,17 @@ import { AppStateContext } from '../../App';
 import { ellipseAddress } from '../../helpers/utilities';
 import Button from '../Button';
 
-const ActiveAccount: FC<RouteComponentProps> = ( props ) => {
+const ActiveAccount: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect, killSession } = useContext(AppStateContext);
   const { connected, address } = state;
-  const { push } = props.history;
 
   const onLogin = useCallback(() => {
-    onConnect();
-    push('/marketplace');
-  }, []);
+    onConnect({ onSuccess: () => history.push('/marketplace') });
+  }, [onConnect, history]);
+
+  const onLogout = useCallback(() => {
+    killSession({ onSuccess: () => history.push('/home') });
+  }, [killSession, history]);
 
   return (
     <ActiveAccountWrapper >
@@ -24,7 +26,7 @@ const ActiveAccount: FC<RouteComponentProps> = ( props ) => {
         address && (
           <Account>
             <Address connected={connected}>{ellipseAddress(address)}</Address>
-            <DisconnectButton onClick={killSession}>
+            <DisconnectButton onClick={onLogout}>
               {'Disconnect'}
             </DisconnectButton>
           </Account>
@@ -32,10 +34,12 @@ const ActiveAccount: FC<RouteComponentProps> = ( props ) => {
       ) :
         <ButtonWrapper onClick={onLogin}>
           <LoginIcon icon={faSignIn}/>
-          <Button
-            title={'Login'}
-            width={"60px"}
-          />
+          <LoginButton>
+            <Button
+              title={'Login'}
+              width={"60px"}
+            />
+          </LoginButton>
         </ButtonWrapper>
       }
     </ActiveAccountWrapper>
@@ -57,12 +61,15 @@ const ButtonWrapper = styled.div`
   align-items: center;
   cursor: pointer;
 
-  > div {
-    color: white;
+  @media (max-width: 700px) {
+    width: 60px;
+    height: 70px;
+    justify-content: center;
+  }
 
-    :hover {
-      color: white;
-    }
+  @media (max-width: 400px) {
+    width: 40px;
+    height: 70px;
   }
 `;
 
@@ -71,6 +78,26 @@ const LoginIcon = styled(FontAwesomeIcon)`
   height: 25px;
   color: white;
   margin-left: 10px;
+
+  @media (max-width: 700px) {
+    margin-left: 0;
+  }
+`;
+
+const LoginButton = styled.div`
+  width: 100%;
+  height: 100%;
+  > div {
+    color: white;
+
+    :hover {
+      color: white;
+    }
+  }
+
+  @media (max-width: 700px) {
+    display: none;
+  }
 `;
 
 const Account = styled.div`

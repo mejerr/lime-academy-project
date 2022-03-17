@@ -1,10 +1,32 @@
-import React, { FC } from 'react'
+import React, { FC, useCallback, useContext } from 'react'
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Button } from "components";
+import { AppStateContext } from 'App';
 
 const Homepage: FC<RouteComponentProps> = ({ history }) => {
+  const { state, onConnect } = useContext(AppStateContext);
+  const { connected } = state;
+
+  const onExploreClick = useCallback(() => {
+    if (!connected) {
+        onConnect({ onSuccess: () => history.push('/marketplace') });
+        return;
+     }
+
+     history.push('/marketplace');
+  }, [connected]);
+
+  const onCreateClick = useCallback(() => {
+    if (!connected) {
+        onConnect({ onSuccess: () => history.push('/create') });
+        return;
+     }
+
+     history.push('/create');
+  }, [connected]);
+
   return (
     <HomepageWrapper >
       <HomepageContent>
@@ -17,7 +39,7 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
                 title={'Explore'}
                 width={"100%"}
                 height={"50px"}
-                onClick={() => history.push('/marketplace')}
+                onClick={onExploreClick}
               />
             </ExploreButtonWrapper>
             <ButtonWrapper>
@@ -25,7 +47,7 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
                 title={'Create'}
                 width={"100%"}
                 height={"50px"}
-                onClick={() => history.push('/create')}
+                onClick={onCreateClick}
               />
             </ButtonWrapper>
           </ButtonsWrapper>

@@ -45,4 +45,13 @@ const Title = styled.div`
   width: 100px;
   color: black;
   font-size: 40px;
+  text-align: center;
+
+  @media (max-width: 1000px) {
+    font-size: 34px;
+  }
+
+  @media (max-width: 670px) {
+    font-size: 28px;
+  }
 `;

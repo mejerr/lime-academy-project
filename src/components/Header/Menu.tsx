@@ -7,7 +7,6 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Button';
 
 const Menu: FC<RouteComponentProps> = ({ history } ) => {
-
   const [menuOpen, setMenuOpen] = useState(false);
 
   const openMenu = useCallback(() => {
@@ -45,6 +44,8 @@ const Menu: FC<RouteComponentProps> = ({ history } ) => {
   )
 }
 
+export default withRouter(Menu);
+
 const MenuWrapper = styled.div`
   width: 70px;
   height: 100%;
@@ -53,14 +54,26 @@ const MenuWrapper = styled.div`
   align-items: center;
   cursor: pointer;
 
-  @media (min-width: 1100px) {
+  @media (min-width: 900px) {
     display: none;
+  }
+
+  @media (max-width: 500px) {
+    width: 40px;
+  }
+
+  @media (max-width: 400px) {
+    width: 20px;
   }
 `;
 
 const MenuIcon = styled(FontAwesomeIcon)`
   width: 25px;
   height: 30px;
+
+  @media (max-width: 400px) {
+    width: 20px;
+  }
 `;
 
 const fadeIn = keyframes`
@@ -80,5 +93,4 @@ const MenuContent = styled.div`
   padding: 0 10px;
   background-color: red;
   animation: ${fadeIn} 0.5s forwards;
-`
-export default withRouter(Menu);
+`;

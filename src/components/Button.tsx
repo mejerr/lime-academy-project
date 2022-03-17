@@ -11,7 +11,7 @@ interface IProps {
   alignItems?: string;
   justifyContent?: string;
   arrow?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const Button: FC<IProps> = ({

@@ -6,7 +6,7 @@ import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Column from './components/Column';
 import Wrapper from './components/Wrapper';
-import Header from './components/Header1';
+import Header from './components/Header/Header';
 import Loader from './components/Loader';
 import ConnectButton from './components/ConnectButton';
 
@@ -76,7 +76,9 @@ const INITIAL_STATE: IAppState = {
 
 export const AppStateContext = React.createContext({
   state: INITIAL_STATE,
+  // tslint:disable-next-line: no-empty
   killSession: () => {},
+  // tslint:disable-next-line: no-empty
   onConnect: () => {}
 });
 
@@ -217,12 +219,6 @@ class App extends React.Component<any, any> {
   );
 
   public render = () => {
-    const {
-      address,
-      connected,
-      chainId,
-      fetching
-    } = this.state;
     return (
       <AppStateContext.Provider
         value={{
@@ -232,6 +228,7 @@ class App extends React.Component<any, any> {
         }}
       >
       <StyledApp>
+        <Header />
         <Suspense fallback={<p>...Loading</p>} >{this.routes()}</Suspense>
       </StyledApp>
       </AppStateContext.Provider>

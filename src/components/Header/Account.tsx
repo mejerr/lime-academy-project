@@ -30,12 +30,11 @@ const ActiveAccount: FC<RouteComponentProps> = ( props ) => {
           </Account>
         )
       ) :
-        <ButtonWrapper>
+        <ButtonWrapper onClick={onLogin}>
           <LoginIcon icon={faSignIn}/>
           <Button
             title={'Login'}
             width={"60px"}
-            onClick={onLogin}
           />
         </ButtonWrapper>
       }
@@ -56,9 +55,14 @@ const ButtonWrapper = styled.div`
   background-color: #024bb0;
   display: flex;
   align-items: center;
+  cursor: pointer;
 
   > div {
     color: white;
+
+    :hover {
+      color: white;
+    }
   }
 `;
 

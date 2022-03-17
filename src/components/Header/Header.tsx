@@ -1,11 +1,9 @@
-import React, { FC, useCallback, useContext } from 'react'
+import React, { FC } from 'react'
 import styled from 'styled-components'
-import { RouteComponentProps } from 'react-router';
-import { withRouter } from 'react-router-dom';
 import Menu from './Menu';
 import NavBar from './NavBar';
 import Account from './Account';
-import limeblockLogo from "../../assets/limeblock-logo.png";
+import { LimeblockLogo } from "assets";
 
 const Header: FC = () => {
   return (
@@ -35,7 +33,7 @@ const Logo = styled.div`
   width: 50px;
   height: 50px;
   margin-right: 10px;
-  background: transparent url(${limeblockLogo}) top center no-repeat;
+  background: transparent url(${LimeblockLogo}) top center no-repeat;
   background-size: contain;
   flex-shrink: 0;
 `;

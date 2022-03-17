@@ -6,9 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Button';
 
-const Menu: FC<RouteComponentProps> = ({ history} ) => {
-  const { location, push } = history;
-  const { pathname } = location;
+const Menu: FC<RouteComponentProps> = ({ history } ) => {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -18,30 +16,31 @@ const Menu: FC<RouteComponentProps> = ({ history} ) => {
 
   return (
     <MenuWrapper onClick={openMenu}>
-        <MenuIcon icon={faBars} />
-        {menuOpen && <MenuContent>
+      <MenuIcon icon={faBars} />
+      {menuOpen &&
+        <MenuContent>
           <Button
             title={'Marketplace'}
             width={"100%"}
-            onClick={() => push('/marketplace')}
+            onClick={() => history.push('/marketplace')}
             justifyContent={"flex-start"}
             arrow={true}
           />
           <Button
             title={'Create'}
             width={"100%"}
-            onClick={() => push('/create')}
+            onClick={() => history.push('/create')}
             justifyContent={"flex-start"}
             arrow={true}
           />
-            <Button
-              title={'My Collection'}
-              width={"100%"}
-              onClick={() => push('/collection')}
-              justifyContent={"flex-start"}
-              arrow={true}
+          <Button
+            title={'My Collection'}
+            width={"100%"}
+            onClick={() => history.push('/collection')}
+            justifyContent={"flex-start"}
+            arrow={true}
           />
-        </MenuContent>}
+      </MenuContent>}
     </MenuWrapper>
   )
 }

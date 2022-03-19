@@ -2,11 +2,27 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { withRouter } from 'react-router-dom';
 import { faAngleUp, faAngleDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { nftImage } from 'assets';
+interface IProps {
+  image?: string;
+  name?: string,
+  creator?: string,
+  joinedDate?: string,
+  description?: string,
+  showCreator?: boolean
+  showDescription?: boolean
+}
 
-const Block: FC<RouteComponentProps> = ({ history }) => {
+const Block: FC<IProps> = ({
+  image = nftImage,
+  name = "New generation",
+  creator,
+  joinedDate,
+  description = "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz",
+  showCreator = true,
+  showDescription = true
+}) => {
   const [height, setHeight] = useState<string>("120px");
   const [openDescription, setOpenDescription] = useState<boolean>(false);
   const descriptionNode = useRef<HTMLHeadingElement>(null);
@@ -21,26 +37,31 @@ const Block: FC<RouteComponentProps> = ({ history }) => {
     }
   }, [openDescription]);
 
-
   return (
     <BlockWrapper>
-      <BlockImage />
+      <BlockImage image={image}/>
       <SmallImageWrapper>
         <SmallImage />
       </SmallImageWrapper>
-      <BlockName>{"New generation"}</BlockName>
-      <BlockCreator>Created by <span>{"MisterPizza"}</span></BlockCreator>
-      <BlockDescriptionWrapper ref={descriptionNode} style={{ height }} isOpen={openDescription}>
-        <BlockDescription onClick={onOpenDescription}>
-        {"asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsa"}
-        </BlockDescription>
-      </BlockDescriptionWrapper>
-      <ArrowIcon icon={openDescription? faAngleUp : faAngleDown}/>
+      <BlockName>{name}</BlockName>
+      <BlockCreator>
+        {showCreator && <div>Created by</div>}
+        <span>{creator}</span>
+        {joinedDate && <JoinedDate>Joined {joinedDate}</JoinedDate>}
+      </BlockCreator>
+      {showDescription && (<>
+        <BlockDescriptionWrapper ref={descriptionNode} style={{ height }} isOpen={openDescription}>
+          <BlockDescription onClick={onOpenDescription}>
+          {description}
+          </BlockDescription>
+        </BlockDescriptionWrapper>
+        <ArrowIcon icon={openDescription? faAngleUp : faAngleDown}/>
+      </>)}
     </BlockWrapper>
   );
 };
 
-export default withRouter(Block);
+export default Block;
 
 const BlockWrapper = styled.div`
   display: flex;
@@ -50,10 +71,10 @@ const BlockWrapper = styled.div`
   position: relative;
 `;
 
-const BlockImage = styled.div`
+const BlockImage = styled.div<{ image: string }>`
   height: 220px;
   width: 100%;
-  background: transparent url(${nftImage}) center center no-repeat;
+  background: ${({ image }) => `transparent url(${image}) center center no-repeat`};
   background-size: cover;
 `;
 
@@ -77,6 +98,11 @@ const BlockCreator = styled.div`
   > span {
     color: rgb(32, 129, 226);
   }
+`;
+
+const JoinedDate = styled.div`
+  font-size: 16px;
+  margin: 10px 0 30px;
 `;
 
 const BlockDescriptionWrapper = styled.div<{ isOpen: boolean }>`

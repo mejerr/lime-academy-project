@@ -4,42 +4,25 @@ import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { nftImage } from 'assets';
 
-const Collections: FC<RouteComponentProps> = ({ history }) => {
+const Collection: FC<RouteComponentProps> = ({ history }) => {
   const onClick = useCallback((collectionId) => {
     history.push(`/marketplace/collections/${collectionId}`);
   }, []);
 
   return (
-    <CollectionsWrapper>
-      {[1, 2, 3].map((el, index) => {
-        return (
-          <Collection key={index} onClick={() => onClick(1)}>
-            <Image />
-            <SmallImageWrapper>
-            <SmallImage />
-            </SmallImageWrapper>
-            <Name>{"New generation"}</Name>
-            <Creator>creator <span>{"MisterPizza"}</span></Creator>
-            <Description>{"asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"}</Description>
-          </Collection>
-        );
-      })}
-    </CollectionsWrapper>
+    <CollectionWrapper key={1} onClick={() => onClick(1)}>
+      <Image />
+      <SmallImageWrapper>
+      <SmallImage />
+      </SmallImageWrapper>
+      <Name>{"New generation"}</Name>
+      <Creator>creator <span>{"MisterPizza"}</span></Creator>
+      <Description>{"asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"}</Description>
+    </CollectionWrapper>
   )
 };
 
-export default withRouter(Collections);
-
-const CollectionsWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 30px;
-  padding: 30px 40px 20px;
-
-  @media (max-width: 700px) {
-  grid-template-columns: repeat(1, 1fr);
-  }
-`;
+export default withRouter(Collection);
 
 export const fadeIn = keyframes`
   0% {
@@ -50,7 +33,7 @@ export const fadeIn = keyframes`
   }
 `;
 
-const Collection = styled.div`
+const CollectionWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;

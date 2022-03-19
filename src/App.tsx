@@ -17,6 +17,7 @@ import { getChainData } from './helpers/utilities';
 import Homepage from './view/Homepage';
 import Marketplace from 'view/Marketplace';
 import CollectionBlock from 'view/Collections/CollectionBlock';
+import MyCollections from 'view/MyCollections';
 
 const SLayout = styled.div`
   position: relative;
@@ -220,7 +221,7 @@ class App extends React.Component<any, any> {
         />
         <Route
           path='/collection'
-          component={Homepage}
+          component={MyCollections}
         />
         <Route path='/' exact component={Homepage} />
         <Redirect to='/' />

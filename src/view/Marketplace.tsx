@@ -1,10 +1,6 @@
-import React, { FC, useCallback, useContext } from 'react'
+import React, { FC } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { RouteComponentProps } from 'react-router';
-import { withRouter } from 'react-router-dom';
-import { Button } from "components";
-import { AppStateContext } from 'App';
-import { nftImage } from 'assets';
+
 import Collections from './Collections/Collections';
 
 const Marketplace: FC = () => {

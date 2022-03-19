@@ -30,8 +30,8 @@ const Block: FC<RouteComponentProps> = ({ history }) => {
       </SmallImageWrapper>
       <BlockName>{"New generation"}</BlockName>
       <BlockCreator>Created by <span>{"MisterPizza"}</span></BlockCreator>
-      <BlockDescriptionWrapper ref={descriptionNode} style={{ height }} isOpen={openDescription}  onClick={onOpenDescription}>
-        <BlockDescription>
+      <BlockDescriptionWrapper ref={descriptionNode} style={{ height }} isOpen={openDescription}>
+        <BlockDescription onClick={onOpenDescription}>
         {"asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsa"}
         </BlockDescription>
       </BlockDescriptionWrapper>
@@ -42,19 +42,11 @@ const Block: FC<RouteComponentProps> = ({ history }) => {
 
 export default withRouter(Block);
 
-const ArrowIcon = styled(FontAwesomeIcon)<{ icon: IconDefinition }>`
-  width: 12px;
-  height: 12px;
-  position: relative;
-  top: ${({ icon }) => icon === faAngleUp ? "-22px" : "-35px"};
-`;
-
 const BlockWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding-bottom: 20px;
   position: relative;
 `;
 
@@ -64,14 +56,18 @@ const BlockImage = styled.div`
   background: transparent url(${nftImage}) center center no-repeat;
   background-size: cover;
 `;
+
 const SmallImageWrapper = styled.div``;
+
 const SmallImage = styled.div``;
+
 const BlockName = styled.div`
   font-size: 40px;
   width: 100%;
   text-align: center;
   margin: 20px 0;
 `;
+
 const BlockCreator = styled.div`
   font-size: 16px;
   width: 100%;
@@ -90,6 +86,7 @@ const BlockDescriptionWrapper = styled.div<{ isOpen: boolean }>`
   max-width: 700px;
   overflow: hidden;
   position: relative;
+  cursor: pointer;
 
   height: ${({ isOpen }) => isOpen ? "300px" : "120px"};
   transition: all 0.3s ease-out;
@@ -102,4 +99,11 @@ const BlockDescription = styled.div`
   word-break: break-all;
   line-height: 22px;
   color: rgb(112, 122, 131);
+`;
+
+const ArrowIcon = styled(FontAwesomeIcon)<{ icon: IconDefinition }>`
+  width: 12px;
+  height: 12px;
+  position: relative;
+  top: ${({ icon }) => icon === faAngleUp ? "-22px" : "-35px"};
 `;

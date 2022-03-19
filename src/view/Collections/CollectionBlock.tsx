@@ -2,13 +2,14 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import { fadeIn } from '../Marketplace';
 import { Block } from 'components';
+import NFTTokens from 'view/NFTTokens/NFTTokens';
 
 const CollectionBlock: FC = () => {
 
   return (
     <CollectionBlockWrapper>
       <Block />
-        {/* <NFTTokens /> */}
+      <NFTTokens />
     </CollectionBlockWrapper>
   );
 };

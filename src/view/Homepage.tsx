@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { Button } from "components";
 import { AppStateContext } from 'App';
 import { nftImage } from 'assets';
+import { fadeIn } from './Marketplace';
 
 const Homepage: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect } = useContext(AppStateContext);
@@ -61,6 +62,7 @@ const HomepageWrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
+  animation: ${fadeIn} 0.5s ease-out;
 `;
 
 const HomepageContent = styled.div`
@@ -165,7 +167,7 @@ const NFTImage = styled.img`
   object-fit: cover;
   max-width: 100%;
   max-height: 100%;
-  background: transparent url(${nftImage}) top center no-repeat;
+  background: transparent url(${nftImage}) center center no-repeat;
   background-size: cover;
   object-fit: cover;
   flex-shrink: 0;

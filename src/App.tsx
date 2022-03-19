@@ -1,6 +1,6 @@
   // tslint:disable: no-empty
 import React, { Suspense } from 'react';
-import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Web3Modal from 'web3modal';
@@ -16,6 +16,7 @@ import { getChainData } from './helpers/utilities';
 
 import Homepage from './view/Homepage';
 import Marketplace from 'view/Marketplace';
+import CollectionBlock from 'view/Collections/CollectionBlock';
 
 const SLayout = styled.div`
   position: relative;
@@ -204,6 +205,10 @@ class App extends React.Component<any, any> {
         <Route
           path='/home'
           component={Homepage}
+        />
+        <Route
+          path='/marketplace/collections/:id'
+          component={CollectionBlock}
         />
         <Route
           path='/marketplace'

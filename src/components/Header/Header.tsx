@@ -27,13 +27,18 @@ const HeaderWrapper = styled.div`
   align-items: center;
   padding: 10px 0 10px 10px;
   box-shadow: rgb(4 17 29 / 25%) 0px 0px 8px 0px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  z-index: 1;
 `;
 
 const Logo = styled.div`
   width: 50px;
   height: 50px;
   margin-right: 10px;
-  background: transparent url(${limeblockLogo}) top center no-repeat;
+  background: url(${limeblockLogo}) top center no-repeat;
   background-size: contain;
   flex-shrink: 0;
 `;

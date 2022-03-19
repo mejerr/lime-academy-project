@@ -75,7 +75,7 @@ const LeftPanel = styled.div`
   flex-direction: column;
   width: 50%;
   height: 50%;
-  padding: 100px 20px 0;
+  padding: 70px 20px 0;
 `;
 
 const Title = styled.div`

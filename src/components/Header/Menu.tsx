@@ -1,41 +1,58 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useContext, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Button';
+import { AppStateContext } from 'App';
 
 const Menu: FC<RouteComponentProps> = ({ history } ) => {
+  const { state, onConnect } = useContext(AppStateContext);
+  const { connected } = state;
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const openMenu = useCallback(() => {
     setMenuOpen(!menuOpen);
   }, [menuOpen]);
 
+  const onClick = useCallback((pathname) => {
+    if (!connected) {
+        onConnect({ onSuccess: () => {
+          history.push(pathname);
+          setMenuOpen(false);
+        } });
+        return;
+     }
+
+     history.push(pathname);
+     setMenuOpen(false);
+  }, [connected]);
+
   return (
-    <MenuWrapper onClick={openMenu}>
-      <MenuIcon icon={faBars} />
+    <MenuWrapper>
+      <MenuIcon icon={faBars} onClick={openMenu} />
       {menuOpen &&
         <MenuContent>
           <Button
             title={'Marketplace'}
             width={"100%"}
-            onClick={() => history.push('/marketplace')}
+            onClick={() => onClick('/marketplace')}
             justifyContent={"flex-start"}
             arrow={true}
           />
           <Button
             title={'Create'}
             width={"100%"}
-            onClick={() => history.push('/create')}
+            onClick={() => onClick('/create')}
             justifyContent={"flex-start"}
             arrow={true}
           />
           <Button
             title={'My Collection'}
             width={"100%"}
-            onClick={() => history.push('/collection')}
+            onClick={() => onClick('/collection')}
             justifyContent={"flex-start"}
             arrow={true}
           />
@@ -52,7 +69,6 @@ const MenuWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
 
   @media (min-width: 900px) {
     display: none;
@@ -70,6 +86,7 @@ const MenuWrapper = styled.div`
 const MenuIcon = styled(FontAwesomeIcon)`
   width: 25px;
   height: 30px;
+  cursor: pointer;
 
   @media (max-width: 400px) {
     width: 20px;
@@ -86,11 +103,12 @@ const fadeIn = keyframes`
 `;
 
 const MenuContent = styled.div`
+  height: calc(100vh - 70px);
   position: absolute;
   top: 70px;
   left: 0;
   width: 100%;
   padding: 0 10px;
-  background-color: red;
+  background-color: #fff;
   animation: ${fadeIn} 0.5s forwards;
 `;

@@ -15,6 +15,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { getChainData } from './helpers/utilities';
 
 import Homepage from './view/Homepage';
+import Marketplace from 'view/Marketplace';
 
 const SLayout = styled.div`
   position: relative;
@@ -206,7 +207,7 @@ class App extends React.Component<any, any> {
         />
         <Route
           path='/marketplace'
-          component={Homepage}
+          component={Marketplace}
         />
         <Route
           path='/create'
@@ -261,12 +262,13 @@ class App extends React.Component<any, any> {
       //   </Column>
       // </SLayout>
   };
-}
+};
 
 const StyledApp = styled.div`
   width: 100%;
-  height: 100%;
 `;
-const StyledContent = styled.div``;
+
+const StyledContent = styled.div`
+`;
 
 export default App;

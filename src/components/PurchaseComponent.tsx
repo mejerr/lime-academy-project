@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState, useCallback } from 'react'
 import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +7,23 @@ import { Button } from 'components';
 import { ethereumImage } from 'assets';
 
 const PurchaseComponent: FC<RouteComponentProps> = ({ history }) => {
+  const [openOffer, setOpenOffer] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>('');
+
+  const onOpenOffer = useCallback(() => {
+    setOpenOffer(!openOffer);
+  }, [openOffer]);
+
+  const onSendOffer = useCallback(() => {
+    // send real offer
+    setOpenOffer(false);
+    setInputValue('');
+  }, []);
+
+  const onInputChange = useCallback((event) => {
+    setInputValue(event.target.value);
+  }, []);
+
   return (
     <PurchaseWrapper>
       <Price>{"Current price"}</Price>
@@ -17,20 +34,29 @@ const PurchaseComponent: FC<RouteComponentProps> = ({ history }) => {
       </Value>
 
       <ButtonsWrapper>
-        <BuyButtonWrapper>
-          <BuyIcon icon={faCartShopping} />
-          <Button
-            title={'Buy now'}
-            width={"270px"}
-            height={"65px"}
-          />
-        </BuyButtonWrapper>
+        {openOffer ?
+          <InputWrapper>
+            <Input onChange={(e) => onInputChange(e)} value={inputValue}/>
+            <ValueIcon />
+            <ETHText>{"ETH"}</ETHText>
+          </InputWrapper> :
+          <BuyButtonWrapper>
+            <BuyIcon icon={faCartShopping} />
+            <Button
+              title={'Buy now'}
+              width={"270px"}
+              height={"65px"}
+            />
+          </BuyButtonWrapper>
+        }
+
         <SendButtonWrapper>
           <OfferIcon icon={faPaperPlane} />
           <Button
-            title={'Send Offer'}
+            title={openOffer ? 'Place bid' : 'Send Offer'}
             width={"150px"}
             height={"65px"}
+            onClick={openOffer ? onSendOffer : onOpenOffer}
           />
         </SendButtonWrapper>
       </ButtonsWrapper>
@@ -110,6 +136,15 @@ const SendButtonWrapper = styled.div`
   }
 `;
 
+const OfferIcon = styled(FontAwesomeIcon)`
+  position: absolute;
+  color: #024bb0;
+  top: 27px;
+  left: 13px;
+  width: 18px;
+  height: 18px;
+`;
+
 const BuyButtonWrapper = styled(SendButtonWrapper as any)`
   background-color: #024bb0;
 
@@ -134,11 +169,33 @@ const BuyIcon = styled(FontAwesomeIcon)`
   height: 22px;
 `;
 
-const OfferIcon = styled(FontAwesomeIcon)`
-  position: absolute;
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 270px;
+  margin: 0 10px;
+  border-radius: 10px;
+  border: 1px solid #024bb0;
+`;
+
+const ETHText = styled.span`
+  padding: 0 5px;
+  color: rgb(112, 122, 131);
+`;
+
+const Input = styled.input`
+  border: none;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  font-size: 24px;
+  font-weight: 600;
   color: #024bb0;
-  top: 27px;
-  left: 13px;
-  width: 18px;
-  height: 18px;
+  text-transform: uppercase;
+  padding: 0 10px;
+
+  :focus {
+    outline: none !important;
+    border: none;
+  }
 `;

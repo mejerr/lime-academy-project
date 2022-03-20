@@ -62,7 +62,7 @@ const StyledButton = styled.div<{
   font-weight: 600;
   color: ${({ active }) => active ? 'black' : 'rgba(0, 0, 0, 0.6)'};
 
-  border-bottom: ${({ active }) => active && '2px solid blue'};
+  border-bottom: ${({ active }) => active && '3px solid blue'};
   transition-property: border-bottom;
   transition-duration: 0.3s;
 

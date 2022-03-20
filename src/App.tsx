@@ -19,6 +19,7 @@ import Marketplace from 'view/Marketplace';
 import CollectionBlock from 'view/Collections/CollectionBlock';
 import MyCollections from 'view/MyCollections';
 import NFTToken from 'view/NFTTokens/NFTToken';
+import CreateBlock from 'view/Create/CreateBlock';
 
 const SLayout = styled.div`
   position: relative;
@@ -222,7 +223,7 @@ class App extends React.Component<any, any> {
         />
         <Route
           path='/create'
-          component={Homepage}
+          component={CreateBlock}
         />
         <Route
           path='/my-collection'

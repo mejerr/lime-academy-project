@@ -5,15 +5,15 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 
 const NFTTokens: FC<RouteComponentProps> = ({ history }) => {
-  const onClick = useCallback((collectionId) => {
-    history.push(`/marketplace/collections/${collectionId}`);
+  const onClick = useCallback((collectionId, tokenId) => {
+    history.push(`/collection/${collectionId}/token/${tokenId}`);
   }, []);
 
   return (
     <NFTTokenseWrapper>
       {[1, 2, 3,4 ,5 ].map((el, index) => {
         return (
-          <NFTToken key={index} onClick={() => onClick(1)}>
+          <NFTToken key={index} onClick={() => onClick(1, 1)}>
             <Image />
             <InfoWrapper>
               <Info>

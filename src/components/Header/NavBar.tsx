@@ -41,9 +41,9 @@ const NavBar: FC<RouteComponentProps> = ({ history }) => {
     },
     {
       title: 'My Collection',
-      isActive: pathname === "/collection",
+      isActive: pathname === "/my-collection",
       width: "100px",
-      onClick: () => onClick("/collection")
+      onClick: () => onClick("/my-collection")
     }
   ];
 

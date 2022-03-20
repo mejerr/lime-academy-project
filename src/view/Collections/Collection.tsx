@@ -6,7 +6,7 @@ import { nftImage } from 'assets';
 
 const Collection: FC<RouteComponentProps> = ({ history }) => {
   const onClick = useCallback((collectionId) => {
-    history.push(`/marketplace/collections/${collectionId}`);
+    history.push(`/collection/${collectionId}`);
   }, []);
 
   return (

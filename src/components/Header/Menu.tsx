@@ -52,7 +52,7 @@ const Menu: FC<RouteComponentProps> = ({ history } ) => {
           <Button
             title={'My Collection'}
             width={"100%"}
-            onClick={() => onClick('/collection')}
+            onClick={() => onClick('/my-collection')}
             justifyContent={"flex-start"}
             arrow={true}
           />

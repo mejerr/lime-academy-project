@@ -1,61 +1,20 @@
   // tslint:disable: no-empty
 import React, { Suspense } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-
+import { Switch, Route, Redirect } from 'react-router-dom';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import Column from './components/Column';
-import Wrapper from './components/Wrapper';
 import Header from './components/Header/Header';
-import Loader from './components/Loader';
-import ConnectButton from './components/ConnectButton';
 
 import { Web3Provider } from '@ethersproject/providers';
 import { getChainData } from './helpers/utilities';
 
 import Homepage from './views/Homepage';
 import Marketplace from 'views/Marketplace';
-
 import MyCollections from 'views/MyCollections';
 import CreateBlock from 'views/Create/CreateBlock';
 import NFTTokenBlock from 'views/NFTTokenBlock';
 import CollectionBlock from 'views/CollectionBlock';
-
-const SLayout = styled.div`
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  text-align: center;
-`;
-
-const SContent = styled(Wrapper)`
-  width: 100%;
-  height: 100%;
-  padding: 0 16px;
-`;
-
-const SContainer = styled.div`
-  height: 100%;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  word-break: break-word;
-`;
-
-const SLanding = styled(Column)`
-  height: 600px;
-`;
-
-// @ts-ignore
-const SBalances = styled(SLanding)`
-  height: 100%;
-  & h3 {
-    padding-top: 30px;
-  }
-`;
 
 interface IAppState {
   fetching: boolean;
@@ -105,11 +64,11 @@ class App extends React.Component<any, any> {
     });
   }
 
-  // public componentDidMount() {
-  //   if (this.web3Modal.cachedProvider) {
-  //     this.onConnect();
-  //   }
-  // }
+  public componentDidMount() {
+    if (this.web3Modal.cachedProvider) {
+      this.onConnect();
+    }
+  }
 
   public onConnect = async ({ onSuccess = () => {} } = {}) => {
     this.provider = await this.web3Modal.connect();
@@ -251,29 +210,6 @@ class App extends React.Component<any, any> {
       </StyledApp>
       </AppStateContext.Provider>
     );
-      // <SLayout>
-      //   <Column maxWidth={1000} spanHeight>
-      //     <Header
-      //       connected={connected}
-      //       address={address}
-      //       chainId={chainId}
-      //       killSession={this.resetApp}
-      //     />
-      //     <SContent>
-      //       {fetching ? (
-      //         <Column center>
-      //           <SContainer>
-      //             <Loader />
-      //           </SContainer>
-      //         </Column>
-      //       ) : (
-      //           <SLanding center>
-      //             {!this.state.connected && <ConnectButton onClick={this.onConnect} />}
-      //           </SLanding>
-      //         )}
-      //     </SContent>
-      //   </Column>
-      // </SLayout>
   };
 };
 

@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useState } from 'react'
 import styled, { css, keyframes } from 'styled-components'
-import { fadeIn } from 'App';
 import Create from './Create';
 
 const CreateBlock: FC = () => {
@@ -35,7 +34,6 @@ const CreateBlock: FC = () => {
 export default CreateBlock;
 
 const CreateBlockWrapper = styled.div`
-  animation: ${fadeIn} 0.5s ease-out;
   max-width: min(1280px, 100% - 40px);;
   margin: 0 auto;
 `;

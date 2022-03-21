@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { Collections } from 'components';
 
 const Marketplace: FC = () => {
@@ -13,6 +13,11 @@ const Marketplace: FC = () => {
 
 export default Marketplace;
 
+const fadeIn = keyframes`
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+`;
+
 const MarketplaceWrapper = styled.div`
   display: flex;
   margin: 0 auto;
@@ -21,6 +26,7 @@ const MarketplaceWrapper = styled.div`
   justify-content: center;
   flex-direction: column;
   padding-bottom: 20px;
+  animation: ${fadeIn} 0.5s ease-out;
 `;
 
 const MarketplaceTitle = styled.div`

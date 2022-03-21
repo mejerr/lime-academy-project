@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useState } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { Block, Collections, NFTTokens } from 'components';
-import { fadeIn } from 'App';
 
 const MyCollections: FC = () => {
   const [activeTab, setActiveTab] = useState<string>("Tokens");
@@ -34,6 +33,11 @@ const MyCollections: FC = () => {
 };
 
 export default MyCollections;
+
+const fadeIn = keyframes`
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+`;
 
 const MyCollectionsWrapper = styled.div`
   display: flex;

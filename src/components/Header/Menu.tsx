@@ -119,13 +119,9 @@ const MenuIcon = styled(FontAwesomeIcon)`
   }
 `;
 
-const fadeIn = keyframes`
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
+const slideFromLeftIn = keyframes`
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
 `;
 
 const MenuContent = styled.div`
@@ -136,5 +132,5 @@ const MenuContent = styled.div`
   width: 100%;
   padding: 0 10px;
   background-color: #fff;
-  animation: ${fadeIn} 0.5s forwards;
+  animation: ${slideFromLeftIn} 0.5s forwards;
 `;

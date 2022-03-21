@@ -1,8 +1,7 @@
 import React, { FC, useCallback } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { nftImage } from 'assets';
 import { PurchaseComponent, Offer } from 'components';
-import { fadeIn } from 'App';
 import { UNIT_DATA } from 'helpers/constants';
 
 const OFFERS_DUMMIES = [
@@ -61,6 +60,11 @@ const NFTTokenBlock: FC<IProps> = ({
 };
 
 export default NFTTokenBlock;
+
+const fadeIn = keyframes`
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+`;
 
 const NFTTokenBlockWrapper = styled.div`
   animation: ${fadeIn} 0.5s ease-out;

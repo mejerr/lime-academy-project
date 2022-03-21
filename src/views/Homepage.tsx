@@ -1,9 +1,9 @@
 import React, { FC, useCallback, useContext } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Button } from "components";
-import { AppStateContext, fadeIn } from 'App';
+import { AppStateContext } from 'App';
 import { nftImage } from 'assets';
 
 const Homepage: FC<RouteComponentProps> = ({ history }) => {
@@ -56,6 +56,11 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
 };
 
 export default withRouter(Homepage);
+
+const fadeIn = keyframes`
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+`;
 
 const HomepageWrapper = styled.div`
   width: 100%;

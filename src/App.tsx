@@ -1,4 +1,4 @@
-  // tslint:disable: no-empty
+// tslint:disable: no-empty
 import React, { Suspense } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Switch, Route, Redirect } from 'react-router-dom';

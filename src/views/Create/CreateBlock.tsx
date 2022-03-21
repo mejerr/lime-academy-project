@@ -1,33 +1,85 @@
-import React, { FC, useCallback, useState } from 'react'
+// tslint:disable: no-empty
+import React, { ChangeEvent, FC, useCallback, useState } from 'react'
 import styled, { css, keyframes } from 'styled-components'
 import Create from './Create';
 
+interface ICreateState {
+  name: string;
+  description: string;
+  inputName: string;
+  inputDescription: string;
+}
+
+const INITIAL_STATE: ICreateState = {
+  name: '',
+  description: '',
+  inputName: '',
+  inputDescription: '',
+};
+
+export const CreateStateContext = React.createContext({
+  state: INITIAL_STATE,
+  onNameChange: (event: ChangeEvent<HTMLInputElement>): void => {},
+  onDescriptionChange: (event: ChangeEvent<HTMLTextAreaElement>): void => {},
+});
+
 const CreateBlock: FC = () => {
   const [activeBlock, setActiveBlock] = useState<number>(1);
+  const [itemName, setItemName] = useState("");
+  const [itemDescription, setItemDescription] = useState("");
+  const [collectionName, setCollectionName] = useState("");
+  const [collectionDescription, setCollectionDescription] = useState("");
+
+  const onItemNameChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setItemName(event.target.value);
+  }, [itemName]);
+
+  const onItemDescriptionChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
+    setItemDescription(event.target.value);
+  }, [itemDescription]);
+
+  const onCollectionNameChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setCollectionName(event.target.value);
+  }, [collectionName]);
+
+  const onCollectionDescriptionChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
+    setCollectionDescription(event.target.value);
+  }, [collectionDescription]);
 
   const onBlockClick = useCallback((id) => {
     setActiveBlock(id);
   }, []);
 
   return (
-    <CreateBlockWrapper>
-      <ActiveCreateBlock>
-        <ActiveBlock active={activeBlock === 1} onClick={() => onBlockClick(1)}>
-          {"New Item"}
-        </ActiveBlock>
-        <ActiveBlock active={activeBlock === 2} onClick={() => onBlockClick(2)}>
-          {"New Collection"}
-        </ActiveBlock>
-      </ActiveCreateBlock>
+    <CreateStateContext.Provider
+      value={{
+        state: {
+          name: activeBlock === 1 ? "Item name" : "Collection name",
+          description: activeBlock === 1 ? "Item description" : "Collection description",
+          inputName: activeBlock === 1 ? itemName : collectionName,
+          inputDescription: activeBlock === 1 ? itemDescription : collectionDescription
+        },
+        onNameChange: (e: ChangeEvent<HTMLInputElement>) =>
+          activeBlock === 1 ? onItemNameChange(e) : onCollectionNameChange(e),
+        onDescriptionChange: (e: ChangeEvent<HTMLTextAreaElement>) =>
+          activeBlock === 1 ? onItemDescriptionChange(e) : onCollectionDescriptionChange(e),
+      }}
+    >
+      <CreateBlockWrapper>
+        <ActiveCreateBlock>
+          <ActiveBlock active={activeBlock === 1} onClick={() => onBlockClick(1)}>
+            {"New Item"}
+          </ActiveBlock>
+          <ActiveBlock active={activeBlock === 2} onClick={() => onBlockClick(2)}>
+            {"New Collection"}
+          </ActiveBlock>
+        </ActiveCreateBlock>
 
-      <NewCreationWrapper active={activeBlock}>
-        <Create
-          header={activeBlock === 2 ? "Create a Collection" : "Create New Item"}
-          name={activeBlock === 2 ? "Collection name" :  "Item name"}
-          description={activeBlock === 2 ? "Collection description" : "Item description"}
-        />
-      </NewCreationWrapper>
-    </CreateBlockWrapper>
+        <NewCreationWrapper active={activeBlock}>
+          <Create header={activeBlock === 1 ? "Create New Item" : "Create a Collection"}/>
+        </NewCreationWrapper>
+      </CreateBlockWrapper>
+    </CreateStateContext.Provider>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { Button} from 'components';
 import RequiredFields from './RequiredFields';
@@ -7,21 +7,17 @@ import { fadeIn } from 'App';
 interface IProps {
   header: string;
   image?: string;
-  name: string;
-  description: string;
   onClick?: () => void;
 }
 
 const Create: FC<IProps> = ({
   header,
-  name = "",
-  description = "",
   onClick
 }) => {
   return (
     <CreateWrapper>
       <Header>{header}</Header>
-      <RequiredFields name={name} description={description} />
+      <RequiredFields />
       <CreateButtonWrapper>
         <Button
           title={"Create"}

@@ -1,7 +1,8 @@
-import React, { FC, useState, ChangeEvent, useCallback } from 'react'
+import React, { FC, useState, useCallback, useContext, ChangeEvent } from 'react'
 import styled from 'styled-components'
 import { emptyImage } from 'assets';
 import { SelectableMenu } from 'components';
+import { CreateStateContext } from './CreateBlock';
 
 const TITLES = {
   0: { title: "Marketplace"},
@@ -21,30 +22,18 @@ export interface ITitle {
   title: string;
 }
 
-interface IProps {
-  name: string;
-  description: string;
-}
-
-const RequiredFields: FC<IProps> = ({
-  name = "",
-  description = ""
+const RequiredFields: FC = ({
 }) => {
-  const [inputName, setInputName] = useState("");
-  const [inputDescription, setInputDescription] = useState("");
+  const {
+    state: { name, description, inputName, inputDescription },
+    onNameChange,
+    onDescriptionChange
+  } = useContext(CreateStateContext);
   const [selected, setSelected] = useState<number>(0);
 
   const onSelect = useCallback((id) => {
     setSelected(id);
   }, []);
-
-  const onNameChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setInputName(event.target.value);
-  }, [inputName]);
-
-  const onDescriptionChange = useCallback((event) => {
-    setInputDescription(event.target.value);
-  }, [inputDescription]);
 
   const collectionTitles: ITitle[] = [];
   for (let i = 0; i < 3; i++) {
@@ -72,7 +61,7 @@ const RequiredFields: FC<IProps> = ({
         <NameInput
           placeholder={name}
           value={inputName}
-          onChange={(e) => onNameChange(e)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onNameChange(e)}
         />
       </SectionWrapper>
 
@@ -81,7 +70,7 @@ const RequiredFields: FC<IProps> = ({
         <DescriptionInput
           placeholder={description}
           value={inputDescription}
-          onChange={(e) => onDescriptionChange(e)}
+          onChange={(event: ChangeEvent<HTMLTextAreaElement>) => onDescriptionChange(event)}
         />
       </SectionWrapper>
 
@@ -166,7 +155,7 @@ const NameInput = styled.input`
   width: calc(100% - 40px);
   border-radius: 10px;
   height: 55px;
-  outline: none !important;
+  outline: none;
   border: 1px solid rgb(229, 232, 235);
 
   :focus {
@@ -181,7 +170,7 @@ const DescriptionInput = styled.textarea`
   width: calc(100% - 40px);
   border-radius: 10px;
   height: 150px;
-  outline: none !important;
+  outline: none;
   border: 1px solid rgb(229, 232, 235);
 
   :focus {

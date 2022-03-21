@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from 'react'
 import styled, { css, keyframes } from 'styled-components'
-import { fadeIn } from '../Marketplace';
+import { fadeIn } from 'App';
 import Create from './Create';
 
 const CreateBlock: FC = () => {
@@ -53,7 +53,6 @@ const ActiveBlock = styled.div<{ active: boolean }>`
   margin: 0 5px;
   width: 150px;
   text-align: center;
-  border: 1px solid rgb(112, 122, 131);
   border-radius: 10px;
   color: rgb(112, 122, 131);
   cursor: pointer;
@@ -65,12 +64,12 @@ const ActiveBlock = styled.div<{ active: boolean }>`
   }
 `;
 
-export const slideRight = keyframes`
+const slideRight = keyframes`
   0% { transform: translateX(-100%); }
   100% { transform: translateX(0); }
 `;
 
-export const slideLeft = keyframes`
+const slideLeft = keyframes`
   0% { transform: translateX(100%); }
   100% { transform: translateX(0); }
 `;

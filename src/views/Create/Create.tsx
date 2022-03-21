@@ -1,8 +1,9 @@
 import React, { FC } from 'react'
-import { Button} from 'components';
 import styled from 'styled-components'
-import { fadeIn } from '../Marketplace';
+import { Button} from 'components';
 import RequiredFields from './RequiredFields';
+import { fadeIn } from 'App';
+
 interface IProps {
   header: string;
   image?: string;

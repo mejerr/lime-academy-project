@@ -3,9 +3,8 @@ import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Button } from "components";
-import { AppStateContext } from 'App';
+import { AppStateContext, fadeIn } from 'App';
 import { nftImage } from 'assets';
-import { fadeIn } from './Marketplace';
 
 const Homepage: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect } = useContext(AppStateContext);
@@ -27,14 +26,14 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
           <Title>{"Discover, collect, and sell \n extraordinary NFTs"}</Title>
           <Subtitle>{"LimeBlock is the world's first and largest NFT marketplace"}</Subtitle>
           <ButtonsWrapper>
-            <ExploreButtonWrapper>
+            <MarketplaceButtonWrapper>
               <Button
-                title={'Explore'}
+                title={'Marketplace'}
                 width={"100%"}
                 height={"50px"}
                 onClick={() => onClick("/marketplace")}
               />
-            </ExploreButtonWrapper>
+            </MarketplaceButtonWrapper>
             <ButtonWrapper>
               <Button
                 title={'Create'}
@@ -45,6 +44,7 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
             </ButtonWrapper>
           </ButtonsWrapper>
         </LeftPanel>
+
         <RightPanel>
           <ImageWrapper onClick={() => onClick("/marketplace")}>
             <NFTImage />
@@ -114,7 +114,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const ExploreButtonWrapper = styled(ButtonWrapper as any)`
+const MarketplaceButtonWrapper = styled(ButtonWrapper as any)`
   background-color: #024bb0;
 
   :hover {

@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { RouteComponentProps } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleUp, faAngleDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { nftImage } from 'assets';
@@ -50,12 +49,17 @@ const Block: FC<IProps> = ({
         {joinedDate && <JoinedDate>Joined {joinedDate}</JoinedDate>}
       </BlockCreator>
       {showDescription && (<>
-        <BlockDescriptionWrapper ref={descriptionNode} style={{ height }} isOpen={openDescription}>
-          <BlockDescription onClick={onOpenDescription}>
+        <BlockDescriptionWrapper
+          ref={descriptionNode}
+          style={{ height }}
+          isOpen={openDescription}
+          onClick={onOpenDescription}
+        >
+          <BlockDescription >
           {description}
           </BlockDescription>
         </BlockDescriptionWrapper>
-        <ArrowIcon icon={openDescription? faAngleUp : faAngleDown}/>
+        <ArrowIcon icon={openDescription? faAngleUp : faAngleDown} onClick={onOpenDescription} />
       </>)}
     </BlockWrapper>
   );
@@ -131,5 +135,6 @@ const ArrowIcon = styled(FontAwesomeIcon)<{ icon: IconDefinition }>`
   width: 12px;
   height: 12px;
   position: relative;
+  cursor: pointer;
   top: ${({ icon }) => icon === faAngleUp ? "-22px" : "-35px"};
 `;

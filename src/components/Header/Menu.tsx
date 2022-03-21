@@ -4,8 +4,21 @@ import { withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import Button from '../Button';
 import { AppStateContext } from 'App';
+import { IOption, ITitle } from 'views/Create/RequiredFields';
+import SelectableMenu from '../SelectableMenu';
+
+const TITLES: ITitle[] = [
+  { title: "Marketplace"},
+  { title: "Create"},
+  { title: "My Collection"}
+];
+
+enum PATHS {
+  '/marketplace',
+  '/create',
+  '/my-collection'
+}
 
 const Menu: FC<RouteComponentProps> = ({ history } ) => {
   const { state, onConnect } = useContext(AppStateContext);
@@ -17,46 +30,59 @@ const Menu: FC<RouteComponentProps> = ({ history } ) => {
     setMenuOpen(!menuOpen);
   }, [menuOpen]);
 
-  const onClick = useCallback((pathname) => {
+  const onClick = useCallback((pathId) => {
     if (!connected) {
         onConnect({ onSuccess: () => {
-          history.push(pathname);
+          history.push(PATHS[pathId]);
           setMenuOpen(false);
         } });
         return;
      }
 
-     history.push(pathname);
+     history.push(PATHS[pathId]);
      setMenuOpen(false);
   }, [connected]);
+
+  const test = [
+    {
+      title: "Marketplace",
+      width: "100%",
+      onClick: () => onClick('/marketplace'),
+      justifyContent: "flex-start",
+      arrow: true
+    },
+    {
+      title: "Create",
+      width: "100%",
+      onClick: () => onClick('/create'),
+      justifyContent: "flex-start",
+      arrow: true
+    },
+    {
+      title: "My Collection",
+      width: "100%",
+      onClick: () => onClick('/my-collection'),
+      justifyContent: "flex-start",
+      arrow: true
+    }
+  ];
+
+  const OPTIONS = (): IOption => ({
+    width: "100%",
+    height: '70px',
+    onClick: (pathId: number) => onClick(pathId),
+    justifyContent: "flex-start",
+    arrow: true
+  });
 
   return (
     <MenuWrapper>
       <MenuIcon icon={faBars} onClick={openMenu} />
       {menuOpen &&
         <MenuContent>
-          <Button
-            title={'Marketplace'}
-            width={"100%"}
-            onClick={() => onClick('/marketplace')}
-            justifyContent={"flex-start"}
-            arrow={true}
-          />
-          <Button
-            title={'Create'}
-            width={"100%"}
-            onClick={() => onClick('/create')}
-            justifyContent={"flex-start"}
-            arrow={true}
-          />
-          <Button
-            title={'My Collection'}
-            width={"100%"}
-            onClick={() => onClick('/my-collection')}
-            justifyContent={"flex-start"}
-            arrow={true}
-          />
-      </MenuContent>}
+          <SelectableMenu showSelected={false} titles={TITLES} options={OPTIONS()}/>
+        </MenuContent>
+      }
     </MenuWrapper>
   )
 }

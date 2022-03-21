@@ -1,7 +1,7 @@
   // tslint:disable: no-empty
 import React, { Suspense } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
@@ -14,12 +14,12 @@ import ConnectButton from './components/ConnectButton';
 import { Web3Provider } from '@ethersproject/providers';
 import { getChainData } from './helpers/utilities';
 
-import Homepage from './view/Homepage';
-import Marketplace from 'view/Marketplace';
-import CollectionBlock from 'view/Collections/CollectionBlock';
-import MyCollections from 'view/MyCollections';
-import NFTToken from 'view/NFTTokens/NFTToken';
-import CreateBlock from 'view/Create/CreateBlock';
+import Homepage from './views/Homepage';
+import Marketplace from 'views/Marketplace';
+import CollectionBlock from 'views/Collections/CollectionBlock';
+import MyCollections from 'views/MyCollections';
+import NFTTokenBlock from 'views/NFTTokens/NFTTokenBlock';
+import CreateBlock from 'views/Create/CreateBlock';
 
 const SLayout = styled.div`
   position: relative;
@@ -211,7 +211,7 @@ class App extends React.Component<any, any> {
         />
         <Route
           path='/collection/:id/token/:id'
-          component={NFTToken}
+          component={NFTTokenBlock}
         />
         <Route
           path='/collection/:id'
@@ -275,6 +275,11 @@ class App extends React.Component<any, any> {
       // </SLayout>
   };
 };
+
+export const fadeIn = keyframes`
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+`;
 
 const StyledApp = styled.div`
   width: 100%;

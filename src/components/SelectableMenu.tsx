@@ -1,21 +1,24 @@
 import React, { FC, useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { fadeIn } from 'view/Marketplace';
-import Button from 'components/Button';
-import { IOption, ITitle } from 'view/Create/RequiredFields';
+import { Button } from 'components';
+import { IOption, ITitle } from 'views/Create/RequiredFields';
+import { fadeIn } from 'App';
 
 interface IProps {
   options: IOption;
-  selected: number;
+  selected?: number;
+  showSelected?: boolean;
   titles: ITitle[];
 }
 
 const SelectableMenu: FC<IProps> = ({
   options,
   selected = 0,
+  showSelected = true,
   titles = []
 }) => {
   const { width, height, onClick, justifyContent, arrow = false } = options;
+  const selectedTitle = titles[selected] ? titles[selected].title : "No collections added";
   const [isOpen, setIsOpen] = useState(false);
 
   const onMenuClick = useCallback(() => {
@@ -28,22 +31,23 @@ const SelectableMenu: FC<IProps> = ({
 
   const renderOptions = ({ title }, index: number) => {
     return (
-      <Button
-        key={index}
-        title={title}
-        width={width}
-        height={height}
-        onClick={() => onClick(index)}
-        justifyContent={justifyContent}
-        arrow={arrow}
-      />
+      <OptionWrapper key={index}>
+        <Button
+          title={title}
+          width={width}
+          height={height}
+          onClick={() => onClick(index)}
+          justifyContent={justifyContent}
+          arrow={arrow}
+        />
+      </OptionWrapper>
     );
   };
 
   return (
-    <SelectableMenuWrapper onClick={onMenuClick}>
-      <Title isOpen={isOpen}>{titles[selected] ? titles[selected].title : "No collections added"}</Title>
-      <OptionsWrapper isOpen={isOpen}>
+    <SelectableMenuWrapper showSelected={showSelected} onClick={onMenuClick}>
+      {showSelected && <SelectedTitle isOpen={isOpen}>{selectedTitle}</SelectedTitle>}
+      <OptionsWrapper isOpen={showSelected ? isOpen : true}>
         {titles.map(renderOptions)}
       </OptionsWrapper>
     </SelectableMenuWrapper>
@@ -52,28 +56,19 @@ const SelectableMenu: FC<IProps> = ({
 
 export default SelectableMenu;
 
-const SelectableMenuWrapper = styled.div`
+const SelectableMenuWrapper = styled.div<{ showSelected: boolean }>`
   position: relative;
   animation: ${fadeIn} 0.5s ease-out;
   width: calc(100% - 40px);
   height: 100%;
 
   margin: 20px 20px 30px;
-  border: 1px solid black;
+  border: ${({ showSelected }) => showSelected ? '1px solid black' : 'none'};
   border-radius: 10px;
+  cursor: pointer;
 `;
 
-const SelectableOption = styled.div`
-  animation: ${fadeIn} 0.5s ease-out;
-  width: 100%;
-  border-bottom: 1px solid rgb(229, 232, 235);
-
-  :last-of-type {
-    border: none;
-  }
-`;
-
-const Title = styled.div<{ isOpen: boolean }>`
+const SelectedTitle = styled.div<{ isOpen: boolean }>`
   font-size: 18px;
   color: rgb(112, 122, 131);
   border-bottom: ${({ isOpen }) => isOpen && '1px solid rgb(229, 232, 235)'};
@@ -87,5 +82,20 @@ const OptionsWrapper = styled.div<{ isOpen: boolean }>`
   display: ${({ isOpen }) => isOpen ? 'block' : 'none'};
   width: 100%;
   transition: all 1s ease;
+`;
+
+const OptionWrapper = styled.div`
   padding: 0 10px;
+  width: 100%;
+  height: 100%;
+
+  :hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  > div {
+    margin: 0;
+    :hover {
+      color: rgb(112, 122, 131);
+    }
+  }
 `;

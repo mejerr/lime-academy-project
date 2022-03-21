@@ -1,11 +1,21 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
+import React, { FC, useCallback } from 'react'
 import styled from 'styled-components'
-import {  ethereumImage, nftImage } from 'assets';
-import { Button } from 'components';
-import { fadeIn } from 'view/Marketplace';
+import { nftImage } from 'assets';
 import { PurchaseComponent } from 'components';
-import Offer from './Offer';
+import { fadeIn } from 'App';
 import { UNIT_DATA } from 'helpers/constants';
+import Offer from './Offer';
+
+const OFFERS_DUMMIES = [
+  {
+    price: 213,
+    bidder: "maneskin"
+  },
+  {
+    price: 456,
+    bidder: "dsadsa"
+  },
+];
 
 interface IProps {
   collectionName: string,
@@ -13,20 +23,19 @@ interface IProps {
   owner: string
 }
 
-const NFTToken: FC<IProps> = ({
+const NFTTokenBlock: FC<IProps> = ({
   collectionName = "Where My Vans Go",
   tokenName = "Where My Vans Go #64",
   owner = "goso221"
 }) => {
-
-  const renderOffers = useCallback((index) => {
+  const renderOffers = useCallback(({ price, bidder}, index) => {
     return (
-      <Offer key={index} />
-    )
+      <Offer key={index} price={price} bidder={bidder} />
+    );
   }, []);
 
   return (
-    <NFTTokenWrapper>
+    <NFTTokenBlockWrapper>
       <ImageWrapper>
         <Image />
       </ImageWrapper>
@@ -43,18 +52,18 @@ const NFTToken: FC<IProps> = ({
             {UNIT_DATA.map(({ name }) => <Unit key={name}>{name}</Unit>)}
           </OffersData>
           <OffersContent>
-            {[1,2,3].map(renderOffers)}
+            {OFFERS_DUMMIES.map(renderOffers)}
           </OffersContent>
         </OffersWrapper>
 
       </DetailsWrapper>
-    </NFTTokenWrapper>
+    </NFTTokenBlockWrapper>
   )
 };
 
-export default NFTToken;
+export default NFTTokenBlock;
 
-const NFTTokenWrapper = styled.div`
+const NFTTokenBlockWrapper = styled.div`
   animation: ${fadeIn} 0.5s ease-out;
   display: flex;
   margin: 30px auto;

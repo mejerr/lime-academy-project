@@ -52,14 +52,12 @@ const RequiredFields: FC<IProps> = ({
     collectionTitles.push({ title: collectionTitle });
   }
 
-  const OPTIONS = (): IOption => {
-    return {
-      width: "100%",
-      height: '50px',
-      onClick: (id: number) => onSelect(id),
-      justifyContent: "flex-start"
-    }
-  };
+  const OPTIONS = (): IOption => ({
+    width: "100%",
+    height: '50px',
+    onClick: (id: number) => onSelect(id),
+    justifyContent: "flex-start"
+  });
 
   return (
     <RequiredFieldsWrapper>

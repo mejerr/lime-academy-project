@@ -1,72 +1,61 @@
-import { ethereumImage, nftImage } from 'assets';
-import { Button } from 'components';
 import React, { FC, useCallback } from 'react'
+import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
+import { ethereumImage } from 'assets';
+import { Button } from 'components';
 
-const NFTTokens: FC<RouteComponentProps> = ({ history }) => {
-  const onClick = useCallback((collectionId, tokenId) => {
+interface IProps extends RouteComponentProps {
+  collectionId: string;
+  tokenId: string;
+  creator: string;
+  name: string;
+  price: number;
+  image: string;
+}
+
+const Token: FC<IProps> = ({
+  history,
+  collectionId,
+  tokenId,
+  creator,
+  name,
+  price,
+  image
+}) => {
+  const onClick = useCallback(() => {
     history.push(`/collection/${collectionId}/token/${tokenId}`);
-  }, []);
+  }, [collectionId, tokenId]);
 
   return (
-    <NFTTokenseWrapper>
-      {[1, 2, 3,4 ,5 ].map((el, index) => {
-        return (
-          <NFTToken key={index} onClick={() => onClick(1, 1)}>
-            <Image />
-            <InfoWrapper>
-              <Info>
-                <Creator>creator <span>{"MisterPizza"}</span></Creator>
-                <Name>{"New generation"}</Name>
-              </Info>
-
-              <PriceWrapper>
-                <Price>{"Price"}</Price>
-                <Value>
-                  <ValueIcon />
-                  <Amount>{154123.321}</Amount>
-                </Value>
-              </PriceWrapper>
-            </InfoWrapper>
-
-            <Footer>
-              <Button
-                title={'Buy'}
-                width={"100%"}
-                height={"15px"}
-              />
-            </Footer>
-          </NFTToken>
-        );
-      })}
-    </NFTTokenseWrapper>
-  )
+    <TokenWrapper onClick={onClick}>
+      <Image image={image}/>
+      <InfoWrapper>
+        <Info>
+          <Creator>creator <span>{creator}</span></Creator>
+          <Name>{name}</Name>
+        </Info>
+        <PriceWrapper>
+          <Price>{"Price"}</Price>
+          <Value>
+            <ValueIcon />
+            <Amount>{price}</Amount>
+          </Value>
+        </PriceWrapper>
+      </InfoWrapper>
+      <BuyButtonWrapper>
+        <Button
+          title={'Buy'}
+          width={"100%"}
+          height={"15px"}
+        />
+      </BuyButtonWrapper>
+    </TokenWrapper>
+  );
 };
 
-export default withRouter(NFTTokens);
+export default withRouter(Token);
 
-export const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-`;
-
-const NFTTokenseWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 10px;
-  padding: 30px 40px 20px;
-
-  @media (max-width: 700px) {
-  grid-template-columns: repeat(1, 1fr);
-  }
-`;
-
-const NFTToken = styled.div`
+const TokenWrapper = styled.div`
   width: 100%;
 
   border: 1px solid rgb(229, 232, 235);
@@ -79,12 +68,12 @@ const NFTToken = styled.div`
   }
 `;
 
-const Image = styled.div`
+const Image = styled.div<{ image: string }>`
   height: 280px;
   width: 200px;
   margin: 0 auto;
 
-  background: transparent url(${nftImage}) center center no-repeat;
+  background: ${({ image }) => image && `transparent url(${image}) center center no-repeat`};
   background-size: cover;
 `;
 
@@ -129,6 +118,7 @@ const Price = styled.div`
 
 const Value = styled.div`
   display: flex;
+  justify-content: flex-end;
   width: 80px;
   padding: 0 10px;
 `;
@@ -149,7 +139,7 @@ const Amount = styled.div`
   text-align: right;
 `;
 
-const Footer = styled.div`
+const BuyButtonWrapper = styled.div`
   display: flex;
   width: 100%;
   height: 42px;
@@ -157,10 +147,11 @@ const Footer = styled.div`
   justify-content: center;
   align-items: center;
   background: linear-gradient(rgba(229, 232, 235, 0.392) 0%, rgb(255, 255, 255) 20%);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 
   > div {
     color: rgb(32, 129, 226);
-
     :hover {
       color: rgba(32, 129, 226, 0.8);
     }

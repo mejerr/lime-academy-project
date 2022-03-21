@@ -1,18 +1,22 @@
 import React, { FC } from 'react'
 import styled from 'styled-components';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
 
-const Offer: FC<RouteComponentProps> = ({ history }) => {
+interface IProps {
+  price: number;
+  bidder: string;
+}
+
+const Offer: FC<IProps> = ({ price, bidder }) => {
   return (
     <OfferContainer>
       <PriceETH>
         <ValueIcon />
-        <div>{"1.67 ETH"}</div>
+        <div>{`${price} ETH`}</div>
       </PriceETH>
       <PriceUSD>{"$123.123.123"}</PriceUSD>
-      <Bidder>{"manskin"}</Bidder>
+      <Bidder>{bidder}</Bidder>
       <OfferButtonsWrapper>
         <AcceptButtonWrapper>
           <Button
@@ -33,7 +37,7 @@ const Offer: FC<RouteComponentProps> = ({ history }) => {
   );
 };
 
-export default withRouter(Offer);
+export default Offer;
 
 const OfferContainer = styled.div`
   display: flex;

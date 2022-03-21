@@ -1,37 +1,43 @@
 import React, { FC, useCallback } from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
-import { nftImage } from 'assets';
 
-const Collection: FC<RouteComponentProps> = ({ history }) => {
+interface IProps extends RouteComponentProps {
+  id: number;
+  image: string;
+  smallImage: string;
+  name: string;
+  creator: string;
+  description: string;
+}
+
+const Collection: FC<IProps> = ({
+  history,
+  image,
+  smallImage,
+  name,
+  creator,
+  description
+}) => {
   const onClick = useCallback((collectionId) => {
     history.push(`/collection/${collectionId}`);
   }, []);
 
   return (
-    <CollectionWrapper key={1} onClick={() => onClick(1)}>
-      <Image />
+    <CollectionWrapper onClick={() => onClick(1)}>
+      <Image image={image}/>
       <SmallImageWrapper>
-      <SmallImage />
+        <SmallImage smallImage={smallImage}/>
       </SmallImageWrapper>
-      <Name>{"New generation"}</Name>
-      <Creator>creator <span>{"MisterPizza"}</span></Creator>
-      <Description>{"asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"}</Description>
+      <Name>{name}</Name>
+      <Creator>creator <span>{creator}</span></Creator>
+      <Description>{description}</Description>
     </CollectionWrapper>
   )
 };
 
 export default withRouter(Collection);
-
-export const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-`;
 
 const CollectionWrapper = styled.div`
   width: 100%;
@@ -68,13 +74,13 @@ const Description = styled.div`
   overflow: hidden;
 `;
 
-const Image = styled.div`
+const Image = styled.div<{ image: string }>`
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   height: 280px;
   width: 100%;
 
-  background: transparent url(${nftImage}) center center no-repeat;
+  background: ${({ image }) => image && `transparent url(${image}) center center no-repeat`};
   background-size: cover;
 `;
 
@@ -89,12 +95,12 @@ const SmallImageWrapper = styled.div`
   top: -20px;
 `;
 
-const SmallImage = styled.div`
+const SmallImage = styled.div<{ smallImage: string }>`
   width: 100%;
   height: 100%;
   border-radius: 50%;
 
-  background: transparent url(${nftImage}) center center no-repeat;
+  background: ${({ smallImage }) => smallImage && `transparent url(${smallImage}) center center no-repeat`};
   background-size: cover;`;
 
 

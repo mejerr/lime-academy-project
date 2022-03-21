@@ -137,6 +137,7 @@ const SendButtonWrapper = styled.div`
 `;
 
 const BuyButtonWrapper = styled(SendButtonWrapper as any)`
+  width: 270px;
   background-color: #024bb0;
 
   :hover {

@@ -1,7 +1,8 @@
-import { Block } from 'components';
 import React, { FC, useCallback, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
-import Collection from './Collections/Collection';
+import styled from 'styled-components'
+import { Block } from 'components';
+import { fadeIn } from 'App';
+import Collections from './Collections/Collections';
 import NFTTokens from './NFTTokens/NFTTokens';
 
 const MyCollections: FC = () => {
@@ -10,10 +11,6 @@ const MyCollections: FC = () => {
   const changeTab = useCallback((tab) => {
     setActiveTab(tab);
   }, [setActiveTab]);
-
-  const renderCollections = useCallback((index) => {
-    return <Collection key={index}/>;
-  }, []);
 
   return (
     <MyCollectionsWrapper>
@@ -25,26 +22,20 @@ const MyCollections: FC = () => {
         joinedDate={"October 2021"}
       />
       <ActiveContent>
-        <NFTTokensTab active={activeTab === "Tokens"} onClick={() => changeTab("Tokens")}>{"Tokens"}</NFTTokensTab>
-        <CollectionsTab active={activeTab === "Collections"} onClick={() => changeTab("Collections")}>{"Collections"} </CollectionsTab>
+        <NFTTokensTab active={activeTab === "Tokens"} onClick={() => changeTab("Tokens")}>
+          {"Tokens"}
+        </NFTTokensTab>
+        <CollectionsTab active={activeTab === "Collections"} onClick={() => changeTab("Collections")}>
+          {"Collections"}
+        </CollectionsTab>
       </ActiveContent>
 
-      {activeTab === "Tokens" ?
-        <NFTTokens /> :
-        <CollectionsWrapper>
-          {[1, 2, 3].map(renderCollections)}
-        </CollectionsWrapper>
-      }
+      {activeTab === "Tokens" ? <NFTTokens /> : <Collections />}
     </MyCollectionsWrapper>
   )
 };
 
 export default MyCollections;
-
-export const fadeIn = keyframes`
-  0% {opacity: 0;}
-  100% {opacity: 1;}
-`;
 
 const MyCollectionsWrapper = styled.div`
   display: flex;
@@ -90,15 +81,4 @@ const CollectionsTab = styled(NFTTokensTab as any)`
   background-color: ${({ active }) => active && 'rgba(0, 0, 0, 0.1)'};
   border-radius: 10px;
   transition: background-color .3s ease;
-`;
-
-const CollectionsWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 30px;
-  padding: 30px 40px 20px;
-
-  @media (max-width: 700px) {
-  grid-template-columns: repeat(1, 1fr);
-  }
 `;

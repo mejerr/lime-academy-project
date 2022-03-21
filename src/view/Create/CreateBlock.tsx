@@ -20,14 +20,14 @@ const CreateBlock: FC = () => {
           {"New Collection"}
         </ActiveBlock>
       </ActiveCreateBlock>
-        <NewCreationWrapper active={activeBlock}>
-          <Create
-            header={activeBlock === 2 ? "Create a Collection" : "Create New Item"}
-            name={activeBlock === 2 ? "Collection name" :  "Item name"}
-            description={activeBlock === 2 ? "Collection description" : "Item description"}
-          />
-        </NewCreationWrapper>
 
+      <NewCreationWrapper active={activeBlock}>
+        <Create
+          header={activeBlock === 2 ? "Create a Collection" : "Create New Item"}
+          name={activeBlock === 2 ? "Collection name" :  "Item name"}
+          description={activeBlock === 2 ? "Collection description" : "Item description"}
+        />
+      </NewCreationWrapper>
     </CreateBlockWrapper>
   );
 };
@@ -74,7 +74,6 @@ export const slideLeft = keyframes`
   0% { transform: translateX(100%); }
   100% { transform: translateX(0); }
 `;
-
 
 const NewCreationWrapper = styled.div<{ active: number }>`
   display: flex;

@@ -1,8 +1,7 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
-import { Block } from 'components';
+import { Block, NFTTokens } from 'components';
 import { fadeIn } from 'App';
-import NFTTokens from 'views/NFTTokens/NFTTokens';
 
 const CollectionBlock: FC = () => {
   return (

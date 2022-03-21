@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
-import Collections from './Collections/Collections';
+import { Collections } from 'components';
 
 const Marketplace: FC = () => {
   return (

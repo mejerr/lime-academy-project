@@ -16,10 +16,11 @@ import { getChainData } from './helpers/utilities';
 
 import Homepage from './views/Homepage';
 import Marketplace from 'views/Marketplace';
-import CollectionBlock from 'views/Collections/CollectionBlock';
+
 import MyCollections from 'views/MyCollections';
-import NFTTokenBlock from 'views/NFTTokens/NFTTokenBlock';
 import CreateBlock from 'views/Create/CreateBlock';
+import NFTTokenBlock from 'views/NFTTokenBlock';
+import CollectionBlock from 'views/CollectionBlock';
 
 const SLayout = styled.div`
   position: relative;

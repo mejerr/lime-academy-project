@@ -5,8 +5,8 @@ import { RouteComponentProps } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { AppStateContext } from 'App';
-import { IOption, ITitle } from 'views/Create/RequiredFields';
-import SelectableMenu from '../SelectableMenu';
+import { ITitle } from 'views/Create/RequiredFields';
+import { SelectableMenu } from 'components';
 
 const TITLES: ITitle[] = [
   { title: "Marketplace"},
@@ -67,20 +67,20 @@ const Menu: FC<RouteComponentProps> = ({ history } ) => {
     }
   ];
 
-  const OPTIONS = (): IOption => ({
+  const OPTIONS = {
     width: "100%",
     height: '70px',
     onClick: (pathId: number) => onClick(pathId),
     justifyContent: "flex-start",
     arrow: true
-  });
+  };
 
   return (
     <MenuWrapper>
       <MenuIcon icon={faBars} onClick={openMenu} />
       {menuOpen &&
         <MenuContent>
-          <SelectableMenu showSelected={false} titles={TITLES} options={OPTIONS()}/>
+          <SelectableMenu showSelected={false} titles={TITLES} options={OPTIONS}/>
         </MenuContent>
       }
     </MenuWrapper>

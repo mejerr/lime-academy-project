@@ -1,7 +1,7 @@
 import React, { FC, useState, ChangeEvent, useCallback } from 'react'
+import styled from 'styled-components'
 import { emptyImage } from 'assets';
 import { SelectableMenu } from 'components';
-import styled from 'styled-components'
 
 const TITLES = {
   0: { title: "Marketplace"},
@@ -52,12 +52,12 @@ const RequiredFields: FC<IProps> = ({
     collectionTitles.push({ title: collectionTitle });
   }
 
-  const OPTIONS = (): IOption => ({
+  const OPTIONS = {
     width: "100%",
     height: '50px',
     onClick: (id: number) => onSelect(id),
     justifyContent: "flex-start"
-  });
+  };
 
   return (
     <RequiredFieldsWrapper>
@@ -87,7 +87,7 @@ const RequiredFields: FC<IProps> = ({
 
       <SectionWrapper>
         <Section>{"Choose Collection"}</Section>
-        <SelectableMenu titles={collectionTitles} options={OPTIONS()} selected={selected}/>
+        <SelectableMenu titles={collectionTitles} options={OPTIONS} selected={selected}/>
       </SectionWrapper>
     </RequiredFieldsWrapper>
   );
@@ -113,22 +113,6 @@ const RequiredFieldsTitle = styled.div`
     left: 10px;
     top: 20px;
     content: " *";
-    color: rgb(235, 87, 87);
-  }
-`;
-
-const Title = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  padding: 20px;
-  position: relative;
-
-  ::after {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    top: 20px;
-    content: "  *";
     color: rgb(235, 87, 87);
   }
 `;

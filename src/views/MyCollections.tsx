@@ -1,9 +1,7 @@
 import React, { FC, useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { Block } from 'components';
+import { Block, Collections, NFTTokens } from 'components';
 import { fadeIn } from 'App';
-import Collections from './Collections/Collections';
-import NFTTokens from './NFTTokens/NFTTokens';
 
 const MyCollections: FC = () => {
   const [activeTab, setActiveTab] = useState<string>("Tokens");

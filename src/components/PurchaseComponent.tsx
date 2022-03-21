@@ -136,15 +136,6 @@ const SendButtonWrapper = styled.div`
   }
 `;
 
-const OfferIcon = styled(FontAwesomeIcon)`
-  position: absolute;
-  color: #024bb0;
-  top: 27px;
-  left: 13px;
-  width: 18px;
-  height: 18px;
-`;
-
 const BuyButtonWrapper = styled(SendButtonWrapper as any)`
   background-color: #024bb0;
 
@@ -153,7 +144,7 @@ const BuyButtonWrapper = styled(SendButtonWrapper as any)`
   }
 
   > div {
-    color: white;
+    color: #fff;
     :hover {
       color: #fff;
     }
@@ -167,6 +158,15 @@ const BuyIcon = styled(FontAwesomeIcon)`
   left: 75px;
   width: 22px;
   height: 22px;
+`;
+
+const OfferIcon = styled(FontAwesomeIcon)`
+  position: absolute;
+  color: #024bb0;
+  top: 27px;
+  left: 13px;
+  width: 18px;
+  height: 18px;
 `;
 
 const InputWrapper = styled.div`

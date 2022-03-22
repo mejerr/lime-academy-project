@@ -11,6 +11,29 @@ const COLLECTIONS_DUMMY = [
     name: "New generation",
     creator: "MisterPizza",
     description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },
+  {
+    id: 1,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },
+  {
+    id: 2,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },  {
+    id: 3,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
   }
 ];
 

@@ -33,7 +33,12 @@ const MarketplaceTitle = styled.div`
   width: 100%;
   text-align: center;
   color: black;
-  font-size: 30px;
+  font-size: 24px;
   padding: 60px 20px 60px;
   border-bottom: 1px solid grey;
+
+  @media (max-width: 670px) {
+    font-size: 20px;
+    padding: 40px 20px;
+  }
 `;

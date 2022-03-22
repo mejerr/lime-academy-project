@@ -71,6 +71,18 @@ const NFTTokenBlockWrapper = styled.div`
   display: flex;
   margin: 30px auto;
   padding: 20px;
+
+
+  @media (max-width: 800px) {
+    max-width: 500px;
+  }
+
+  @media (max-width: 1000px) {
+    flex-direction: column;
+    align-items: center;
+    max-width: 600px;
+    max-height: 1000px;
+  }
 `;
 
 const ImageWrapper = styled.div`
@@ -79,6 +91,16 @@ const ImageWrapper = styled.div`
   border: 1px solid rgb(229, 232, 235);
   border-radius: 10px;
   margin: 0 10px;
+
+  @media (max-width: 1000px) {
+    width: 580px;
+    height: 500px;
+  }
+
+  @media (max-width: 600px) {
+    width: 430px;
+    height: 500px;
+  }
 `;
 
 const Image = styled.div`
@@ -94,7 +116,7 @@ const Image = styled.div`
 const DetailsWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  flex: 1;
+  width: 100%;
   margin: 0 20px;
 `;
 

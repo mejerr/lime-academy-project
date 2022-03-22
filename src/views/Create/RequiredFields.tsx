@@ -87,6 +87,10 @@ export default RequiredFields;
 const RequiredFieldsWrapper = styled.div`
   min-width: 772px;
   width: 100%;
+
+  @media (max-width: 830px) {
+    min-width: 0;
+  }
 `;
 
 const RequiredFieldsTitle = styled.div`
@@ -113,6 +117,10 @@ const ImageWrapper = styled.div`
   border: 3px dashed rgb(204, 204, 204);
   padding: 10px;
   border-radius: 10px;
+
+  @media (max-width: 400px) {
+    width: 250px;
+  }
 `;
 
 const Image = styled.div<{ image: string }>`

@@ -223,6 +223,7 @@ const StyledApp = styled.div`
 `;
 
 const StyledContent = styled.div`
+  padding-bottom: 20px;
 `;
 
 export default App;

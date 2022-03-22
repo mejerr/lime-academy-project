@@ -25,7 +25,7 @@ const ConnectButton: FC<RouteComponentProps> = ({ history }) => {
       {connected ? (
         address && (
           <Account>
-            <Address connected={connected}>{ellipseAddress(address)}</Address>
+            <Address connected={connected}>{ellipseAddress(address, 8)}</Address>
             <DisconnectButton onClick={onLogout}>
               {'Disconnect'}
             </DisconnectButton>

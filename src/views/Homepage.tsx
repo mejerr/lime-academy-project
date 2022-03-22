@@ -75,6 +75,10 @@ const HomepageContent = styled.div`
   margin: 0 auto;
   width: 100%;
   max-width: min(1280px, 100% - 40px);
+
+  @media (max-width: 800px) {
+    flex-direction: column;
+  }
 `;
 
 const LeftPanel = styled.div`
@@ -83,6 +87,11 @@ const LeftPanel = styled.div`
   width: 50%;
   height: 50%;
   padding: 70px 20px 0;
+
+  @media (max-width: 800px) {
+    width: 100%;
+    padding: 40px 20px 0;
+  }
 `;
 
 const Title = styled.div`
@@ -141,6 +150,11 @@ const RightPanel = styled.div`
   width: 50%;
   height: 50%;
   padding-top: 50px;
+
+  @media (max-width: 800px) {
+    width: 100%;
+    align-items: center;
+  }
 `;
 
 const ImageWrapper = styled.div`
@@ -163,6 +177,12 @@ const ImageWrapper = styled.div`
     max-width: 360px;
     max-height: 370px;
     margin-top: 30px;
+  }
+
+  @media (max-width: 420px) {
+    max-width: 280px;
+    max-height: 280px;
+    margin-top: 20px;
   }
 `;
 

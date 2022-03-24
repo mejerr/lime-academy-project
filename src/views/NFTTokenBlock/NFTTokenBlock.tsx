@@ -1,8 +1,9 @@
 import React, { FC, useCallback } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { nftImage } from 'assets';
-import { PurchaseComponent, Offer } from 'components';
 import { UNIT_DATA } from 'helpers/constants';
+import Offer from './Offer';
+import PurchaseComponent from './PurchaseComponent';
 
 const OFFERS_DUMMIES = [
   {

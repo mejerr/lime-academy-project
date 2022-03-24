@@ -2,32 +2,29 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleUp, faAngleDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { nftImage } from 'assets';
 interface IProps {
-  image?: string;
-  name?: string,
-  creator?: string,
-  joinedDate?: string,
+  image: string;
+  name: string,
+  creator: string,
+  joinedDate: string,
   description?: string,
   showCreator?: boolean
-  showDescription?: boolean
 }
 
-const Block: FC<IProps> = ({
-  image = nftImage,
-  name = "New generation",
+const BlockHeader: FC<IProps> = ({
+  image,
+  name,
   creator,
   joinedDate,
-  description = "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz",
-  showCreator = true,
-  showDescription = true
+  description = "",
+  showCreator = true
 }) => {
   const [height, setHeight] = useState<string>("120px");
   const [openDescription, setOpenDescription] = useState<boolean>(false);
   const descriptionNode = useRef<HTMLHeadingElement>(null);
 
   const onOpenDescription = useCallback(() => {
-    setOpenDescription(!openDescription)
+    setOpenDescription(!openDescription);
   }, [openDescription]);
 
   useEffect(() => {
@@ -39,16 +36,13 @@ const Block: FC<IProps> = ({
   return (
     <BlockWrapper>
       <BlockImage image={image}/>
-      <SmallImageWrapper>
-        <SmallImage />
-      </SmallImageWrapper>
       <BlockName>{name}</BlockName>
       <BlockCreator>
         {showCreator && <div>Created by</div>}
         <span>{creator}</span>
         {joinedDate && <JoinedDate>Joined {joinedDate}</JoinedDate>}
       </BlockCreator>
-      {showDescription && (<>
+      {description && (<>
         <BlockDescriptionWrapper
           ref={descriptionNode}
           style={{ height }}
@@ -56,7 +50,7 @@ const Block: FC<IProps> = ({
           onClick={onOpenDescription}
         >
           <BlockDescription >
-          {description}
+            {description}
           </BlockDescription>
         </BlockDescriptionWrapper>
         <ArrowIcon icon={openDescription? faAngleUp : faAngleDown} onClick={onOpenDescription} />
@@ -65,7 +59,7 @@ const Block: FC<IProps> = ({
   );
 };
 
-export default Block;
+export default BlockHeader;
 
 const BlockWrapper = styled.div`
   display: flex;
@@ -81,10 +75,6 @@ const BlockImage = styled.div<{ image: string }>`
   background: ${({ image }) => `transparent url(${image}) center center no-repeat`};
   background-size: cover;
 `;
-
-const SmallImageWrapper = styled.div``;
-
-const SmallImage = styled.div``;
 
 const BlockName = styled.div`
   font-size: 40px;

@@ -1,6 +1,60 @@
 import React, { FC, useCallback, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { Block, Collections, NFTTokens } from 'components';
+import { BlockHeader, Collections, NFTTokens } from 'components';
+import { nftImage } from 'assets';
+
+const COLLECTIONS_DUMMY = [
+  {
+    id: 0,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },
+  {
+    id: 1,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },
+  {
+    id: 2,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },  {
+    id: 3,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  }
+];
+
+const TOKENS_DUMMY = [
+  {
+    collectionId: 0,
+    tokenId: 0,
+    name: "New generation",
+    creator: "MisterPizza",
+    price: 123.3,
+    image: nftImage
+  },
+  {
+    collectionId: 0,
+    tokenId: 0,
+    name: "New generation",
+    creator: "MisterPizza",
+    price: 123.3,
+    image: nftImage
+  }
+];
 
 const MyCollections: FC = () => {
   const [activeTab, setActiveTab] = useState<string>("Tokens");
@@ -11,12 +65,12 @@ const MyCollections: FC = () => {
 
   return (
     <MyCollectionsWrapper>
-      <Block
+      <BlockHeader
+        image={nftImage}
         name={"unnamed"}
-        showCreator={false}
-        showDescription={false}
-        creator={"Misterpizza"}
+        creator={"0x2131231234512"}
         joinedDate={"October 2021"}
+        showCreator={false}
       />
       <ActiveContent>
         <NFTTokensTab active={activeTab === "Tokens"} onClick={() => changeTab("Tokens")}>
@@ -27,7 +81,7 @@ const MyCollections: FC = () => {
         </CollectionsTab>
       </ActiveContent>
 
-      {activeTab === "Tokens" ? <NFTTokens /> : <Collections />}
+      {activeTab === "Tokens" ? <NFTTokens tokens={TOKENS_DUMMY}/> : <Collections collections={COLLECTIONS_DUMMY}/>}
     </MyCollectionsWrapper>
   )
 };

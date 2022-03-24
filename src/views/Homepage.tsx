@@ -24,7 +24,7 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
       <HomepageContent>
         <LeftPanel>
           <Title>{"Discover, collect, and sell \n extraordinary NFTs"}</Title>
-          <Subtitle>{"LimeBlock is the world's first and largest NFT marketplace"}</Subtitle>
+          <Subtitle>{"LimeBlock is one of the world's first and largest NFT marketplace"}</Subtitle>
           <ButtonsWrapper>
             <MarketplaceButtonWrapper>
               <Button
@@ -34,14 +34,14 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
                 onClick={() => onClick("/marketplace")}
               />
             </MarketplaceButtonWrapper>
-            <ButtonWrapper>
+            <CreateButtonWrapper>
               <Button
                 title={'Create'}
                 width={"100%"}
                 height={"50px"}
                 onClick={() => onClick("/create")}
               />
-            </ButtonWrapper>
+            </CreateButtonWrapper>
           </ButtonsWrapper>
         </LeftPanel>
 
@@ -52,7 +52,7 @@ const Homepage: FC<RouteComponentProps> = ({ history }) => {
         </RightPanel>
       </HomepageContent>
     </HomepageWrapper>
-  )
+  );
 };
 
 export default withRouter(Homepage);
@@ -109,7 +109,7 @@ const ButtonsWrapper = styled.div`
   display: flex;
 `;
 
-const ButtonWrapper = styled.div`
+const CreateButtonWrapper = styled.div`
   width: 150px;
   height: 50px;
   margin: 0 10px;
@@ -128,7 +128,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const MarketplaceButtonWrapper = styled(ButtonWrapper as any)`
+const MarketplaceButtonWrapper = styled(CreateButtonWrapper as any)`
   background-color: #024bb0;
 
   :hover {

@@ -1,20 +1,21 @@
 import React, { FC, useCallback } from 'react'
 import styled from 'styled-components';
-import { nftImage } from 'assets';
 import Token from './Token';
 
-const TOKENS_DUMMY = [
-  {
-    collection: 0,
-    tokenId: 0,
-    name: "New generation",
-    creator: "MisterPizza",
-    price: 123.3,
-    image: nftImage
-  }
-];
+interface IToken {
+  collectionId: number;
+  tokenId: number;
+  name: string;
+  creator: string;
+  price: number;
+  image: string;
+}
 
-const Tokens: FC = () => {
+interface IProps {
+  tokens: IToken[]
+}
+
+const Tokens: FC<IProps> = ({ tokens }) => {
   const renderTokens = useCallback(({ collectionId, tokenId, creator, name, price, image }) => {
     return (
       <Token
@@ -31,7 +32,7 @@ const Tokens: FC = () => {
 
   return (
     <TokensWrapper>
-      {TOKENS_DUMMY.map(renderTokens)}
+      {tokens.map(renderTokens)}
     </TokensWrapper>
   )
 };
@@ -44,7 +45,11 @@ const TokensWrapper = styled.div`
   grid-gap: 10px;
   padding: 30px 40px 20px;
 
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   @media (max-width: 700px) {
-  grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 `;

@@ -1,14 +1,49 @@
 import React, { FC } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { Collections } from 'components';
+import { nftImage } from 'assets';
+
+const COLLECTIONS_DUMMY = [
+  {
+    id: 0,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },
+  {
+    id: 1,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },
+  {
+    id: 2,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  },  {
+    id: 3,
+    image: nftImage,
+    smallImage: nftImage,
+    name: "New generation",
+    creator: "MisterPizza",
+    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
+  }
+];
 
 const Marketplace: FC = () => {
   return (
     <MarketplaceWrapper>
       <MarketplaceTitle>{"Explore collections"}</MarketplaceTitle>
-      <Collections />
+      <Collections collections={COLLECTIONS_DUMMY}/>
     </MarketplaceWrapper>
-  )
+  );
 };
 
 export default Marketplace;

@@ -26,7 +26,7 @@ const NavBar: FC<RouteComponentProps> = ({ history }) => {
      history.push(pathname);
   }, [connected]);
 
-  const NAV_BUTTONS =  [
+  const NAV_BUTTONS: INavButtons[] =  [
     {
       title: 'Marketplace',
       isActive: pathname === "/marketplace",

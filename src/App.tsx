@@ -13,7 +13,7 @@ import Homepage from './views/Homepage';
 import Marketplace from 'views/Marketplace';
 import MyCollections from 'views/MyCollections';
 import CreateBlock from 'views/Create/CreateBlock';
-import NFTTokenBlock from 'views/NFTTokenBlock';
+import NFTTokenBlock from 'views/NFTTokenBlock/NFTTokenBlock';
 import CollectionBlock from 'views/CollectionBlock';
 
 interface IAppState {
@@ -124,7 +124,7 @@ class App extends React.Component<any, any> {
     }
   }
 
-  public networkChanged = async (networkId: number) => {
+  public networkChanged = async () => {
     const library = new Web3Provider(this.provider);
     const network = await library.getNetwork();
     const chainId = network.chainId;

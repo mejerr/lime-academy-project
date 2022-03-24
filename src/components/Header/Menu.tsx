@@ -43,30 +43,6 @@ const Menu: FC<RouteComponentProps> = ({ history } ) => {
      setMenuOpen(false);
   }, [connected]);
 
-  const test = [
-    {
-      title: "Marketplace",
-      width: "100%",
-      onClick: () => onClick('/marketplace'),
-      justifyContent: "flex-start",
-      arrow: true
-    },
-    {
-      title: "Create",
-      width: "100%",
-      onClick: () => onClick('/create'),
-      justifyContent: "flex-start",
-      arrow: true
-    },
-    {
-      title: "My Collection",
-      width: "100%",
-      onClick: () => onClick('/my-collection'),
-      justifyContent: "flex-start",
-      arrow: true
-    }
-  ];
-
   const OPTIONS = {
     width: "100%",
     height: '70px',

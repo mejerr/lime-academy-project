@@ -1,28 +1,21 @@
+import { nftImage } from 'assets';
 import React, { FC, useCallback } from 'react'
+import { ICollection } from 'SDK/WalletConnectSDK';
 import styled from 'styled-components';
 import Collection from './Collection';
-
-interface ICollection {
-  id: number;
-  image: string;
-  smallImage: string;
-  name: string;
-  description: string;
-  creator: string;
-}
 
 interface IProps {
   collections: ICollection[]
 }
 
-const Collections: FC<IProps> = ({ collections= [] }) => {
-  const renderCollections = useCallback(({ id, image, smallImage, name, creator, description }) => {
+const Collections: FC<IProps> = ({ collections = [] }) => {
+  const renderCollections = useCallback(({ collectionId, image, smallImage, name, creator, description }) => {
     return (
       <Collection
-        key={id}
-        id={id}
-        image={image}
-        smallImage={smallImage}
+        key={collectionId}
+        id={collectionId}
+        image={nftImage}
+        smallImage={nftImage}
         name={name}
         creator={creator}
         description={description}

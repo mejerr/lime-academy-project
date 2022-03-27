@@ -21,7 +21,7 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
     uint256 private collectedListingFee = 0;
     NFTMarketItem private immutable marketItemContract;
 
-    mapping(uint256 => Collection) private collections;
+    mapping(uint256 => Collection) public collections;
     mapping(uint256 => MarketItem) public marketItems;
     mapping(uint256 => mapping(uint256 => Bid)) public itemBids;
 

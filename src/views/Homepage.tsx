@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Button } from "components";
-import { AppStateContext } from 'App';
+import { AppStateContext } from 'SDK/WalletConnectSDK';
 import { nftImage } from 'assets';
 
 const Homepage: FC<RouteComponentProps> = ({ history }) => {

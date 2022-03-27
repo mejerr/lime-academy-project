@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { AppStateContext } from 'App';
+import { AppStateContext } from 'SDK/WalletConnectSDK';
 import { ITitle } from 'views/Create/RequiredFields';
 import { SelectableMenu } from 'components';
 

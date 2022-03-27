@@ -1,41 +1,8 @@
-import React, { FC, useCallback, useState } from 'react'
+import React, { FC, useCallback, useContext, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, Collections, NFTTokens } from 'components';
 import { nftImage } from 'assets';
-
-const COLLECTIONS_DUMMY = [
-  {
-    id: 0,
-    image: nftImage,
-    smallImage: nftImage,
-    name: "New generation",
-    creator: "MisterPizza",
-    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
-  },
-  {
-    id: 1,
-    image: nftImage,
-    smallImage: nftImage,
-    name: "New generation",
-    creator: "MisterPizza",
-    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
-  },
-  {
-    id: 2,
-    image: nftImage,
-    smallImage: nftImage,
-    name: "New generation",
-    creator: "MisterPizza",
-    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
-  },  {
-    id: 3,
-    image: nftImage,
-    smallImage: nftImage,
-    name: "New generation",
-    creator: "MisterPizza",
-    description: "asdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsa"
-  }
-];
+import { AppStateContext } from 'SDK/WalletConnectSDK';
 
 const TOKENS_DUMMY = [
   {
@@ -57,6 +24,8 @@ const TOKENS_DUMMY = [
 ];
 
 const MyCollections: FC = () => {
+  const { state } = useContext(AppStateContext);
+  const { collections } = state;
   const [activeTab, setActiveTab] = useState<string>("Tokens");
 
   const changeTab = useCallback((tab) => {
@@ -81,7 +50,7 @@ const MyCollections: FC = () => {
         </CollectionsTab>
       </ActiveContent>
 
-      {activeTab === "Tokens" ? <NFTTokens tokens={TOKENS_DUMMY}/> : <Collections collections={COLLECTIONS_DUMMY}/>}
+      {activeTab === "Tokens" ? <NFTTokens tokens={TOKENS_DUMMY}/> : <Collections collections={collections}/>}
     </MyCollectionsWrapper>
   )
 };

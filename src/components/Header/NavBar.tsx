@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useContext } from 'react'
-import { AppStateContext } from 'App';
+import { AppStateContext } from 'SDK/WalletConnectSDK';
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';

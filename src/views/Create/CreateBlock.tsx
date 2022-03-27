@@ -1,5 +1,6 @@
 // tslint:disable: no-empty
-import React, { ChangeEvent, FC, useCallback, useState } from 'react'
+import React, { ChangeEvent, FC, useCallback, useContext, useState } from 'react'
+import { AppStateContext } from 'SDK/WalletConnectSDK';
 import styled, { css, keyframes } from 'styled-components'
 import Create from './Create';
 
@@ -24,6 +25,8 @@ export const CreateStateContext = React.createContext({
 });
 
 const CreateBlock: FC = () => {
+  const { createCollection } = useContext(AppStateContext);
+
   const [activeBlock, setActiveBlock] = useState<number>(1);
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
@@ -49,6 +52,14 @@ const CreateBlock: FC = () => {
   const onBlockClick = useCallback((id) => {
     setActiveBlock(id);
   }, []);
+
+  const onCreateItem = useCallback(() => {
+    createCollection(collectionName, collectionDescription);
+  }, [collectionName, collectionDescription]);
+
+  const onCreateCollection = useCallback(() => {
+    createCollection(collectionName, collectionDescription);
+  }, [collectionName, collectionDescription]);
 
   return (
     <CreateStateContext.Provider
@@ -76,7 +87,10 @@ const CreateBlock: FC = () => {
         </ActiveCreateBlock>
 
         <NewCreationWrapper active={activeBlock}>
-          <Create header={activeBlock === 1 ? "Create New Item" : "Create a Collection"}/>
+          <Create
+            header={activeBlock === 1 ? "Create New Item" : "Create a Collection"}
+            onClick={activeBlock === 1 ? onCreateItem : onCreateCollection}
+          />
         </NewCreationWrapper>
       </CreateBlockWrapper>
     </CreateStateContext.Provider>

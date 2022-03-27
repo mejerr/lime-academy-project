@@ -7,61 +7,64 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "hardhat/console.sol";
 import "./NFTMarketItem.sol";
+import "./INFTMarketPlace.sol";
 
-contract NFTMarketPlace is Ownable, ReentrancyGuard {
+contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
     using Counters for Counters.Counter;
 
     Counters.Counter private _collectionId;
+    Counters.Counter private _tokenIds;
+    Counters.Counter private _bidIds;
+
     uint256 private lockedBidAmount = 0;
+    uint256 private listingFee = 0.025 ether;
+    uint256 private collectedListingFee = 0;
     NFTMarketItem private immutable marketItemContract;
 
-    struct Collection {
-        uint256 collectionId;
-        string name;
-        string description;
-        uint256 createdOn;
-        address creator;
-    }
+    mapping(uint256 => Collection) private collections;
+    mapping(uint256 => MarketItem) public marketItems;
+    mapping(uint256 => mapping(uint256 => Bid)) public itemBids;
 
     uint256[] public collectionsIds;
+    uint256[] public marketItemsIds;
+    uint256[] public bidsIds;
 
-    mapping(uint256 => Collection) private collections;
-
-    event CollectionCreated(
-        uint256 indexed collectionId,
-        string indexed name,
-        string description,
-        uint256 createdOn,
-        address creator
-    );
-
-    event ItemBought(
-        uint256 indexed itemId,
-        address buyer,
-        address owner,
-        uint256 price
-    );
-
-    event BidCreated(uint256 indexed itemId, uint256 price, address bidder);
-    event BidAccepted(
-        uint256 indexed tokenId,
-        uint256 indexed bidId,
-        uint256 amount,
-        address bidder
-    );
-    event BidCancelled(
-        uint256 indexed tokenId,
-        uint256 indexed bidId,
-        address canceller
-    );
-
-    event ListingFeeToOwner(uint256 listingFee);
-    event Deposit(uint256 price);
-
-    modifier isItemOwner(uint256 itemId) {
+    modifier onlyItemOwner(uint256 itemId) {
         require(
             marketItemContract.ownerOf(itemId) == msg.sender,
-            "Item is not owned by you"
+            "Marketplace: item is not owned by you"
+        );
+        _;
+    }
+
+    modifier onlyItemExists(uint256 itemId) {
+        require(
+            marketItems[itemId].itemId == itemId,
+            "Marketplace: no such item"
+        );
+        _;
+    }
+
+    modifier onlyBidExists(uint256 tokenId, uint256 bidId) {
+        require(
+            itemBids[tokenId][bidId].bidId == bidId,
+            "Marketplace: no such bid"
+        );
+        _;
+    }
+
+    modifier onlyValueEnough() {
+        require(
+            msg.value == listingFee,
+            "Marketplace: price must be equal to listing price"
+        );
+        _;
+    }
+
+    modifier onlyForSale(uint256 tokenId) {
+        require(
+            marketItems[tokenId].status == ItemListingStatus.ForSale,
+            "Marketplace: item is not for sale"
         );
         _;
     }
@@ -70,44 +73,51 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard {
         marketItemContract = NFTMarketItem(_marketItemAddress);
     }
 
-    function getContractBalance()
+    function getLockedBidAmount()
         external
         view
         virtual
+        override
         onlyOwner
         returns (uint256)
     {
-        return address(this).balance;
-    }
-
-    function getOwnerBalance() external view onlyOwner returns (uint256) {
-        return (msg.sender).balance;
-    }
-
-    function getLockedBidAmount() external view onlyOwner returns (uint256) {
         return lockedBidAmount;
     }
 
     /* Transfers collected listing fees to owner */
-    function transferListingFee(address nftContract)
+    function transferListingFee()
         external
         payable
+        virtual
+        override
         onlyOwner
         nonReentrant
     {
-        NFTMarketItem marketItem = NFTMarketItem(nftContract);
+        uint256 fee = collectedListingFee;
+        collectedListingFee = 0;
+        address(this).balance - fee;
+        payable(msg.sender).transfer(fee);
 
-        address(this).balance - marketItem.getCollectedListingFee();
-        payable(msg.sender).transfer(marketItem.getCollectedListingFee());
+        emit ListingFeeToOwner(collectedListingFee);
+    }
 
-        emit ListingFeeToOwner(marketItem.getCollectedListingFee());
-
-        marketItem.resetCollectedListingFee();
+    /* Update listing fee */
+    function updateListingFee(uint256 _listingFee)
+        external
+        payable
+        virtual
+        override
+        onlyOwner
+    {
+        listingFee = _listingFee;
+        emit ListingFeeUpdated(_listingFee);
     }
 
     /* Creates a collection of future NFTs */
     function createCollection(string calldata name, string calldata description)
         external
+        virtual
+        override
     {
         _collectionId.increment();
         uint256 collectionId = _collectionId.current();
@@ -123,96 +133,176 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard {
 
         collectionsIds.push(collectionId);
 
-        emit CollectionCreated(
-            collectionId,
-            name,
-            description,
-            createdOn,
-            msg.sender
-        );
+        emit CollectionCreated(collectionId, createdOn, msg.sender);
     }
 
     /* Gets collection array length */
-    function getCollectionLength() external view returns (uint256) {
+    function getCollectionLength() external view override returns (uint256) {
         return collectionsIds.length;
     }
 
+    /* Mint new NFT item */
+    function mintToken(
+        string memory tokenURI,
+        string calldata name,
+        string calldata description,
+        uint256 collectionId
+    ) public payable virtual override nonReentrant returns (uint256) {
+        require(
+            collections[collectionId].creator == msg.sender,
+            "Marketplace: no collection of yours"
+        );
+
+        _tokenIds.increment();
+        uint256 newTokenId = _tokenIds.current();
+        uint256 createdOn = block.timestamp;
+
+        marketItemContract.mintItem(msg.sender, newTokenId, tokenURI);
+
+        marketItems[newTokenId] = MarketItem(
+            newTokenId,
+            name,
+            description,
+            0,
+            collectionId,
+            createdOn,
+            ItemListingStatus.Idle
+        );
+
+        marketItemsIds.push(newTokenId);
+
+        emit ItemMinted(newTokenId, 0, collectionId, createdOn);
+
+        return newTokenId;
+    }
+
+    function getMarketItemsLength()
+        external
+        view
+        virtual
+        override
+        returns (uint256)
+    {
+        return marketItemsIds.length;
+    }
+
+    /* Create market sale */
+    function createSale(uint256 tokenId, uint256 _price)
+        external
+        payable
+        virtual
+        override
+        onlyItemExists(tokenId)
+        onlyItemOwner(tokenId)
+        onlyValueEnough
+        nonReentrant
+    {
+        marketItemContract.setApprovalForAll(_msgSender(), true);
+
+        collectedListingFee += msg.value;
+        marketItems[tokenId].price = _price;
+        marketItems[tokenId].status = ItemListingStatus.ForSale;
+
+        emit CreateMarketSale(tokenId, _price);
+    }
+
+    /* Cancel market sale */
+    function cancelSale(uint256 tokenId)
+        external
+        override
+        onlyItemExists(tokenId)
+        onlyItemOwner(tokenId)
+        onlyForSale(tokenId)
+    {
+        marketItemContract.setApprovalForAll(_msgSender(), false);
+
+        marketItems[tokenId].price = 0;
+        marketItems[tokenId].status = ItemListingStatus.Idle;
+
+        emit CancelMarketSale(tokenId);
+    }
+
     /* Transfers ownership of the item, as well as funds between parties */
-    function buyMarketItem(uint256 tokenId) external payable nonReentrant {
+    function buyMarketItem(uint256 tokenId)
+        external
+        payable
+        virtual
+        override
+        nonReentrant
+        onlyForSale(tokenId)
+    {
         address itemOwner = marketItemContract.ownerOf(tokenId);
 
-        require(itemOwner != msg.sender, "You can not buy your own item");
         require(
-            marketItemContract.getMarketItem(tokenId).status ==
-                marketItemContract.getItemStatuses(0),
-            "Item is not for sale"
+            itemOwner != msg.sender,
+            "Marketplace: you can not buy your own item"
         );
         require(
-            msg.value == marketItemContract.getMarketItem(tokenId).price,
-            "Please submit the asking price in order to complete the purchase"
+            msg.value == marketItems[tokenId].price,
+            "Marketplace: amount must be equal to listing price"
         );
+
+        marketItems[tokenId].price = 0;
+        marketItems[tokenId].status = ItemListingStatus.Idle;
 
         marketItemContract.transferFrom(itemOwner, msg.sender, tokenId);
-
         payable(itemOwner).transfer(msg.value);
-        marketItemContract.setPrice(
-            tokenId,
-            0,
-            marketItemContract.getItemStatuses(1)
-        );
 
         emit ItemBought(tokenId, msg.sender, itemOwner, msg.value);
     }
 
     /* Adds bid for specific market item */
-    function bidMarketItem(uint256 itemId, uint256 price)
+    function bidMarketItem(uint256 tokenId)
         external
         payable
+        virtual
+        override
+        onlyItemExists(tokenId)
         nonReentrant
     {
+        require(msg.value > 0, "Marketplace: offer must be at least one wei");
         require(
-            msg.value >= price,
-            "You have to send enough money to bid on this item"
+            marketItemContract.ownerOf(tokenId) != msg.sender,
+            "Marketplace: you can not bid your own item"
         );
-        require(
-            marketItemContract.getMarketItem(itemId).itemId == itemId,
-            "No such item"
-        );
-        require(
-            marketItemContract.getMarketItem(itemId).status ==
-                marketItemContract.getItemStatuses(0),
-            "Item is not for sale"
-        );
-        require(
-            marketItemContract.ownerOf(itemId) != msg.sender,
-            "You can not bid your own item"
-        );
+
+        _bidIds.increment();
+        uint256 newBidId = _bidIds.current();
 
         lockedBidAmount += msg.value;
-        marketItemContract.addBid(itemId, price, msg.sender);
+        itemBids[tokenId][newBidId] = Bid(
+            newBidId,
+            msg.value,
+            payable(msg.sender)
+        );
 
-        emit BidCreated(itemId, price, msg.sender);
+        emit BidCreated(newBidId, msg.value, msg.sender);
+    }
+
+    function getItemBidsLength() public view override returns (uint256) {
+        return bidsIds.length;
     }
 
     /* Accepts bid from bidder for specific market item */
     function acceptItemBid(uint256 tokenId, uint256 bidId)
         external
         payable
-        isItemOwner(tokenId)
+        virtual
+        override
+        onlyItemOwner(tokenId)
+        onlyBidExists(tokenId, bidId)
         nonReentrant
     {
-        require(
-            marketItemContract.getItemBid(tokenId, bidId).bidId == bidId,
-            "No such bid for this item"
-        );
-
-        address bidder = marketItemContract.getItemBid(tokenId, bidId).bidder;
-        uint256 amount = marketItemContract.getItemBid(tokenId, bidId).amount;
+        address bidder = itemBids[tokenId][bidId].bidder;
+        uint256 amount = itemBids[tokenId][bidId].amount;
 
         require(
             lockedBidAmount >= amount,
-            "Transaction failed. Contract has not enough wei"
+            "Marketplace: Transaction failed. Contract has not enough wei"
         );
+
+        marketItems[tokenId].price = 0;
+        marketItems[tokenId].status = ItemListingStatus.Idle;
 
         marketItemContract.transferFrom(msg.sender, bidder, tokenId);
 
@@ -220,50 +310,38 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard {
         address(this).balance - amount;
         payable(msg.sender).transfer(amount);
 
-        marketItemContract.setPrice(
-            tokenId,
-            0,
-            marketItemContract.getItemStatuses(1)
-        );
+        delete itemBids[tokenId][bidId];
 
         emit BidAccepted(tokenId, bidId, amount, bidder);
-
-        marketItemContract.removeBid(tokenId, bidId);
     }
 
     /* Cancels bid from bidder for specific market item */
     function cancelItemBid(uint256 tokenId, uint256 bidId)
         external
         payable
+        override
+        onlyItemExists(tokenId)
+        onlyBidExists(tokenId, bidId)
         nonReentrant
     {
-        require(
-            marketItemContract.getMarketItem(tokenId).itemId == tokenId,
-            "No such item"
-        );
-
-        require(
-            marketItemContract.getItemBid(tokenId, bidId).bidId == bidId,
-            "No such bid for this item"
-        );
-
-        address bidder = marketItemContract.getItemBid(tokenId, bidId).bidder;
-        uint256 amount = marketItemContract.getItemBid(tokenId, bidId).amount;
+        address bidder = itemBids[tokenId][bidId].bidder;
+        uint256 amount = itemBids[tokenId][bidId].amount;
 
         require(
             lockedBidAmount >= amount,
-            "Transaction failed. Contract has not enough wei"
+            "Marketplace: Transaction failed. Contract has not enough wei"
         );
+
         lockedBidAmount -= amount;
         address(this).balance - amount;
         payable(bidder).transfer(amount);
 
-        marketItemContract.removeBid(tokenId, bidId);
+        delete itemBids[tokenId][bidId];
 
         emit BidCancelled(tokenId, bidId, msg.sender);
     }
 
-    receive() external payable {
+    receive() external payable virtual override {
         emit Deposit(msg.value);
     }
 }

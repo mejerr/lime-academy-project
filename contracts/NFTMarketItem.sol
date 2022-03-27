@@ -65,14 +65,6 @@ contract NFTMarketItem is ERC721URIStorage, Ownable, ReentrancyGuard {
         _;
     }
 
-    modifier isForSale(uint256 itemId) {
-        require(
-            marketItems[itemId].status != ItemListingStatus.ForSale,
-            "Item is already for sale"
-        );
-        _;
-    }
-
     modifier isValueEnough() {
         require(
             msg.value == listingFee,
@@ -98,6 +90,14 @@ contract NFTMarketItem is ERC721URIStorage, Ownable, ReentrancyGuard {
     ) external {
         marketItems[itemId].price = _price;
         marketItems[itemId].status = _status;
+    }
+
+    function getItemStatuses(uint256 enumType)
+        public
+        pure
+        returns (ItemListingStatus)
+    {
+        return ItemListingStatus(enumType);
     }
 
     function getListingFee() public view returns (uint256) {
@@ -173,7 +173,11 @@ contract NFTMarketItem is ERC721URIStorage, Ownable, ReentrancyGuard {
         return marketItems[itemId];
     }
 
-    function createSale(uint256 itemId, uint256 _price)
+    function createSale(
+        address marketplace,
+        uint256 itemId,
+        uint256 _price
+    )
         external
         payable
         itemExists(itemId)
@@ -181,7 +185,8 @@ contract NFTMarketItem is ERC721URIStorage, Ownable, ReentrancyGuard {
         isValueEnough
         nonReentrant
     {
-        approve(address(this), itemId);
+        setApprovalForAll(marketplace, true);
+
         collectedListingFee += msg.value;
         marketItems[itemId].price = _price;
         marketItems[itemId].status = ItemListingStatus.ForSale;

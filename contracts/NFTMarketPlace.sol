@@ -3,17 +3,17 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "hardhat/console.sol";
 import "./NFTMarketItem.sol";
 
-contract NFTMarketPlace is NFTMarketItem {
+contract NFTMarketPlace is Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
 
     Counters.Counter private _collectionId;
     uint256 private lockedBidAmount = 0;
+    NFTMarketItem private immutable marketItemContract;
 
     struct Collection {
         uint256 collectionId;
@@ -58,7 +58,25 @@ contract NFTMarketPlace is NFTMarketItem {
     event ListingFeeToOwner(uint256 listingFee);
     event Deposit(uint256 price);
 
-    function getContractBalance() external view onlyOwner returns (uint256) {
+    modifier isItemOwner(uint256 itemId) {
+        require(
+            marketItemContract.ownerOf(itemId) == msg.sender,
+            "Item is not owned by you"
+        );
+        _;
+    }
+
+    constructor(address _marketItemAddress) {
+        marketItemContract = NFTMarketItem(_marketItemAddress);
+    }
+
+    function getContractBalance()
+        external
+        view
+        virtual
+        onlyOwner
+        returns (uint256)
+    {
         return address(this).balance;
     }
 
@@ -120,119 +138,117 @@ contract NFTMarketPlace is NFTMarketItem {
     }
 
     /* Transfers ownership of the item, as well as funds between parties */
-    function buyMarketItem(address nftContract, uint256 tokenId)
-        external
-        payable
-        nonReentrant
-    {
-        NFTMarketItem marketItem = NFTMarketItem(nftContract);
-        address itemOwner = ERC721.ownerOf(tokenId);
+    function buyMarketItem(uint256 tokenId) external payable nonReentrant {
+        address itemOwner = marketItemContract.ownerOf(tokenId);
 
-        ERC721._isApprovedOrOwner(address(this), tokenId);
         require(itemOwner != msg.sender, "You can not buy your own item");
         require(
-            marketItem.getMarketItem(tokenId).status ==
-                ItemListingStatus.ForSale,
+            marketItemContract.getMarketItem(tokenId).status ==
+                marketItemContract.getItemStatuses(0),
             "Item is not for sale"
         );
         require(
-            msg.value == marketItem.getMarketItem(tokenId).price,
+            msg.value == marketItemContract.getMarketItem(tokenId).price,
             "Please submit the asking price in order to complete the purchase"
         );
 
-        _transfer(itemOwner, msg.sender, tokenId);
+        marketItemContract.transferFrom(itemOwner, msg.sender, tokenId);
 
         payable(itemOwner).transfer(msg.value);
-        marketItem.setPrice(tokenId, 0, ItemListingStatus.Idle);
+        marketItemContract.setPrice(
+            tokenId,
+            0,
+            marketItemContract.getItemStatuses(1)
+        );
 
         emit ItemBought(tokenId, msg.sender, itemOwner, msg.value);
     }
 
     /* Adds bid for specific market item */
-    function bidMarketItem(
-        uint256 itemId,
-        uint256 price,
-        address nftContract
-    ) external payable nonReentrant {
+    function bidMarketItem(uint256 itemId, uint256 price)
+        external
+        payable
+        nonReentrant
+    {
         require(
             msg.value >= price,
             "You have to send enough money to bid on this item"
         );
-        NFTMarketItem marketItem = NFTMarketItem(nftContract);
         require(
-            marketItem.getMarketItem(itemId).itemId == itemId,
+            marketItemContract.getMarketItem(itemId).itemId == itemId,
             "No such item"
         );
         require(
-            marketItem.getMarketItem(itemId).status ==
-                ItemListingStatus.ForSale,
+            marketItemContract.getMarketItem(itemId).status ==
+                marketItemContract.getItemStatuses(0),
             "Item is not for sale"
         );
         require(
-            ERC721.ownerOf(itemId) != msg.sender,
+            marketItemContract.ownerOf(itemId) != msg.sender,
             "You can not bid your own item"
         );
 
         lockedBidAmount += msg.value;
-        marketItem.addBid(itemId, price, msg.sender);
+        marketItemContract.addBid(itemId, price, msg.sender);
 
         emit BidCreated(itemId, price, msg.sender);
     }
 
     /* Accepts bid from bidder for specific market item */
-    function acceptItemBid(
-        uint256 tokenId,
-        uint256 bidId,
-        address nftContract
-    ) external payable isItemOwner(tokenId) nonReentrant {
-        NFTMarketItem marketItem = NFTMarketItem(nftContract);
-
+    function acceptItemBid(uint256 tokenId, uint256 bidId)
+        external
+        payable
+        isItemOwner(tokenId)
+        nonReentrant
+    {
         require(
-            marketItem.getItemBid(tokenId, bidId).bidId == bidId,
+            marketItemContract.getItemBid(tokenId, bidId).bidId == bidId,
             "No such bid for this item"
         );
 
-        address bidder = marketItem.getItemBid(tokenId, bidId).bidder;
-        uint256 amount = marketItem.getItemBid(tokenId, bidId).amount;
+        address bidder = marketItemContract.getItemBid(tokenId, bidId).bidder;
+        uint256 amount = marketItemContract.getItemBid(tokenId, bidId).amount;
 
         require(
             lockedBidAmount >= amount,
             "Transaction failed. Contract has not enough wei"
         );
 
-        _transfer(msg.sender, bidder, tokenId);
+        marketItemContract.transferFrom(msg.sender, bidder, tokenId);
 
         lockedBidAmount -= amount;
         address(this).balance - amount;
         payable(msg.sender).transfer(amount);
 
-        marketItem.setPrice(tokenId, 0, ItemListingStatus.Idle);
+        marketItemContract.setPrice(
+            tokenId,
+            0,
+            marketItemContract.getItemStatuses(1)
+        );
 
         emit BidAccepted(tokenId, bidId, amount, bidder);
 
-        marketItem.removeBid(tokenId, bidId);
+        marketItemContract.removeBid(tokenId, bidId);
     }
 
     /* Cancels bid from bidder for specific market item */
-    function cancelItemBid(
-        uint256 tokenId,
-        uint256 bidId,
-        address nftContract
-    ) external payable nonReentrant {
-        NFTMarketItem marketItem = NFTMarketItem(nftContract);
-
+    function cancelItemBid(uint256 tokenId, uint256 bidId)
+        external
+        payable
+        nonReentrant
+    {
         require(
-            marketItem.getMarketItem(tokenId).itemId == tokenId,
+            marketItemContract.getMarketItem(tokenId).itemId == tokenId,
             "No such item"
         );
 
         require(
-            marketItem.getItemBid(tokenId, bidId).bidId == bidId,
+            marketItemContract.getItemBid(tokenId, bidId).bidId == bidId,
             "No such bid for this item"
         );
 
-        address bidder = marketItem.getItemBid(tokenId, bidId).bidder;
-        uint256 amount = marketItem.getItemBid(tokenId, bidId).amount;
+        address bidder = marketItemContract.getItemBid(tokenId, bidId).bidder;
+        uint256 amount = marketItemContract.getItemBid(tokenId, bidId).amount;
 
         require(
             lockedBidAmount >= amount,
@@ -242,7 +258,7 @@ contract NFTMarketPlace is NFTMarketItem {
         address(this).balance - amount;
         payable(bidder).transfer(amount);
 
-        marketItem.removeBid(tokenId, bidId);
+        marketItemContract.removeBid(tokenId, bidId);
 
         emit BidCancelled(tokenId, bidId, msg.sender);
     }

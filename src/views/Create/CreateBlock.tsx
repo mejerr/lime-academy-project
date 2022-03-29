@@ -1,7 +1,7 @@
 // tslint:disable: no-empty
-import React, { ChangeEvent, FC, useCallback, useContext, useState } from 'react'
+import React, { ChangeEvent, FC, useCallback, useContext, useState } from 'react';
 import { AppStateContext } from 'SDK/WalletConnectSDK';
-import styled, { css, keyframes } from 'styled-components'
+import styled, { css, keyframes } from 'styled-components';
 import Create from './Create';
 
 interface ICreateState {
@@ -25,7 +25,7 @@ export const CreateStateContext = React.createContext({
 });
 
 const CreateBlock: FC = () => {
-  const { createCollection } = useContext(AppStateContext);
+  const { state: { contractsSDK } } = useContext(AppStateContext);
 
   const [activeBlock, setActiveBlock] = useState<number>(1);
   const [itemName, setItemName] = useState("");
@@ -54,12 +54,16 @@ const CreateBlock: FC = () => {
   }, []);
 
   const onCreateItem = useCallback(() => {
-    createCollection(collectionName, collectionDescription);
-  }, [collectionName, collectionDescription]);
+    if (contractsSDK) {
+      contractsSDK.createCollection(collectionName, collectionDescription);
+    }
+  }, [collectionName, collectionDescription, contractsSDK]);
 
   const onCreateCollection = useCallback(() => {
-    createCollection(collectionName, collectionDescription);
-  }, [collectionName, collectionDescription]);
+    if (contractsSDK) {
+      contractsSDK.createCollection(collectionName, collectionDescription);
+    }
+  }, [collectionName, collectionDescription, contractsSDK]);
 
   return (
     <CreateStateContext.Provider

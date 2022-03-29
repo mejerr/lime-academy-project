@@ -1,8 +1,9 @@
-import React, { FC, useCallback, useContext, useState } from 'react'
+import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, Collections, NFTTokens } from 'components';
 import { nftImage } from 'assets';
 import { AppStateContext } from 'SDK/WalletConnectSDK';
+import { ICollection } from 'SDK/ContractsSDK';
 
 const TOKENS_DUMMY = [
   {
@@ -14,8 +15,8 @@ const TOKENS_DUMMY = [
     image: nftImage
   },
   {
-    collectionId: 0,
-    tokenId: 0,
+    collectionId: 1,
+    tokenId: 1,
     name: "New generation",
     creator: "MisterPizza",
     price: 123.3,
@@ -24,13 +25,26 @@ const TOKENS_DUMMY = [
 ];
 
 const MyCollections: FC = () => {
-  const { state } = useContext(AppStateContext);
-  const { collections } = state;
+  const { state: { connected, contractsSDK } } = useContext(AppStateContext);
   const [activeTab, setActiveTab] = useState<string>("Tokens");
+  const[collections, setCollections] = useState<ICollection[]>([]);
+
 
   const changeTab = useCallback((tab) => {
     setActiveTab(tab);
   }, [setActiveTab]);
+
+  useEffect(() => {
+    const renderCollections = async () => {
+      const result = await contractsSDK.getCollections();
+      setCollections(result);
+    }
+
+    if (connected && contractsSDK) {
+      renderCollections();
+    }
+  }, [connected, contractsSDK]);
+
 
   return (
     <MyCollectionsWrapper>

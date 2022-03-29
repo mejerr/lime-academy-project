@@ -1,17 +1,23 @@
-import React, { FC, useContext, useEffect } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Collections } from 'components';
 import { AppStateContext } from 'SDK/WalletConnectSDK';
+import { ICollection } from 'SDK/ContractsSDK';
 
 const Marketplace: FC = () => {
-  const { state, getCollections } = useContext(AppStateContext);
-  const { collections, connected } = state;
+  const { state: { connected, contractsSDK }} = useContext(AppStateContext);
+  const[collections, setCollections] = useState<ICollection[]>([]);
 
   useEffect(() => {
-    if (connected) {
-      getCollections();
+    const renderCollections = async () => {
+      const result = await contractsSDK.getCollections();
+      setCollections(result);
     }
-  }, [connected]);
+
+    if (connected && contractsSDK) {
+      renderCollections();
+    }
+  }, [connected, contractsSDK]);
 
   return (
     <MarketplaceWrapper>

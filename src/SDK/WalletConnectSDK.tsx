@@ -4,10 +4,9 @@ import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { Web3Provider } from '@ethersproject/providers';
 import { getChainData } from '../helpers/utilities';
-import { ethers } from 'ethers';
 
-import marketplaceABI from 'NFTMarketPlace.json';
 import ContractsSDK from './ContractsSDK';
+import { ethers } from 'ethers';
 
 interface IProps {
   children: any | null,
@@ -30,8 +29,7 @@ interface IAppState {
   result: any | null;
   electionContract: any | null;
   info: any | null;
-  marketplace: any | null;
-  collections: ICollection[];
+  contractsSDK: any | ethers.Contract;
 }
 
 const INITIAL_STATE: IAppState = {
@@ -44,16 +42,13 @@ const INITIAL_STATE: IAppState = {
   result: null,
   electionContract: null,
   info: null,
-  marketplace: null,
-  collections: []
+  contractsSDK: null
 };
 
 export const AppStateContext = React.createContext({
   state: INITIAL_STATE,
   killSession: ({ onSuccess = () => {} }): void => {},
-  onConnect: ({ onSuccess = () => {} }): void => {},
-  getCollections: (): void => {},
-  createCollection: (name: string, description: string): void => {}
+  onConnect: ({ onSuccess = () => {} }): void => {}
 });
 
 class WalletConnectSDK extends React.Component<IProps> {
@@ -77,39 +72,12 @@ class WalletConnectSDK extends React.Component<IProps> {
   public async componentDidMount() {
     if (this.web3Modal.cachedProvider) {
       await this.onConnect();
+      const signer: ethers.Signer = await this.state.library.getSigner();
 
-      const marketplace = new ethers.Contract(
-        '0x0165878A594ca255338adfa4d48449f69242Eb8F',
-        marketplaceABI.abi,
-        await this.state.library.getSigner()
-      );
-      this.state.marketplace = marketplace;
+      this.setState({
+        contractsSDK: new ContractsSDK(signer)
+      })
     }
-  }
-
-  public async getCollections() {
-    const collectionLengthBN = await this.state.marketplace.getCollectionLength();
-    const collectionLength = Number(collectionLengthBN.toString());
-
-    const collections: ICollection[] = [];
-    for (let i = 1; i <= collectionLength; i++) {
-      const collection: ICollection = await this.state.marketplace.collections(i);
-      const { collectionId, name, description, creator } = collection;
-      collections.push({
-        collectionId: Number(collectionId.toString()),
-        name,
-        description,
-        creator
-      });
-    }
-    this.setState({
-      collections
-    });
-  }
-
-  public async createCollection(name: string, description: string) {
-    const creation = await this.state.marketplace.createCollection(name, description);
-    await creation.wait();
   }
 
   public onConnect = async ({ onSuccess = () => {} } = {}) => {
@@ -210,14 +178,11 @@ class WalletConnectSDK extends React.Component<IProps> {
         value={{
           state: this.state,
           killSession: ({ onSuccess }) => this.resetApp({ onSuccess }),
-          onConnect: ({ onSuccess }) => this.onConnect({ onSuccess }),
-          getCollections: () => this.getCollections(),
-          createCollection: (name, description) => this.createCollection(name, description)
+          onConnect: ({ onSuccess }) => this.onConnect({ onSuccess })
         }}
       >
-        <ContractsSDK />
         {this.props.children}
-        </AppStateContext.Provider>
+      </AppStateContext.Provider>
     );
   };
 }

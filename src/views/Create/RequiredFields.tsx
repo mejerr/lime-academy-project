@@ -25,9 +25,10 @@ export interface ITitle {
 const RequiredFields: FC = ({
 }) => {
   const {
-    state: { name, description, inputName, inputDescription },
+    state: { name, description, inputName, inputDescription, fileUrl },
     onNameChange,
-    onDescriptionChange
+    onDescriptionChange,
+    onImageChange,
   } = useContext(CreateStateContext);
   const [selected, setSelected] = useState<number>(0);
 
@@ -52,8 +53,13 @@ const RequiredFields: FC = ({
     <RequiredFieldsWrapper>
       <RequiredFieldsTitle>{"Required fields"}</RequiredFieldsTitle>
       <Section>{"Image"}</Section>
-      <ImageWrapper>
-        <Image image={emptyImage}/>
+      <ImageWrapper emptyImage={!fileUrl.length}>
+        <ImageInput
+          type="file"
+          name="Asset"
+          onChange={onImageChange}
+          />
+        <Image src={fileUrl ? fileUrl : emptyImage}/>
       </ImageWrapper>
 
       <SectionWrapper>
@@ -110,26 +116,44 @@ const RequiredFieldsTitle = styled.div`
   }
 `;
 
-const ImageWrapper = styled.div`
+const ImageWrapper = styled.div<{ emptyImage: boolean }>`
   margin: 20px;
-  width: 350px;
-  height: 250px;
+  width: 360px;
+  height: 260px;
+
   border: 3px dashed rgb(204, 204, 204);
   padding: 10px;
   border-radius: 10px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  :hover {
+    background-color: rgba(55, 55, 55, 0.1);
+    transition: background-color 0.3s ease;
+  }
 
   @media (max-width: 400px) {
     width: 250px;
   }
 `;
 
-const Image = styled.div<{ image: string }>`
+const Image = styled.img`
+  width: 340px;
+  height: 240px;
+  border-radius: 10px;
+  flex-shrink: 0;
+`;
+
+const ImageInput = styled.input`
   width: 100%;
   height: 100%;
-  border-radius: 10px;
-
-  background: ${({ image}) => image && `transparent url(${image}) center center no-repeat`};
-  background-size: cover;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
 `;
 
 const SectionWrapper = styled.div`

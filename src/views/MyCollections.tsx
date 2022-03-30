@@ -2,34 +2,15 @@ import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, Collections, NFTTokens } from 'components';
 import { nftImage } from 'assets';
-import { ICollection } from 'SDK/ContractsSDK';
+import { ICollection, INFTItem } from 'SDK/ContractsSDK';
 import { AppStateContext, IConnectData } from './AppContextWrapper';
-
-const TOKENS_DUMMY = [
-  {
-    collectionId: 0,
-    tokenId: 0,
-    name: "New generation",
-    creator: "MisterPizza",
-    price: 123.3,
-    image: nftImage
-  },
-  {
-    collectionId: 1,
-    tokenId: 1,
-    name: "New generation",
-    creator: "MisterPizza",
-    price: 123.3,
-    image: nftImage
-  }
-];
 
 const MyCollections: FC = () => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
   const [activeTab, setActiveTab] = useState<string>("Tokens");
   const[collections, setCollections] = useState<ICollection[]>([]);
-
+  const[tokens, setTokens] = useState<INFTItem[]>([]);
 
   const changeTab = useCallback((tab) => {
     setActiveTab(tab);
@@ -41,8 +22,19 @@ const MyCollections: FC = () => {
       setCollections(result);
     }
 
-    if (connected && contractsSDK) {
+    if (activeTab === "Tokens" && connected && contractsSDK) {
       renderCollections();
+    }
+  }, [connected, contractsSDK]);
+
+  useEffect(() => {
+    const renderTokens = async () => {
+      const result = await contractsSDK.getNFTs();
+      setTokens(result);
+    }
+
+    if (activeTab === "Collections" && connected && contractsSDK) {
+      renderTokens();
     }
   }, [connected, contractsSDK]);
 
@@ -65,7 +57,7 @@ const MyCollections: FC = () => {
         </CollectionsTab>
       </ActiveContent>
 
-      {activeTab === "Tokens" ? <NFTTokens tokens={TOKENS_DUMMY}/> : <Collections collections={collections}/>}
+      {activeTab === "Tokens" ? <NFTTokens tokens={tokens}/> : <Collections collections={collections}/>}
     </MyCollectionsWrapper>
   )
 };

@@ -1,27 +1,18 @@
 import React, { FC, useCallback } from 'react'
+import { INFTItem } from 'SDK/ContractsSDK';
 import styled from 'styled-components';
 import Token from './Token';
-
-interface IToken {
-  collectionId: number;
-  tokenId: number;
-  name: string;
-  creator: string;
-  price: number;
-  image: string;
-}
-
 interface IProps {
-  tokens: IToken[]
+  tokens: INFTItem[]
 }
 
 const Tokens: FC<IProps> = ({ tokens }) => {
-  const renderTokens = useCallback(({ collectionId, tokenId, creator, name, price, image }) => {
+  const renderTokens = useCallback(({ collectionId, itemId, creator, name, price, image }) => {
     return (
       <Token
-        key={tokenId}
+        key={itemId}
         collectionId={collectionId}
-        tokenId={tokenId}
+        tokenId={itemId}
         creator={creator}
         name={name}
         price={price}

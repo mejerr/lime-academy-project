@@ -1,52 +1,27 @@
-import React, { FC } from 'react'
+import React, { FC, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, NFTTokens } from 'components';
 import { nftImage } from 'assets';
-
-const TOKENS_DUMMY = [
-  {
-    collectionId: 0,
-    tokenId: 0,
-    name: "New generation",
-    creator: "MisterPizza",
-    price: 123.3,
-    image: nftImage
-  },
-  {
-    collectionId: 0,
-    tokenId: 0,
-    name: "New generation",
-    creator: "MisterPizza",
-    price: 123.3,
-    image: nftImage
-  },
-  {
-    collectionId: 0,
-    tokenId: 0,
-    name: "New generation",
-    creator: "MisterPizza",
-    price: 123.3,
-    image: nftImage
-  },
-  {
-    collectionId: 0,
-    tokenId: 0,
-    name: "New generation",
-    creator: "MisterPizza",
-    price: 123.3,
-    image: nftImage
-  },
-  {
-    collectionId: 0,
-    tokenId: 0,
-    name: "New generation",
-    creator: "MisterPizza",
-    price: 123.3,
-    image: nftImage
-  }
-];
+import { AppStateContext, IConnectData } from './AppContextWrapper';
+import { INFTItem } from 'SDK/ContractsSDK';
 
 const CollectionBlock: FC = () => {
+  const { state } = useContext(AppStateContext);
+  const { connected, contractsSDK }: IConnectData = state;
+  const[tokens, setTokens] = useState<INFTItem[]>([]);
+
+  useEffect(() => {
+    const renderTokens = async () => {
+      const result = await contractsSDK.getNFTs();
+      setTokens(result);
+    }
+
+    if (connected && contractsSDK) {
+      renderTokens();
+    }
+  }, [connected, contractsSDK]);
+
+
   return (
     <CollectionBlockWrapper>
       <BlockHeader
@@ -63,7 +38,7 @@ const CollectionBlock: FC = () => {
           dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz dsadsaasdcxzcxzczxczcxzczxcxzczxczcxzczcxxzcxzcxzccxzcz`
         }
       />
-      <NFTTokens tokens={TOKENS_DUMMY} />
+      <NFTTokens tokens={tokens} />
     </CollectionBlockWrapper>
   );
 };

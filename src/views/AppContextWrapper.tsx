@@ -43,7 +43,7 @@ export const AppStateContext = React.createContext({
 const AppContextWrapper: FC<IProps> = ({ children }) => {
   const [provider, setProvider] = useState<any | ethers.providers.Provider>(null);
   const [web3Modal, setWeb3Modal] = useState<any>({});
-  const [state, setState] = useState<IConnectData>({});
+  const [state, setState] = useState<IConnectData>(INITIAL_STATE);
 
   const getNetwork = () => getChainData(state.chainId || 0).network;
 
@@ -136,7 +136,7 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
       userAdress,
       userBalance,
       connected: true,
-      contractsSDK: new ContractsSDK(state.signer)
+      contractsSDK: new ContractsSDK(signer)
     });
 
     await subscribeToProviderEvents(provider);

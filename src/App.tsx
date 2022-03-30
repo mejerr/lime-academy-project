@@ -1,8 +1,7 @@
 // tslint:disable: no-empty
-import React, { Suspense } from 'react';
+import React, { FC, Suspense } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import Header from './components/Header/Header';
 
 import Homepage from './views/Homepage';
 import Marketplace from 'views/Marketplace';
@@ -10,10 +9,12 @@ import MyCollections from 'views/MyCollections';
 import CreateBlock from 'views/Create/CreateBlock';
 import NFTTokenBlock from 'views/NFTTokenBlock/NFTTokenBlock';
 import CollectionBlock from 'views/CollectionBlock';
-import WalletConnectSDK from 'SDK/WalletConnectSDK';
+import AppContextWrapper from 'views/AppContextWrapper';
+import Header from 'components/Header/Header';
 
-class App extends React.Component<any, any> {
-  public routes = () => (
+
+const App: FC = () => {
+  const routes = () => (
     <StyledContent>
       <Switch>
         <Route
@@ -46,16 +47,14 @@ class App extends React.Component<any, any> {
     </StyledContent>
   );
 
-  public render = () => {
     return (
-      <WalletConnectSDK>
-          <StyledApp>
-            <Header />
-            <Suspense fallback={<p>...Loading</p>} >{this.routes()}</Suspense>
-          </StyledApp>
-      </WalletConnectSDK>
+      <AppContextWrapper>
+        <StyledApp>
+          <Header />
+          <Suspense fallback={<p>...Loading</p>} >{routes()}</Suspense>
+        </StyledApp>
+      </AppContextWrapper>
     );
-  };
 };
 
 export default App;

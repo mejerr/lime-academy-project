@@ -3,21 +3,21 @@ import styled, { keyframes } from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Button } from "components";
-import { AppStateContext } from 'SDK/WalletConnectSDK';
 import { nftImage } from 'assets';
+import { AppStateContext, IConnectData } from './AppContextWrapper';
 
 const Homepage: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect } = useContext(AppStateContext);
-  const { connected } = state;
+  const { connected }: IConnectData = state;
 
   const onClick = useCallback((pathname) => {
     if (!connected) {
-        onConnect({ onSuccess: () => history.push(pathname) });
-        return;
+      onConnect({ onSuccess: () => history.push(pathname) });
+      return;
      }
 
      history.push(pathname);
-  }, [connected]);
+  }, [connected, onConnect, history]);
 
   return (
     <HomepageWrapper >

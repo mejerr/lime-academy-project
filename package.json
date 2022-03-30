@@ -31,7 +31,7 @@
     "hardhat": "^2.9.1",
     "hardhat-gas-reporter": "^1.0.8",
     "ts-node": "^10.7.0",
-    "typescript": "^3.2.2"
+    "typescript": "^3.9.10"
   },
   "dependencies": {
     "@ethersproject/address": "^5.0.8",

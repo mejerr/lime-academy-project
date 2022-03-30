@@ -2,8 +2,8 @@ import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, Collections, NFTTokens } from 'components';
 import { nftImage } from 'assets';
-import { AppStateContext } from 'SDK/WalletConnectSDK';
 import { ICollection } from 'SDK/ContractsSDK';
+import { AppStateContext, IConnectData } from './AppContextWrapper';
 
 const TOKENS_DUMMY = [
   {
@@ -25,7 +25,8 @@ const TOKENS_DUMMY = [
 ];
 
 const MyCollections: FC = () => {
-  const { state: { connected, contractsSDK } } = useContext(AppStateContext);
+  const { state } = useContext(AppStateContext);
+  const { connected, contractsSDK }: IConnectData = state;
   const [activeTab, setActiveTab] = useState<string>("Tokens");
   const[collections, setCollections] = useState<ICollection[]>([]);
 

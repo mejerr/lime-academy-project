@@ -4,9 +4,9 @@ import { withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { AppStateContext } from 'SDK/WalletConnectSDK';
 import { ITitle } from 'views/Create/RequiredFields';
 import { SelectableMenu } from 'components';
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 
 const TITLES: ITitle[] = [
   { title: "Marketplace"},
@@ -22,7 +22,7 @@ enum PATHS {
 
 const Menu: FC<RouteComponentProps> = ({ history } ) => {
   const { state, onConnect } = useContext(AppStateContext);
-  const { connected } = state;
+  const { connected }: IConnectData = state;
 
   const [menuOpen, setMenuOpen] = useState(false);
 

@@ -1,7 +1,7 @@
 // tslint:disable: no-empty
 import React, { ChangeEvent, FC, useCallback, useContext, useState } from 'react';
-import { AppStateContext } from 'SDK/WalletConnectSDK';
 import styled, { css, keyframes } from 'styled-components';
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import Create from './Create';
 
 interface ICreateState {
@@ -25,7 +25,8 @@ export const CreateStateContext = React.createContext({
 });
 
 const CreateBlock: FC = () => {
-  const { state: { contractsSDK } } = useContext(AppStateContext);
+  const { state } = useContext(AppStateContext);
+  const { contractsSDK }: IConnectData = state;
 
   const [activeBlock, setActiveBlock] = useState<number>(1);
   const [itemName, setItemName] = useState("");

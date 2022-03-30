@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useContext } from 'react'
-import { AppStateContext } from 'SDK/WalletConnectSDK';
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { withRouter } from 'react-router-dom';
 import Button from '../Button';
 
@@ -15,7 +15,7 @@ interface INavButtons {
 const NavBar: FC<RouteComponentProps> = ({ history }) => {
   const { pathname } = history.location;
   const { state, onConnect } = useContext(AppStateContext);
-  const { connected } = state;
+  const { connected }: IConnectData = state;
 
   const onClick = useCallback((pathname) => {
     if (!connected) {
@@ -24,7 +24,7 @@ const NavBar: FC<RouteComponentProps> = ({ history }) => {
      }
 
      history.push(pathname);
-  }, [connected]);
+  }, [onConnect, connected]);
 
   const NAV_BUTTONS: INavButtons[] =  [
     {

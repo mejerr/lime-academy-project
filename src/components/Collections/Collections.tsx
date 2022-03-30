@@ -1,6 +1,6 @@
 import { nftImage } from 'assets';
 import React, { FC, useCallback } from 'react'
-import { ICollection } from 'SDK/WalletConnectSDK';
+import { ICollection } from 'SDK/ContractsSDK';
 import styled from 'styled-components';
 import Collection from './Collection';
 

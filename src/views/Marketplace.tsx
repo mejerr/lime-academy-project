@@ -1,11 +1,12 @@
 import React, { FC, useContext, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Collections } from 'components';
-import { AppStateContext } from 'SDK/WalletConnectSDK';
 import { ICollection } from 'SDK/ContractsSDK';
+import { AppStateContext, IConnectData } from './AppContextWrapper';
 
 const Marketplace: FC = () => {
-  const { state: { connected, contractsSDK }} = useContext(AppStateContext);
+  const { state } = useContext(AppStateContext);
+  const { connected, contractsSDK }: IConnectData = state;
   const[collections, setCollections] = useState<ICollection[]>([]);
 
   useEffect(() => {
@@ -22,7 +23,7 @@ const Marketplace: FC = () => {
   return (
     <MarketplaceWrapper>
       <MarketplaceTitle>{"Explore collections"}</MarketplaceTitle>
-      <Collections collections={collections}/>
+      {!collections.length ? <EmptyContent>{"No collections to show"}</EmptyContent>: <Collections collections={collections}/>}
     </MarketplaceWrapper>
   );
 };
@@ -57,4 +58,12 @@ const MarketplaceTitle = styled.div`
     font-size: 20px;
     padding: 40px 20px;
   }
+`;
+
+const EmptyContent = styled.div`
+  font-size: 36px;
+  text-align: center;
+  padding: 40px;
+  background: rgba(55, 55, 55, 0.04);
+  border: 1px solid rgba(55, 55, 55, 0.1);
 `;

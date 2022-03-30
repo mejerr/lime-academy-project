@@ -4,28 +4,28 @@ import { withRouter } from 'react-router-dom';
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignIn } from '@fortawesome/free-solid-svg-icons';
-import { AppStateContext } from 'SDK/WalletConnectSDK';
 import { ellipseAddress } from '../../helpers/utilities';
 import Button from '../Button';
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 
 const ConnectButton: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect, killSession } = useContext(AppStateContext);
-  const { connected, address } = state;
+  const { connected, userAdress }: IConnectData = state;
 
   const onLogin = useCallback(() => {
     onConnect({ onSuccess: () => history.push('/marketplace') });
-  }, [onConnect, history]);
+  }, [onConnect]);
 
   const onLogout = useCallback(() => {
     killSession({ onSuccess: () => history.push('/home') });
-  }, [killSession, history]);
+  }, [killSession]);
 
   return (
     <ConnectButtonWrapper >
       {connected ? (
-        address && (
+        userAdress && (
           <Account>
-            <Address connected={connected}>{ellipseAddress(address, 8)}</Address>
+            <Address connected={connected}>{ellipseAddress(userAdress, 8)}</Address>
             <DisconnectButton onClick={onLogout}>
               {'Disconnect'}
             </DisconnectButton>

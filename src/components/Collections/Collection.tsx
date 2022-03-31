@@ -73,6 +73,7 @@ const Description = styled.div`
   height: 60px;
   word-break: break-all;
   overflow: hidden;
+  line-height: 20px;
 `;
 
 const Image = styled.div<{ image: string }>`

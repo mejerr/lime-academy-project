@@ -22,6 +22,7 @@ const Token: FC<IProps> = ({
   price,
   image
 }) => {
+  const location = history.location.pathname.split('/')[1];
   const onClick = useCallback(() => {
     history.push(`/collection/${collectionId}/token/${tokenId}`);
   }, [collectionId, tokenId]);
@@ -34,21 +35,34 @@ const Token: FC<IProps> = ({
           <Creator>creator <span>{creator}</span></Creator>
           <Name>{name}</Name>
         </Info>
-        <PriceWrapper>
-          <Price>{"Price"}</Price>
-          <Value>
-            <ValueIcon />
-            <Amount>{price}</Amount>
-          </Value>
-        </PriceWrapper>
+
+        {price > 0 &&
+          <PriceWrapper>
+            <Price>{"Price"}</Price>
+            <Value>
+              <ValueIcon />
+              <Amount>{price}</Amount>
+            </Value>
+          </PriceWrapper>
+        }
       </InfoWrapper>
-      <BuyButtonWrapper>
+      {location !== "my-collection" &&
+        price > 0 ?
+        <ButtonWrapper>
+          <Button
+            title={'Buy'}
+            width={"100%"}
+            height={"15px"}
+          />
+        </ButtonWrapper> :
+        <ButtonWrapper>
         <Button
-          title={'Buy'}
+          title={'Make offer'}
           width={"100%"}
           height={"15px"}
         />
-      </BuyButtonWrapper>
+        </ButtonWrapper>
+        }
     </TokenWrapper>
   );
 };
@@ -93,6 +107,10 @@ const Creator = styled.div`
   width: 100%;
   font-size: 12px;
   color: rgb(112, 122, 131);
+
+  & span {
+    color: #2081E2
+  }
 `;
 
 const Name = styled.div`
@@ -139,7 +157,7 @@ const Amount = styled.div`
   text-align: right;
 `;
 
-const BuyButtonWrapper = styled.div`
+const ButtonWrapper = styled.div`
   display: flex;
   width: 100%;
   height: 42px;

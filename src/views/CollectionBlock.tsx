@@ -15,13 +15,12 @@ const CollectionBlock: FC = () => {
 
   useEffect(() => {
     const renderCollection = async () => {
-      const result: ICollection = await contractsSDK.getCollection(params.id);
-
+      const result: ICollection = await contractsSDK.getCollection(+params.id);
       setCollection(result);
     }
 
     const renderTokens = async () => {
-      const result = await contractsSDK.getNFTs();
+      const result: INFTItem[] = await contractsSDK.getCollectionNFTs(+params.id);
       setTokens(result);
     }
 
@@ -37,10 +36,9 @@ const CollectionBlock: FC = () => {
         image={nftImage}
         name={collection.name}
         creator={collection.creator}
-        joinedDate={"October 2021"}
         description={collection.description}
       />
-      <NFTTokens tokens={tokens} />
+      {tokens.length ? <NFTTokens tokens={tokens} /> : <EmptyContent>{"No collections to show"}</EmptyContent>}
     </CollectionBlockWrapper>
   );
 };
@@ -54,4 +52,10 @@ const fadeIn = keyframes`
 
 const CollectionBlockWrapper = styled.div`
   animation: ${fadeIn} 0.5s ease-out;
+`;
+
+const EmptyContent = styled.div`
+  font-size: 36px;
+  text-align: center;
+  padding: 40px;
 `;

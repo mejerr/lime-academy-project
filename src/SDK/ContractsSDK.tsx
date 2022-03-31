@@ -37,8 +37,10 @@ export interface INFTItem {
 class ContractsSDK {
   public marketplace: ethers.Contract;
   public marketItem: ethers.Contract;
+  public userAdress: string;
 
-  constructor(signer: ethers.Signer) {
+  constructor(signer: ethers.Signer, userAdress: string) {
+    this.userAdress = userAdress;
     this.marketplace =  new ethers.Contract(
       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       marketplaceABI.abi,
@@ -83,6 +85,10 @@ class ContractsSDK {
     }
   }
 
+  public async getUserCollections(userAddress: string) {
+    const collections: ICollection[] = await this.getCollections();
+    return collections.filter(({ creator }) => creator === userAddress);
+  }
 
   public async createCollection(name: string, description: string) {
     const collectionCreation = await this.marketplace.createCollection(name, description);
@@ -94,7 +100,7 @@ class ContractsSDK {
     const nftItemsIds: IFetchedNFTItem[] = [];
 
     for (let i = 1; i <= nftItemsLength; i++) {
-      const nftItem = this.marketplace.marketItems(i);
+      const nftItem: IFetchedNFTItem = this.marketplace.marketItems(i);
       nftItemsIds.push(nftItem);
     };
 
@@ -112,13 +118,23 @@ class ContractsSDK {
           collectionId: Number(collectionId.toString()),
           createdOn,
           status,
-          creator: this.marketItem.address,
+          creator: this.userAdress,
           image: meta.data.image
         }
       }))
     });
 
     return result;
+  }
+
+  public async getCollectionNFTs(collectionId: number) {
+    const nfts = await this.getNFTs();
+    return nfts.filter(nft => nft.collectionId === collectionId);
+  }
+
+  public async getUserNFTs(userAddress: string) {
+    const nfts = await this.getNFTs();
+    return nfts.filter(nft => nft.creator === userAddress);
   }
 
   public async createNFTItem(tokenURI: string, name: string, description: string, collectionId: number) {

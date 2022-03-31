@@ -65,6 +65,7 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
       await resetApp();
     } else {
       setState({ connected: true, userAdress: accounts[0] });
+      window.location.reload();
     }
   }
 
@@ -136,7 +137,7 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
       userAdress,
       userBalance,
       connected: true,
-      contractsSDK: new ContractsSDK(signer)
+      contractsSDK: new ContractsSDK(signer, userAdress)
     });
 
     await subscribeToProviderEvents(provider);

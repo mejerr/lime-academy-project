@@ -28,7 +28,7 @@ const RequiredFields: FC = () => {
   } = useContext(CreateStateContext);
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
-  const[collectionProps, setCollectionPropss] = useState<ICollectionProps[]>([]);
+  const [collectionProps, setCollectionPropss] = useState<ICollectionProps[]>([]);
 
   const onSelect = useCallback((id) => {
     setSelectedCollectionId(id);

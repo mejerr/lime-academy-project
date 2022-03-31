@@ -14,18 +14,19 @@ interface IProps extends RouteComponentProps {
 
 const Collection: FC<IProps> = ({
   history,
+  id,
   image,
   smallImage,
   name,
   creator,
   description
 }) => {
-  const onClick = useCallback((collectionId) => {
-    history.push(`/collection/${collectionId}`);
+  const onClick = useCallback(() => {
+    history.push(`/collection/${id}`);
   }, []);
 
   return (
-    <CollectionWrapper onClick={() => onClick(1)}>
+    <CollectionWrapper onClick={onClick}>
       <Image image={image}/>
       <SmallImageWrapper>
         <SmallImage smallImage={smallImage}/>

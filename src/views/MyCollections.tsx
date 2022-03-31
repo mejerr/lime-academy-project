@@ -9,8 +9,8 @@ const MyCollections: FC = () => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
   const [activeTab, setActiveTab] = useState<string>("Tokens");
-  const[collections, setCollections] = useState<ICollection[]>([]);
-  const[tokens, setTokens] = useState<INFTItem[]>([]);
+  const [collections, setCollections] = useState<ICollection[]>([]);
+  const [tokens, setTokens] = useState<INFTItem[]>([]);
 
   const changeTab = useCallback((tab) => {
     setActiveTab(tab);

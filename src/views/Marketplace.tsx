@@ -7,7 +7,7 @@ import { AppStateContext, IConnectData } from './AppContextWrapper';
 const Marketplace: FC = () => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
-  const[collections, setCollections] = useState<ICollection[]>([]);
+  const [collections, setCollections] = useState<ICollection[]>([]);
 
   useEffect(() => {
     const renderCollections = async () => {

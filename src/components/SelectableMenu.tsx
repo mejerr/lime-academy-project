@@ -1,42 +1,42 @@
 import React, { FC, useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from 'components';
-import { IOption, ITitle } from 'views/Create/RequiredFields';
+import { IOption, ICollectionProps } from 'views/Create/RequiredFields';
 import { fadeIn } from 'App';
 
 interface IProps {
   options: IOption;
   selected?: number;
   showSelected?: boolean;
-  titles: ITitle[];
+  collectionProps: ICollectionProps[];
 }
 
 const SelectableMenu: FC<IProps> = ({
   options,
-  selected = 0,
+  selected = 1,
   showSelected = true,
-  titles = []
+  collectionProps = []
 }) => {
   const { width, height, onClick, justifyContent, arrow = false } = options;
-  const selectedTitle = titles[selected] ? titles[selected].title : "No collections added";
+  const selectedTitle = collectionProps[selected - 1] ? collectionProps[selected - 1].name : "No collections added";
   const [isOpen, setIsOpen] = useState(false);
 
   const onMenuClick = useCallback(() => {
-    if (!titles.length) {
+    if (!collectionProps.length) {
       return;
     }
 
     setIsOpen(!isOpen);
   }, [isOpen, options]);
 
-  const renderOptions = ({ title }, index: number) => {
+  const renderOptions = ({ name, collectionId }) => {
     return (
-      <OptionWrapper key={index}>
+      <OptionWrapper key={collectionId}>
         <Button
-          title={title}
+          title={name}
           width={width}
           height={height}
-          onClick={() => onClick(index)}
+          onClick={() => onClick(collectionId)}
           justifyContent={justifyContent}
           arrow={arrow}
         />
@@ -48,7 +48,7 @@ const SelectableMenu: FC<IProps> = ({
     <SelectableMenuWrapper showSelected={showSelected} onClick={onMenuClick}>
       {showSelected && <SelectedTitle isOpen={isOpen}>{selectedTitle}</SelectedTitle>}
       <OptionsWrapper isOpen={showSelected ? isOpen : true}>
-        {titles.map(renderOptions)}
+        {collectionProps.map(renderOptions)}
       </OptionsWrapper>
     </SelectableMenuWrapper>
   );

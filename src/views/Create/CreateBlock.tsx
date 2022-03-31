@@ -4,6 +4,7 @@ import styled, { css, keyframes } from 'styled-components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import Create from './Create';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 const client = ipfsHttpClient({ url: "https://ipfs.infura.io:5001/api/v0" });
 
@@ -13,6 +14,8 @@ interface ICreateState {
   inputName: string;
   inputDescription: string;
   fileUrl: string;
+  selectedCollectionId: number;
+  activeBlock: number;
 }
 
 const INITIAL_STATE: ICreateState = {
@@ -20,7 +23,9 @@ const INITIAL_STATE: ICreateState = {
   description: '',
   inputName: '',
   inputDescription: '',
-  fileUrl: ''
+  fileUrl: '',
+  selectedCollectionId: 1,
+  activeBlock: 1
 };
 
 export const CreateStateContext = React.createContext({
@@ -28,46 +33,24 @@ export const CreateStateContext = React.createContext({
   onNameChange: (event: ChangeEvent<HTMLInputElement>): void => {},
   onDescriptionChange: (event: ChangeEvent<HTMLTextAreaElement>): void => {},
   onImageChange: (event: ChangeEvent<HTMLInputElement>): void => {},
+  setSelectedCollectionId: (id: number) => {}
 });
 
-const CreateBlock: FC = () => {
+const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
   const { state } = useContext(AppStateContext);
   const { contractsSDK }: IConnectData = state;
-  const [fileUrl, setFileUrl] = useState<string>('');
 
+  const [fileUrl, setFileUrl] = useState<string>("");
+  const [selectedCollectionId, setSelectedCollectionId] = useState<number>(1);
   const [activeBlock, setActiveBlock] = useState<number>(1);
   const [itemName, setItemName] = useState<string>("");
   const [itemDescription, setItemDescription] = useState<string>("");
   const [collectionName, setCollectionName] = useState<string>("");
   const [collectionDescription, setCollectionDescription] = useState<string>("");
 
-  const uploadNFTPicture = async (e) => {
-    const file = e.target.files[0]
-    try {
-
-      const added = await client.add(file);
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      setFileUrl(() => url);
-    } catch (error) {
-      console.log('Error uploading file: ', error)
-    }
-  }
-
-  const uploadToIPFS = useCallback(async () => {
-    const data = JSON.stringify({
-      itemName, itemDescription, image: fileUrl
-    });
-
-    try {
-      const added = await client.add(data)
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-
-      return url;
-    } catch (error) {
-      console.log('Error uploading file: ', error);
-      return;
-    }
-  }, [itemName, itemDescription, fileUrl]);
+  const onBlockClick = useCallback((id) => {
+    setActiveBlock(id);
+  }, []);
 
   const onItemNameChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setItemName(event.target.value);
@@ -85,24 +68,53 @@ const CreateBlock: FC = () => {
     setCollectionDescription(event.target.value);
   }, [collectionDescription]);
 
-  const onBlockClick = useCallback((id) => {
-    setActiveBlock(id);
-  }, []);
+  const uploadNFTPicture = async (e) => {
+    const file = e.target.files[0];
+
+    try {
+      const added = await client.add(file);
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      setFileUrl(() => url);
+    } catch (error) {
+      console.error('Error uploading file: ', error);
+    }
+  }
+
+  const uploadToIPFS = useCallback(async () => {
+    const data = JSON.stringify({
+      itemName, itemDescription, image: fileUrl
+    });
+
+    try {
+      const added = await client.add(data)
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+
+      return url;
+    } catch (error) {
+      console.error('Error uploading file: ', error);
+      return;
+    }
+  }, [itemName, itemDescription, fileUrl]);
 
   const onCreateItem = useCallback(async () => {
-    if (itemName.length && itemDescription.length && fileUrl.length && !contractsSDK) {
+    if (!itemName.length || !itemDescription.length || !fileUrl.length || !contractsSDK || !selectedCollectionId) {
       return;
     }
 
-      const tokenURI = await uploadToIPFS();
+    const tokenURI = await uploadToIPFS();
+    await contractsSDK.createNFTItem(tokenURI, itemName, itemDescription, selectedCollectionId);
 
-      await contractsSDK.createNFTItem(tokenURI, itemName, itemDescription, 1);
-  }, [itemName, itemDescription, fileUrl, contractsSDK]);
+    history.push(`/collection/${selectedCollectionId}`);
+  }, [itemName, itemDescription, fileUrl, contractsSDK, selectedCollectionId]);
 
   const onCreateCollection = useCallback(async () => {
-    if (contractsSDK) {
-      await contractsSDK.createCollection(collectionName, collectionDescription);
+    if (!itemName.length || !itemDescription.length || !contractsSDK) {
+      return;
     }
+
+    await contractsSDK.createCollection(collectionName, collectionDescription);
+
+    history.push('/marketplace');
   }, [collectionName, collectionDescription, contractsSDK]);
 
   return (
@@ -113,13 +125,16 @@ const CreateBlock: FC = () => {
           description: activeBlock === 1 ? "Item description" : "Collection description",
           inputName: activeBlock === 1 ? itemName : collectionName,
           inputDescription: activeBlock === 1 ? itemDescription : collectionDescription,
-          fileUrl
+          fileUrl,
+          selectedCollectionId,
+          activeBlock
         },
         onNameChange: (e: ChangeEvent<HTMLInputElement>) =>
           activeBlock === 1 ? onItemNameChange(e) : onCollectionNameChange(e),
         onDescriptionChange: (e: ChangeEvent<HTMLTextAreaElement>) =>
           activeBlock === 1 ? onItemDescriptionChange(e) : onCollectionDescriptionChange(e),
-        onImageChange: uploadNFTPicture
+        onImageChange: uploadNFTPicture,
+        setSelectedCollectionId
       }}
     >
       <CreateBlockWrapper>
@@ -143,7 +158,7 @@ const CreateBlock: FC = () => {
   );
 };
 
-export default CreateBlock;
+export default withRouter(CreateBlock);
 
 const CreateBlockWrapper = styled.div`
   max-width: min(1280px, 100% - 40px);;

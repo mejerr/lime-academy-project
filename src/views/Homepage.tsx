@@ -91,12 +91,17 @@ const LeftPanel = styled.div`
   @media (max-width: 800px) {
     width: 100%;
     padding: 40px 20px 0;
+    align-items: center;
   }
 `;
 
 const Title = styled.div`
   font-size: 45px;
   max-width: 100%;
+
+  @media (max-width: 800px) {
+    text-align: center;
+  }
 `;
 
 const Subtitle = styled.div`

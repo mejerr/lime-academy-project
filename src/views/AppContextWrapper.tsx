@@ -144,7 +144,6 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
     onSuccess();
   };
 
-
   useEffect(() => {
     const modal = new Web3Modal({
       network: getNetwork(),

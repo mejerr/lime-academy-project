@@ -11,7 +11,7 @@ const Marketplace: FC = () => {
 
   useEffect(() => {
     const renderCollections = async () => {
-      const result = await contractsSDK.getCollections();
+      const result: ICollection[] = await contractsSDK.getCollections();
       setCollections(result);
     }
 

@@ -4,14 +4,14 @@ import { withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { ITitle } from 'views/Create/RequiredFields';
+import { ICollectionProps } from 'views/Create/RequiredFields';
 import { SelectableMenu } from 'components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 
-const TITLES: ITitle[] = [
-  { title: "Marketplace"},
-  { title: "Create"},
-  { title: "My Collection"}
+const COLLECTION_PROPS: ICollectionProps[] = [
+  { name: "Marketplace", collectionId: 1},
+  { name: "Create", collectionId: 2},
+  { name: "My Collection", collectionId: 3}
 ];
 
 enum PATHS {
@@ -56,7 +56,7 @@ const Menu: FC<RouteComponentProps> = ({ history } ) => {
       <MenuIcon icon={faBars} onClick={openMenu} />
       {menuOpen &&
         <MenuContent>
-          <SelectableMenu showSelected={false} titles={TITLES} options={OPTIONS}/>
+          <SelectableMenu showSelected={false} collectionProps={COLLECTION_PROPS} options={OPTIONS}/>
         </MenuContent>
       }
     </MenuWrapper>

@@ -1,15 +1,10 @@
-import React, { FC, useState, useCallback, useContext, ChangeEvent } from 'react'
+import React, { FC, useState, useCallback, useContext, ChangeEvent, useEffect } from 'react'
 import styled from 'styled-components'
 import { emptyImage } from 'assets';
 import { SelectableMenu } from 'components';
 import { CreateStateContext } from './CreateBlock';
-
-const TITLES = {
-  0: { title: "Marketplace"},
-  1: { title: "Create"},
-  2: { title: "My Collection"},
-};
-
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { ICollection } from 'SDK/ContractsSDK';
 export interface IOption {
   width: string;
   height: string;
@@ -18,29 +13,38 @@ export interface IOption {
   arrow?: boolean;
 }
 
-export interface ITitle {
-  title: string;
+export interface ICollectionProps {
+  name: string;
+  collectionId: number;
 }
 
-const RequiredFields: FC = ({
-}) => {
+const RequiredFields: FC = () => {
   const {
-    state: { name, description, inputName, inputDescription, fileUrl },
+    state: { name, description, inputName, inputDescription, fileUrl, selectedCollectionId, activeBlock },
     onNameChange,
     onDescriptionChange,
     onImageChange,
+    setSelectedCollectionId
   } = useContext(CreateStateContext);
-  const [selected, setSelected] = useState<number>(0);
+  const { state } = useContext(AppStateContext);
+  const { connected, contractsSDK }: IConnectData = state;
+  const[collectionProps, setCollectionPropss] = useState<ICollectionProps[]>([]);
 
   const onSelect = useCallback((id) => {
-    setSelected(id);
+    setSelectedCollectionId(id);
   }, []);
 
-  const collectionTitles: ITitle[] = [];
-  for (let i = 0; i < 3; i++) {
-    const collectionTitle: string = TITLES[i].title;
-    collectionTitles.push({ title: collectionTitle });
-  }
+  useEffect(() => {
+    const renderCollections = async () => {
+      const collections: ICollection[] = await contractsSDK.getCollections();
+      const collectionProps: ICollectionProps[] = collections.map(({ name, collectionId }): ICollectionProps => ({ name, collectionId }));
+      setCollectionPropss(collectionProps);
+    }
+
+    if (connected && contractsSDK) {
+      renderCollections();
+    }
+  }, [connected, contractsSDK]);
 
   const OPTIONS = {
     width: "100%",
@@ -50,41 +54,43 @@ const RequiredFields: FC = ({
   };
 
   return (
-    <RequiredFieldsWrapper>
-      <RequiredFieldsTitle>{"Required fields"}</RequiredFieldsTitle>
-      <Section>{"Image"}</Section>
-      <ImageWrapper emptyImage={!fileUrl.length}>
-        <ImageInput
-          type="file"
-          name="Asset"
-          onChange={onImageChange}
+      <RequiredFieldsWrapper>
+        <RequiredFieldsTitle>{"Required fields"}</RequiredFieldsTitle>
+        <Section>{"Image"}</Section>
+        <ImageWrapper emptyImage={!fileUrl.length}>
+          <ImageInput
+            type="file"
+            name="Asset"
+            onChange={onImageChange}
           />
-        <Image src={fileUrl ? fileUrl : emptyImage}/>
-      </ImageWrapper>
+          <Image src={fileUrl ? fileUrl : emptyImage}/>
+        </ImageWrapper>
 
-      <SectionWrapper>
-        <Section>{"Name"}</Section>
-        <NameInput
-          placeholder={name}
-          value={inputName}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => onNameChange(e)}
-        />
-      </SectionWrapper>
+        <SectionWrapper>
+          <Section>{"Name"}</Section>
+          <NameInput
+            placeholder={name}
+            value={inputName}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => onNameChange(e)}
+          />
+        </SectionWrapper>
 
-      <SectionWrapper>
-        <Section>{"Description"}</Section>
-        <DescriptionInput
-          placeholder={description}
-          value={inputDescription}
-          onChange={(event: ChangeEvent<HTMLTextAreaElement>) => onDescriptionChange(event)}
-        />
-      </SectionWrapper>
+        <SectionWrapper>
+          <Section>{"Description"}</Section>
+          <DescriptionInput
+            placeholder={description}
+            value={inputDescription}
+            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => onDescriptionChange(event)}
+          />
+        </SectionWrapper>
 
-      <SectionWrapper>
-        <Section>{"Choose Collection"}</Section>
-        <SelectableMenu titles={collectionTitles} options={OPTIONS} selected={selected}/>
-      </SectionWrapper>
-    </RequiredFieldsWrapper>
+        {activeBlock === 1 && (
+          <SectionWrapper>
+            <Section>{"Choose Collection"}</Section>
+            <SelectableMenu collectionProps={collectionProps} options={OPTIONS} selected={selectedCollectionId}/>
+          </SectionWrapper>
+        )}
+      </RequiredFieldsWrapper>
   );
 };
 

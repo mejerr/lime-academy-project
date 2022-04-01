@@ -6,7 +6,11 @@ import { faCartShopping, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
 
-const PurchaseComponent: FC<RouteComponentProps> = ({ history }) => {
+interface IProps extends RouteComponentProps {
+  price: number;
+}
+
+const PurchaseComponent: FC<IProps> = ({ history, price = 0 }) => {
   const [openOffer, setOpenOffer] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
 
@@ -27,12 +31,14 @@ const PurchaseComponent: FC<RouteComponentProps> = ({ history }) => {
   return (
     <PurchaseWrapper>
       <Price>{"Current price"}</Price>
-      <Value>
-        <ValueIcon />
-        <Amount>{154123.321}</Amount>
-        <DollarsAmount>{"($123,123,123)"}</DollarsAmount>
-      </Value>
-
+      {price > 0 ?
+        <Value>
+          <ValueIcon />
+          <Amount>{price}</Amount>
+          <DollarsAmount>{"($123,123,123)"}</DollarsAmount>
+        </Value> :
+        <NoPrice>{"Item not for sale, only offers"}</NoPrice>
+      }
       <ButtonsWrapper>
         {openOffer ?
           <InputWrapper>
@@ -46,6 +52,7 @@ const PurchaseComponent: FC<RouteComponentProps> = ({ history }) => {
               title={'Buy now'}
               width={"270px"}
               height={"65px"}
+              onClick={!price ? onOpenOffer : onOpenOffer}
             />
           </BuyButtonWrapper>
         }
@@ -100,6 +107,10 @@ const ValueIcon = styled.div`
 
 const Amount = styled.div`
   font-size: 30px;
+`;
+
+const NoPrice = styled.div`
+  font-size: 24px;
 `;
 
 const DollarsAmount = styled.div`

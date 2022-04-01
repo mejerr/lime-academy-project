@@ -33,13 +33,13 @@ const Menu: FC<RouteComponentProps> = ({ history } ) => {
   const onClick = useCallback((pathId) => {
     if (!connected) {
         onConnect({ onSuccess: () => {
-          history.push(PATHS[pathId]);
+          history.push(PATHS[pathId - 1]);
           setMenuOpen(false);
         } });
         return;
      }
 
-     history.push(PATHS[pathId]);
+     history.push(PATHS[pathId - 1]);
      setMenuOpen(false);
   }, [connected]);
 

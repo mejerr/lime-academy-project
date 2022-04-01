@@ -1,9 +1,11 @@
-import React, { FC, useCallback } from 'react'
+import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { nftImage } from 'assets';
 import { UNIT_DATA } from 'helpers/constants';
 import Offer from './Offer';
 import PurchaseComponent from './PurchaseComponent';
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { useParams } from 'react-router-dom';
+import { INFTItem } from 'SDK/ContractsSDK';
 
 const OFFERS_DUMMIES = [
   {
@@ -16,34 +18,41 @@ const OFFERS_DUMMIES = [
   },
 ];
 
-interface IProps {
-  collectionName: string,
-  tokenName: string,
-  owner: string
-}
+const NFTTokenBlock: FC = () => {
+  const { state } = useContext(AppStateContext);
+  const { connected, contractsSDK, userAdress }: IConnectData = state;
+  const params: { id: string } = useParams();
+  const [nftToken, setNFTToken] = useState<INFTItem | any>();
 
-const NFTTokenBlock: FC<IProps> = ({
-  collectionName = "Where My Vans Go",
-  tokenName = "Where My Vans Go #64",
-  owner = "goso221"
-}) => {
   const renderOffers = useCallback(({ price, bidder}, index) => {
     return (
       <Offer key={index} price={price} bidder={bidder} />
     );
   }, []);
 
+  useEffect(() => {
+    const renderNFTItem = async () => {
+      const nftItem: INFTItem = await contractsSDK.getNFTItem(params.id);
+      setNFTToken(nftItem);
+    }
+    if (connected && contractsSDK) {
+      renderNFTItem();
+    }
+  }, [connected, contractsSDK]);
+
   return (
     <NFTTokenBlockWrapper>
       <ImageWrapper>
-        <Image />
+        <Image image={nftToken?.image}/>
       </ImageWrapper>
 
       <DetailsWrapper>
-        <CollectionName>{collectionName}</CollectionName>
-        <TokenName>{tokenName}</TokenName>
-        <Owner>Owned by <span>{owner}</span>  </Owner>
-        <PurchaseComponent />
+        <CollectionName>{nftToken?.collectionName}</CollectionName>
+        <TokenName>{nftToken?.name}</TokenName>
+        <Owner>Owned by <span>{nftToken?.creator}</span>  </Owner>
+        {userAdress !== nftToken?.creator &&
+          <PurchaseComponent price={nftToken?.price}/>
+        }
 
         <OffersWrapper>
           <OffersTitle>{"Offers"}</OffersTitle>
@@ -104,13 +113,13 @@ const ImageWrapper = styled.div`
   }
 `;
 
-const Image = styled.div`
+const Image = styled.div<{ image: string }>`
   height: 100%;
   width: 100%;
   margin: 0 auto;
   border-radius: 10px;
 
-  background: transparent url(${nftImage}) center center no-repeat;
+  background: ${({ image }) => image && `transparent url(${image}) center center no-repeat`};
   background-size: cover;
 `;
 

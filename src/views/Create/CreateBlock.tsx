@@ -108,7 +108,7 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
   }, [itemName, itemDescription, fileUrl, contractsSDK, selectedCollectionId]);
 
   const onCreateCollection = useCallback(async () => {
-    if (!contractsSDK || !itemName.length || !itemDescription.length) {
+    if (!contractsSDK || !collectionName.length || !collectionDescription.length) {
       return;
     }
 

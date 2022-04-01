@@ -1,8 +1,9 @@
-import React, { FC, useCallback } from 'react'
+import React, { FC, useCallback, useContext } from 'react'
 import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ethereumImage } from 'assets';
 import { Button } from 'components';
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 
 interface IProps extends RouteComponentProps {
   collectionId: string;
@@ -22,7 +23,9 @@ const Token: FC<IProps> = ({
   price,
   image
 }) => {
-  const location = history.location.pathname.split('/')[1];
+  const { state } = useContext(AppStateContext);
+  const { userAdress }: IConnectData = state;
+
   const onClick = useCallback(() => {
     history.push(`/collection/${collectionId}/token/${tokenId}`);
   }, [collectionId, tokenId]);
@@ -46,7 +49,7 @@ const Token: FC<IProps> = ({
           </PriceWrapper>
         }
       </InfoWrapper>
-      {location !== "my-collection" &&
+      {userAdress !== creator ?
         price > 0 ?
         <ButtonWrapper>
           <Button
@@ -56,12 +59,12 @@ const Token: FC<IProps> = ({
           />
         </ButtonWrapper> :
         <ButtonWrapper>
-        <Button
-          title={'Make offer'}
-          width={"100%"}
-          height={"15px"}
-        />
-        </ButtonWrapper>
+          <Button
+            title={'Make offer'}
+            width={"100%"}
+            height={"15px"}
+          />
+        </ButtonWrapper> : null
         }
     </TokenWrapper>
   );

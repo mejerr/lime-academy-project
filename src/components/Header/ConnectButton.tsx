@@ -10,7 +10,7 @@ import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 
 const ConnectButton: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect, killSession } = useContext(AppStateContext);
-  const { connected, userAdress }: IConnectData = state;
+  const { connected, userAddress }: IConnectData = state;
 
   const onLogin = useCallback(() => {
     onConnect({ onSuccess: () => history.push('/marketplace') });
@@ -23,9 +23,9 @@ const ConnectButton: FC<RouteComponentProps> = ({ history }) => {
   return (
     <ConnectButtonWrapper >
       {connected ? (
-        userAdress && (
+        userAddress && (
           <Account>
-            <Address connected={connected}>{ellipseAddress(userAdress, 8)}</Address>
+            <Address connected={connected}>{ellipseAddress(userAddress, 8)}</Address>
             <DisconnectButton onClick={onLogout}>
               {'Disconnect'}
             </DisconnectButton>

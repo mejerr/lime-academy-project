@@ -39,7 +39,7 @@ const MarketplaceWrapper = styled.div`
   display: flex;
   margin: 0 auto;
   width: 100%;
-  max-width: min(1280px, 100% - 40px);
+  max-width: min(1880px, 100% - 40px);
   justify-content: center;
   flex-direction: column;
   padding-bottom: 20px;

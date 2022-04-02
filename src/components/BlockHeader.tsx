@@ -2,11 +2,12 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleUp, faAngleDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { ethereumImage } from 'assets';
 interface IProps {
   image: string;
   name: string,
-  creator: string,
-  joinedDate: string,
+  creator?: string,
+  userBalance?: string,
   description?: string,
   showCreator?: boolean
 }
@@ -15,8 +16,8 @@ const BlockHeader: FC<IProps> = ({
   image,
   name,
   creator,
-  joinedDate,
-  description = "",
+  userBalance = '',
+  description = '',
   showCreator = true
 }) => {
   const [height, setHeight] = useState<string>("120px");
@@ -40,8 +41,12 @@ const BlockHeader: FC<IProps> = ({
       <BlockCreator>
         {showCreator && <div>Created by</div>}
         <span>{creator}</span>
-        {joinedDate && <JoinedDate>Joined {joinedDate}</JoinedDate>}
       </BlockCreator>
+        {userBalance &&
+          <BalanceWrapper>
+            <ValueIcon/>
+            Balance: {userBalance.substring(0, 10)}
+          </BalanceWrapper> }
       {description && (<>
         <BlockDescriptionWrapper
           ref={descriptionNode}
@@ -49,11 +54,11 @@ const BlockHeader: FC<IProps> = ({
           isOpen={openDescription}
           onClick={onOpenDescription}
         >
-          <BlockDescription >
+          <BlockDescription>
             {description}
           </BlockDescription>
         </BlockDescriptionWrapper>
-        <ArrowIcon icon={openDescription? faAngleUp : faAngleDown} onClick={onOpenDescription} />
+        <ArrowIcon icon={openDescription ? faAngleUp : faAngleDown} onClick={onOpenDescription}/>
       </>)}
     </BlockWrapper>
   );
@@ -94,11 +99,6 @@ const BlockCreator = styled.div`
   }
 `;
 
-const JoinedDate = styled.div`
-  font-size: 16px;
-  margin: 10px 0 30px;
-`;
-
 const BlockDescriptionWrapper = styled.div<{ isOpen: boolean }>`
   margin: 20px 0;
   padding: 20px;
@@ -127,4 +127,19 @@ const ArrowIcon = styled(FontAwesomeIcon)<{ icon: IconDefinition }>`
   position: relative;
   cursor: pointer;
   top: ${({ icon }) => icon === faAngleUp ? "-22px" : "-35px"};
+`;
+
+const BalanceWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ValueIcon = styled.div`
+  display: flex;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background: transparent url(${ethereumImage}) center center no-repeat;
+  background-size: contain;
 `;

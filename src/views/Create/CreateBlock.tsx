@@ -40,7 +40,8 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
   const { state } = useContext(AppStateContext);
   const { contractsSDK }: IConnectData = state;
 
-  const [fileUrl, setFileUrl] = useState<string>("");
+  const [collectionFileUrl, setCollectionFileUrl] = useState<string>("");
+  const [nftFileUrl, setNFTFileUrl] = useState<string>("");
   const [selectedCollectionId, setSelectedCollectionId] = useState<number>(1);
   const [activeBlock, setActiveBlock] = useState<number>(1);
   const [itemName, setItemName] = useState<string>("");
@@ -68,22 +69,21 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
     setCollectionDescription(event.target.value);
   }, [collectionDescription]);
 
-  const uploadNFTPicture = async (e) => {
+  const uploadPicture = async (e) => {
     const file = e.target.files[0];
 
     try {
       const added = await client.add(file);
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      setFileUrl(() => url);
+
+      activeBlock === 1 ? setNFTFileUrl(() => url) : setCollectionFileUrl(() => url);
     } catch (error) {
       console.error('Error uploading file: ', error);
     }
   }
 
   const uploadToIPFS = useCallback(async () => {
-    const data = JSON.stringify({
-      itemName, itemDescription, image: fileUrl
-    });
+    const data = JSON.stringify({ itemName, itemDescription, image: nftFileUrl });
 
     try {
       const added = await client.add(data)
@@ -94,10 +94,10 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
       console.error('Error uploading file: ', error);
       return;
     }
-  }, [itemName, itemDescription, fileUrl]);
+  }, [itemName, itemDescription, nftFileUrl]);
 
   const onCreateItem = useCallback(async () => {
-    if (!itemName.length || !itemDescription.length || !fileUrl.length || !contractsSDK || !selectedCollectionId) {
+    if (!itemName.length || !itemDescription.length || !nftFileUrl.length || !contractsSDK || !selectedCollectionId) {
       return;
     }
 
@@ -105,14 +105,14 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
     await contractsSDK.createNFTItem(tokenURI, itemName, itemDescription, selectedCollectionId);
 
     history.push(`/collection/${selectedCollectionId}`);
-  }, [itemName, itemDescription, fileUrl, contractsSDK, selectedCollectionId]);
+  }, [itemName, itemDescription, nftFileUrl, contractsSDK, selectedCollectionId]);
 
   const onCreateCollection = useCallback(async () => {
     if (!contractsSDK || !collectionName.length || !collectionDescription.length) {
       return;
     }
 
-    await contractsSDK.createCollection(collectionName, collectionDescription);
+    await contractsSDK.createCollection(collectionFileUrl, collectionName, collectionDescription);
 
     history.push('/marketplace');
   }, [collectionName, collectionDescription, contractsSDK]);
@@ -125,7 +125,7 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
           description: activeBlock === 1 ? "Item description" : "Collection description",
           inputName: activeBlock === 1 ? itemName : collectionName,
           inputDescription: activeBlock === 1 ? itemDescription : collectionDescription,
-          fileUrl,
+          fileUrl: activeBlock === 1 ? nftFileUrl : collectionFileUrl,
           selectedCollectionId,
           activeBlock
         },
@@ -133,7 +133,7 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
           activeBlock === 1 ? onItemNameChange(e) : onCollectionNameChange(e),
         onDescriptionChange: (e: ChangeEvent<HTMLTextAreaElement>) =>
           activeBlock === 1 ? onItemDescriptionChange(e) : onCollectionDescriptionChange(e),
-        onImageChange: uploadNFTPicture,
+        onImageChange: uploadPicture,
         setSelectedCollectionId
       }}
     >

@@ -114,11 +114,11 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
     }
 
     /* Creates a collection of future NFTs */
-    function createCollection(string calldata name, string calldata description)
-        external
-        virtual
-        override
-    {
+    function createCollection(
+        string calldata image,
+        string calldata name,
+        string calldata description
+    ) external virtual override {
         _collectionId.increment();
         uint256 collectionId = _collectionId.current();
         uint256 createdOn = block.timestamp;
@@ -128,7 +128,8 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
             name,
             description,
             createdOn,
-            msg.sender
+            msg.sender,
+            image
         );
 
         collectionsIds.push(collectionId);

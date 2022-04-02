@@ -7,7 +7,7 @@ import { AppStateContext, IConnectData } from './AppContextWrapper';
 
 const MyCollections: FC = () => {
   const { state } = useContext(AppStateContext);
-  const { connected, contractsSDK, userAdress }: IConnectData = state;
+  const { connected, contractsSDK, userAddress, userBalance }: IConnectData = state;
   const [activeTab, setActiveTab] = useState<string>("Tokens");
   const [collections, setCollections] = useState<ICollection[]>([]);
   const [tokens, setTokens] = useState<INFTItem[]>([]);
@@ -18,25 +18,25 @@ const MyCollections: FC = () => {
 
   useEffect(() => {
     const renderCollections = async () => {
-      const result = await contractsSDK.getUserCollections(userAdress);
+      const result = await contractsSDK.getUserCollections(userAddress);
       setCollections(result);
     }
 
     if (activeTab === "Collections" && connected && contractsSDK) {
       renderCollections();
     }
-  }, [connected, contractsSDK, activeTab, userAdress]);
+  }, [connected, contractsSDK, activeTab, userAddress]);
 
   useEffect(() => {
     const renderTokens = async () => {
-      const result = await contractsSDK.getUserNFTs(userAdress);
+      const result = await contractsSDK.getUserNFTs(userAddress);
       setTokens(result);
     }
 
     if (activeTab === "Tokens" && connected && contractsSDK) {
       renderTokens();
     }
-  }, [connected, contractsSDK, activeTab,userAdress]);
+  }, [connected, contractsSDK, activeTab,userAddress]);
 
 
   return (
@@ -44,8 +44,8 @@ const MyCollections: FC = () => {
       <BlockHeader
         image={nftImage}
         name={"unnamed"}
-        creator={userAdress}
-        joinedDate={"October 2021"}
+        creator={userAddress}
+        userBalance={userBalance}
         showCreator={false}
       />
       <ActiveContent>

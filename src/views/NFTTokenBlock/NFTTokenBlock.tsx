@@ -4,7 +4,7 @@ import { UNIT_DATA } from 'helpers/constants';
 import Offer from './Offer';
 import PurchaseComponent from './PurchaseComponent';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
-import { useParams } from 'react-router-dom';
+import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
 import { INFTItem } from 'SDK/ContractsSDK';
 
 const OFFERS_DUMMIES = [
@@ -18,11 +18,15 @@ const OFFERS_DUMMIES = [
   },
 ];
 
-const NFTTokenBlock: FC = () => {
+const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   const { state } = useContext(AppStateContext);
-  const { connected, contractsSDK, userAdress }: IConnectData = state;
+  const { connected, contractsSDK, userAddress }: IConnectData = state;
   const params: { id: string } = useParams();
   const [nftToken, setNFTToken] = useState<INFTItem | any>();
+
+  const goToCollection = useCallback(() => {
+    history.push(`/collection/${nftToken.collectionId}`);
+  }, [nftToken]);
 
   const renderOffers = useCallback(({ price, bidder}, index) => {
     return (
@@ -47,10 +51,10 @@ const NFTTokenBlock: FC = () => {
       </ImageWrapper>
 
       <DetailsWrapper>
-        <CollectionName>{nftToken?.collectionName}</CollectionName>
+        <CollectionName onClick={goToCollection}>{nftToken?.collectionName}</CollectionName>
         <TokenName>{nftToken?.name}</TokenName>
         <Owner>Owned by <span>{nftToken?.creator}</span>  </Owner>
-        {userAdress !== nftToken?.creator &&
+        {userAddress !== nftToken?.creator &&
           <PurchaseComponent price={nftToken?.price}/>
         }
 
@@ -69,7 +73,7 @@ const NFTTokenBlock: FC = () => {
   )
 };
 
-export default NFTTokenBlock;
+export default withRouter(NFTTokenBlock);
 
 const fadeIn = keyframes`
   0% { opacity: 0; }

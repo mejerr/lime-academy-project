@@ -1,10 +1,12 @@
-import React, { FC, useState, useCallback, useContext, ChangeEvent, useEffect } from 'react'
-import styled from 'styled-components'
-import { emptyImage } from 'assets';
+import React, { FC, useState, useCallback, useContext, ChangeEvent, useEffect } from 'react';
+import styled from 'styled-components';
 import { SelectableMenu } from 'components';
 import { CreateStateContext } from './CreateBlock';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { ICollection } from 'SDK/ContractsSDK';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
+
 export interface IOption {
   width: string;
   height: string;
@@ -27,8 +29,8 @@ const RequiredFields: FC = () => {
     setSelectedCollectionId
   } = useContext(CreateStateContext);
   const { state } = useContext(AppStateContext);
-  const { connected, contractsSDK }: IConnectData = state;
-  const [collectionProps, setCollectionPropss] = useState<ICollectionProps[]>([]);
+  const { connected, contractsSDK, userAddress }: IConnectData = state;
+  const [collectionProps, setCollectionProps] = useState<ICollectionProps[]>([]);
 
   const onSelect = useCallback((id) => {
     setSelectedCollectionId(id);
@@ -36,9 +38,9 @@ const RequiredFields: FC = () => {
 
   useEffect(() => {
     const renderCollections = async () => {
-      const collections: ICollection[] = await contractsSDK.getCollections();
+      const collections: ICollection[] = await contractsSDK.getUserCollections(userAddress);
       const collectionProps: ICollectionProps[] = collections.map(({ name, collectionId }): ICollectionProps => ({ name, collectionId }));
-      setCollectionPropss(collectionProps);
+      setCollectionProps(collectionProps);
     }
 
     if (connected && contractsSDK) {
@@ -57,13 +59,13 @@ const RequiredFields: FC = () => {
       <RequiredFieldsWrapper>
         <RequiredFieldsTitle>{"Required fields"}</RequiredFieldsTitle>
         <Section>{"Image"}</Section>
-        <ImageWrapper emptyImage={!fileUrl.length}>
+        <ImageWrapper>
           <ImageInput
             type="file"
             name="Asset"
             onChange={onImageChange}
           />
-          <Image src={fileUrl ? fileUrl : emptyImage}/>
+          {fileUrl ? <Image src={fileUrl}/> : <EmptyIcon icon={faImage} />}
         </ImageWrapper>
 
         <SectionWrapper>
@@ -122,7 +124,7 @@ const RequiredFieldsTitle = styled.div`
   }
 `;
 
-const ImageWrapper = styled.div<{ emptyImage: boolean }>`
+const ImageWrapper = styled.div`
   margin: 20px;
   width: 360px;
   height: 260px;
@@ -150,6 +152,11 @@ const Image = styled.img`
   height: 240px;
   border-radius: 10px;
   flex-shrink: 0;
+`;
+
+const EmptyIcon = styled(FontAwesomeIcon)`
+  width: 100px;
+  height: 100px;
 `;
 
 const ImageInput = styled.input`

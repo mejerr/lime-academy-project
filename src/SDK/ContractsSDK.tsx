@@ -10,6 +10,7 @@ export interface ICollection {
   name: string;
   description: string;
   creator: string;
+  image: string;
 }
 
 interface IFetchedNFTItem {
@@ -30,10 +31,10 @@ export interface INFTItem extends IFetchedNFTItem{
 class ContractsSDK {
   public marketplace: ethers.Contract;
   public marketItem: ethers.Contract;
-  public userAdress: string;
+  public userAddress: string;
 
-  constructor(signer: ethers.Signer, userAdress: string) {
-    this.userAdress = userAdress;
+  constructor(signer: ethers.Signer, userAddress: string) {
+    this.userAddress = userAddress;
     this.marketplace =  new ethers.Contract(
       '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       marketplaceABI.abi,
@@ -57,11 +58,12 @@ class ContractsSDK {
     };
 
     const result = await Promise.all(collectionIds).then(collections => (
-      collections.map(({ collectionId, name, description, creator }): ICollection => ({
+      collections.map(({ collectionId, name, description, creator, image }): ICollection => ({
         collectionId: Number(collectionId.toString()),
         name,
         description,
-        creator
+        creator,
+        image
       }))
     ));
 
@@ -69,12 +71,13 @@ class ContractsSDK {
   }
 
   public async getCollection(id: number) {
-    const { collectionId, name, description, creator }: ICollection = await this.marketplace.collections(id);
+    const { collectionId, name, description, creator, image }: ICollection = await this.marketplace.collections(id);
     return {
       collectionId: Number(collectionId.toString()),
       name,
       description,
-      creator
+      creator,
+      image
     }
   }
 
@@ -83,8 +86,8 @@ class ContractsSDK {
     return collections.filter(({ creator }) => creator === userAddress);
   }
 
-  public async createCollection(name: string, description: string) {
-    const collectionCreation = await this.marketplace.createCollection(name, description);
+  public async createCollection(image: string, name: string, description: string) {
+    const collectionCreation = await this.marketplace.createCollection(image, name, description);
     await collectionCreation.wait();
   }
 

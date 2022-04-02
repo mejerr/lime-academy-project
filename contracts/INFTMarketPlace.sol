@@ -13,6 +13,7 @@ interface INFTMarketPlace {
         string description;
         uint256 createdOn;
         address creator;
+        string image;
     }
 
     struct MarketItem {
@@ -78,8 +79,11 @@ interface INFTMarketPlace {
 
     function updateListingFee(uint256 listingFee) external payable;
 
-    function createCollection(string calldata name, string calldata description)
-        external;
+    function createCollection(
+        string calldata image,
+        string calldata name,
+        string calldata description
+    ) external;
 
     function getCollectionLength() external view returns (uint256);
 

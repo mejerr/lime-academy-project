@@ -1,7 +1,6 @@
 import React, { FC, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, NFTTokens } from 'components';
-import { nftImage } from 'assets';
 import { AppStateContext, IConnectData } from './AppContextWrapper';
 import { ICollection, INFTItem } from 'SDK/ContractsSDK';
 import { useParams } from 'react-router-dom';
@@ -33,12 +32,12 @@ const CollectionBlock: FC = () => {
   return (
     <CollectionBlockWrapper>
       <BlockHeader
-        image={nftImage}
+        image={collection.image}
         name={collection.name}
         creator={collection.creator}
         description={collection.description}
       />
-      {tokens.length ? <NFTTokens tokens={tokens} /> : <EmptyContent>{"No collections to show"}</EmptyContent>}
+      {tokens.length ? <NFTTokens tokens={tokens} /> : <EmptyContent>{"No items to show"}</EmptyContent>}
     </CollectionBlockWrapper>
   );
 };

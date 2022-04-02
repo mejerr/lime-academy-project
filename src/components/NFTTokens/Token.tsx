@@ -24,7 +24,7 @@ const Token: FC<IProps> = ({
   image
 }) => {
   const { state } = useContext(AppStateContext);
-  const { userAdress }: IConnectData = state;
+  const { userAddress }: IConnectData = state;
 
   const onClick = useCallback(() => {
     history.push(`/collection/${collectionId}/token/${tokenId}`);
@@ -49,7 +49,7 @@ const Token: FC<IProps> = ({
           </PriceWrapper>
         }
       </InfoWrapper>
-      {userAdress !== creator ?
+      {userAddress !== creator ?
         price > 0 ?
         <ButtonWrapper>
           <Button

@@ -13,7 +13,7 @@ interface IProps {
 }
 
 export interface IConnectData {
-  userAdress?: string;
+  userAddress?: string;
   userBalance?: string;
   signer?: any;
   library?: any;
@@ -24,7 +24,7 @@ export interface IConnectData {
 }
 
 const INITIAL_STATE: IConnectData = {
-  userAdress: '',
+  userAddress: '',
   userBalance: '',
   signer: null,
   library: null,
@@ -64,7 +64,7 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
       // Metamask Lock fire an empty accounts array
       await resetApp();
     } else {
-      setState({ connected: true, userAdress: accounts[0] });
+      setState({ connected: true, userAddress: accounts[0] });
       window.location.reload();
     }
   }
@@ -123,7 +123,7 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
     const library = new Web3Provider(provider);
     const signer = library.getSigner();
     const network = await library.getNetwork();
-    const userAdress = await signer.getAddress();
+    const userAddress = await signer.getAddress();
     const userBalance = ethers.utils.formatEther((await signer.getBalance()).toString());
     const chainId = await signer.getChainId();
 
@@ -134,10 +134,10 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
       library,
       chainId,
       network,
-      userAdress,
+      userAddress,
       userBalance,
       connected: true,
-      contractsSDK: new ContractsSDK(signer, userAdress)
+      contractsSDK: new ContractsSDK(signer, userAddress)
     });
 
     await subscribeToProviderEvents(provider);

@@ -22,7 +22,7 @@ export interface ICollectionProps {
 
 const RequiredFields: FC = () => {
   const {
-    state: { name, description, inputName, inputDescription, fileUrl, selectedCollectionId, activeBlock },
+    state: { name, description, inputName, inputDescription, fileUrl, activeBlock },
     onNameChange,
     onDescriptionChange,
     onImageChange,
@@ -89,7 +89,7 @@ const RequiredFields: FC = () => {
         {activeBlock === 1 && (
           <SectionWrapper>
             <Section>{"Choose Collection"}</Section>
-            <SelectableMenu collectionProps={collectionProps} options={OPTIONS} selected={selectedCollectionId}/>
+            <SelectableMenu collectionProps={collectionProps} options={OPTIONS}/>
           </SectionWrapper>
         )}
       </RequiredFieldsWrapper>

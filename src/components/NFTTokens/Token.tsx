@@ -92,6 +92,10 @@ const Image = styled.div<{ image: string }>`
 
   background: ${({ image }) => image && `transparent url(${image}) center center no-repeat`};
   background-size: cover;
+
+  @media (max-width: 750px) {
+    width: 80%;
+  }
 `;
 
 const InfoWrapper = styled.div`

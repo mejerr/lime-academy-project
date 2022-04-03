@@ -6,19 +6,19 @@ import { fadeIn } from 'App';
 
 interface IProps {
   options: IOption;
-  selected?: number;
   showSelected?: boolean;
   collectionProps: ICollectionProps[];
 }
 
 const SelectableMenu: FC<IProps> = ({
   options,
-  selected = 1,
   showSelected = true,
   collectionProps = []
 }) => {
+
   const { width, height, onClick, justifyContent, arrow = false } = options;
-  const selectedTitle = collectionProps[selected - 1] ? collectionProps[selected - 1].name : "No collections added";
+  const [activeOption, setActiveOption] = useState<number>(0);
+  const selectedTitle = collectionProps[activeOption] ? collectionProps[activeOption].name : "No collections added";
   const [isOpen, setIsOpen] = useState(false);
 
   const onMenuClick = useCallback(() => {
@@ -29,14 +29,19 @@ const SelectableMenu: FC<IProps> = ({
     setIsOpen(!isOpen);
   }, [isOpen, options]);
 
-  const renderOptions = ({ name, collectionId }) => {
+  const onOptionClick = useCallback((optionIndex, collectionId) => {
+    setActiveOption(optionIndex);
+    onClick(collectionId);
+  }, []);
+
+  const renderOptions = ({ name, collectionId }, index) => {
     return (
       <OptionWrapper key={collectionId}>
         <Button
           title={name}
           width={width}
           height={height}
-          onClick={() => onClick(collectionId)}
+          onClick={() => onOptionClick(index, collectionId)}
           justifyContent={justifyContent}
           arrow={arrow}
         />

@@ -8,10 +8,10 @@ import Value from 'components/Value';
 
 interface IProps extends RouteComponentProps {
   collectionId: string;
-  tokenId: string;
+  itemId: string;
   creator: string;
   name: string;
-  price: string;
+  price: number;
   image: string;
   status: ItemStatus;
 }
@@ -19,7 +19,7 @@ interface IProps extends RouteComponentProps {
 const Token: FC<IProps> = ({
   history,
   collectionId,
-  tokenId,
+  itemId,
   creator,
   name,
   price,
@@ -30,8 +30,8 @@ const Token: FC<IProps> = ({
   const { userAddress }: IConnectData = state;
 
   const onClick = useCallback(() => {
-    history.push(`/collection/${collectionId}/token/${tokenId}`);
-  }, [collectionId, tokenId]);
+    history.push(`/collection/${collectionId}/token/${itemId}`);
+  }, [collectionId, itemId]);
 
   return (
     <TokenWrapper onClick={onClick}>

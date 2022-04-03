@@ -2,6 +2,7 @@ import React, { FC, useCallback } from 'react'
 import { INFTItem } from 'SDK/ContractsSDK';
 import styled from 'styled-components';
 import Token from './Token';
+
 interface IProps {
   tokens: INFTItem[]
 }
@@ -12,7 +13,7 @@ const Tokens: FC<IProps> = ({ tokens }) => {
       <Token
         key={itemId}
         collectionId={collectionId}
-        tokenId={itemId}
+        itemId={itemId}
         creator={creator}
         name={name}
         price={price}

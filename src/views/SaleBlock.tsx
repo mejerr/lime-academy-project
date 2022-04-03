@@ -18,10 +18,10 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
   const buttonTitle = nftToken?.status === ItemStatus.ForSale ? nftToken?.creator === userAddress ? "Cancel Sale" : "Buy" : "Sell";
-  const [price, setPrice] = useState<string>('');
+  const [price, setPrice] = useState<number>(0);
 
   const onPriceInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setPrice(event.target.value);
+    setPrice(+event.target.value);
   }, []);
 
   const onSellClick = useCallback(async () => {

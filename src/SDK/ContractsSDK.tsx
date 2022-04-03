@@ -22,7 +22,7 @@ interface IFetchedNFTItem {
   itemId: number;
   name: string;
   description: string;
-  price: string;
+  price: number;
   collectionId: number;
   createdOn: string;
   status: ItemStatus;
@@ -118,7 +118,7 @@ class ContractsSDK {
           itemId: Number(itemId.toString()),
           name,
           description,
-          price: parsedPrice,
+          price: +parsedPrice,
           collectionId: Number(collectionId.toString()),
           createdOn,
           status,
@@ -152,7 +152,7 @@ class ContractsSDK {
       itemId: Number(itemId.toString()),
       name,
       description,
-      price: parsedPrice,
+      price: +parsedPrice,
       collectionId: Number(collectionId.toString()),
       createdOn,
       status,

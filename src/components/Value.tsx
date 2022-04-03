@@ -1,18 +1,36 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ethereumImage } from 'assets';
+import { getEthPriceNow } from 'get-eth-price';
+
+
 
 interface IProps {
-  price?: string;
+  price?: number;
   showDollars?: boolean;
 }
 
-const Value: FC<IProps>  = ({ price = '', showDollars = false }) => {
+const Value: FC<IProps>  = ({ price = 0, showDollars = true }) => {
+  const [USDPrice, setUSDPrice] = useState<string>('0');
+
+  useEffect(() => {
+    const parseEtherUSD = async () => {
+      const result = await getEthPriceNow();
+      // tslint:disable-next-line: no-string-literal
+      const ethUSD = result[Object.keys(result)[0]]['ETH']['USD'];
+      setUSDPrice((price * ethUSD).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    }
+
+    if (price > 0) {
+      parseEtherUSD();
+    }
+  }, [price]);
+
   return (
     <ValueWrapper>
       <ValueIcon />
       <Amount>{price}</Amount>
-      {showDollars && <DollarsAmount>{"($123,123,123)"}</DollarsAmount>}
+      {showDollars && <DollarsAmount>{`($${USDPrice})`}</DollarsAmount>}
   </ValueWrapper>
   );
 }

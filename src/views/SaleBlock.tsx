@@ -1,4 +1,4 @@
-import React, { Dispatch, FC, SetStateAction } from 'react'
+import React, { ChangeEvent, Dispatch, FC, SetStateAction, useCallback, useContext, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 // import { AppStateContext, IConnectData } from './AppContextWrapper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +7,7 @@ import { INFTItem } from 'SDK/ContractsSDK';
 import { ellipseAddress } from 'helpers/utilities';
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
+import { AppStateContext, IConnectData } from './AppContextWrapper';
 
 interface IProps {
   nftToken: INFTItem;
@@ -15,8 +16,20 @@ interface IProps {
 }
 
 const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
-  // const { state } = useContext(AppStateContext);
-  // const { connected, contractsSDK, userAddress, userBalance }: IConnectData = state;
+  const { state } = useContext(AppStateContext);
+  const { connected, contractsSDK }: IConnectData = state;
+  const [price, setPrice] = useState<string>('');
+
+  const onPriceInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setPrice(event.target.value);
+  }, []);
+
+  const onSellClick = useCallback(async () =>{
+    if (connected && contractsSDK) {
+      await contractsSDK.onCreateSale(nftToken.itemId, price)
+    }
+  }, [connected, contractsSDK, price, nftToken]);
+
   return (
     <SaleWrapper isOpen={isOpen}>
       <SaleContent>
@@ -32,15 +45,16 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
           <PriceLabel>{"Price"}</PriceLabel>
           <AmountWrapper>
             <InputWrapper>
-              {nftToken?.price ? <PriceAmount>123123</PriceAmount>: <Input placeholder={"Amount"} />}
+              {!nftToken?.price ? <PriceAmount>123123</PriceAmount>: <Input onChange={onPriceInputChange} placeholder={"Amount"} />}
               <ValueIcon />
               <ETHText>{"ETH"}</ETHText>
             </InputWrapper>
             <ButtonWrapper>
               <Button
-                title={nftToken?.price ? 'Buy' : 'Sell'}
+                title={!nftToken?.price ? 'Buy' : 'Sell'}
                 width={"100%"}
                 height={"65px"}
+                onClick={onSellClick}
               />
             </ButtonWrapper>
           </AmountWrapper>

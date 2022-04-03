@@ -75,6 +75,8 @@ interface INFTMarketPlace {
 
     function getLockedBidAmount() external view returns (uint256);
 
+    function getListingFee() external view returns (uint256);
+
     function transferListingFee() external payable;
 
     function updateListingFee(uint256 listingFee) external payable;

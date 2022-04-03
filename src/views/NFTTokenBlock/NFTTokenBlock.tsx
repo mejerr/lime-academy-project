@@ -106,9 +106,6 @@ const NFTTokenBlockWrapper = styled.div`
   @media (max-width: 1000px) {
     flex-direction: column;
     align-items: center;
-  }
-
-  @media (max-width: 800px) {
     max-width: 580px;
   }
 
@@ -128,6 +125,11 @@ const ButtonWrapper = styled.div`
   width: 150px;
   background-color: #024bb0;
   border-radius: 10px;
+
+  @media (max-width: 1000px) {
+    right: 0;
+    top: 540px;
+  }
 
   :hover {
     background-color: rgba(2, 75, 176, 0.9);

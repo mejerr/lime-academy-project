@@ -84,6 +84,10 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         return lockedBidAmount;
     }
 
+    function getListingFee() external view virtual override returns (uint256) {
+        return listingFee;
+    }
+
     /* Transfers collected listing fees to owner */
     function transferListingFee()
         external

@@ -1,7 +1,7 @@
 // tslint:disable: no-empty
-import React, { FC, Suspense } from 'react';
+import React, { FC, Suspense, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 
 import Homepage from './views/Homepage';
 import Marketplace from 'views/Marketplace';
@@ -14,6 +14,8 @@ import Header from 'components/Header/Header';
 
 
 const App: FC = () => {
+  const history = useHistory();
+
   const routes = () => (
     <StyledContent>
       <Switch>
@@ -51,6 +53,16 @@ const App: FC = () => {
       </Switch>
     </StyledContent>
   );
+
+  useEffect(() => {
+    const unlisten = history.listen(() => {
+      window.scrollTo(0, 0);
+    });
+
+    return () => {
+      unlisten();
+    }
+  }, []);
 
     return (
       <AppContextWrapper>

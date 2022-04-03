@@ -1,8 +1,7 @@
 import React, { FC, useCallback, useContext } from 'react'
 import styled from 'styled-components'
-import { RouteComponentProps } from 'react-router';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Button from '../Button';
 
 interface INavButtons {
@@ -12,7 +11,12 @@ interface INavButtons {
   onClick: () => void
 }
 
-const NavBar: FC<RouteComponentProps> = ({ history }) => {
+interface IProps {
+  onSearchClick: () => void;
+}
+
+const NavBar: FC<IProps> = ({ onSearchClick }) => {
+  const history = useHistory();
   const { pathname } = history.location;
   const { state, onConnect } = useContext(AppStateContext);
   const { connected }: IConnectData = state;
@@ -41,9 +45,15 @@ const NavBar: FC<RouteComponentProps> = ({ history }) => {
     },
     {
       title: 'My Collection',
-      isActive: pathname === "/my-collection",
+      isActive: pathname.startsWith("/my-collection"),
       width: "100px",
       onClick: () => onClick("/my-collection")
+    },
+    {
+      title: 'Search',
+      isActive: false,
+      width: "80px",
+      onClick: onSearchClick
     }
   ];
 
@@ -72,4 +82,4 @@ const NavBarWrapper = styled.div`
   }
 `;
 
-export default withRouter(NavBar);
+export default NavBar;

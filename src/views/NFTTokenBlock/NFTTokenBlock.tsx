@@ -1,13 +1,15 @@
-import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
+import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { UNIT_DATA } from 'helpers/constants';
-import Offer from './Offer';
-import PurchaseComponent from './PurchaseComponent';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
 import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
 import { Button, ImageBlock, Value } from 'components';
+import PurchaseComponent from './PurchaseComponent';
+import Offer from './Offer';
 import SaleBlock from 'views/SaleBlock';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 const OFFERS_DUMMIES = [
   {price: 213, bidder: "maneskin"},
@@ -20,6 +22,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   const params: { id: string } = useParams();
   const [nftToken, setNFTToken] = useState<INFTItem | any>();
   const [openSale, setOpenSale] = useState<boolean>(false);
+  const creatorNode = useRef<HTMLHeadingElement>(null);
 
   const goToCollection = useCallback(() => {
     history.push(`/collection/${nftToken?.collectionId}`);
@@ -42,6 +45,11 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
         window.location.reload();
       }
   }, [connected, contractsSDK, nftToken]);
+
+  const copyToClipboard = useCallback(() => {
+    navigator.clipboard.writeText(creatorNode.current?.innerText ||'');
+    alert("Copied the text: " + creatorNode.current?.innerText ||'');
+  }, [creatorNode]);
 
   useEffect(() => {
     const renderNFTItem = async () => {
@@ -82,7 +90,10 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
       <DetailsWrapper>
         <CollectionName onClick={goToCollection}>{nftToken?.collectionName}</CollectionName>
         <TokenName>{nftToken?.name}</TokenName>
-        <Owner onClick={goToUserCollection}>Owned by <span>{nftToken?.creator}</span>  </Owner>
+        <Owner>
+          Owned by <span ref={creatorNode} onClick={goToUserCollection}>{nftToken?.creator}</span>
+          <CopyIcon icon={faCopy} onClick={copyToClipboard}/>
+        </Owner>
         {nftToken?.creator !== userAddress &&
           <PurchaseComponent nftToken={nftToken} setOpenSale={setOpenSale}/>
         }
@@ -212,6 +223,13 @@ const Owner = styled.div`
       color: rgba(32, 129, 226, 0.7);
     }
   }
+`;
+
+const CopyIcon = styled(FontAwesomeIcon)`
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+  cursor: pointer;
 `;
 
 const OffersWrapper = styled.div`

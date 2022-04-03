@@ -1,28 +1,40 @@
-import React, { FC } from 'react'
-import styled from 'styled-components'
+import React, { FC, useCallback, useState } from 'react';
+import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
+import { limeblockLogo } from "assets";
 import Menu from './Menu';
 import NavBar from './NavBar';
 import ConnectButton from './ConnectButton';
-import { limeblockLogo } from "assets";
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import Search from './Search';
 
-const Header: FC<RouteComponentProps> = ({ history }) => {
-  const onClick = () => history.push("/home");
+const Header: FC = () => {
+  const [openSearch, setOpenSearch] = useState<boolean>(false);
+  const history = useHistory();
+
+  const onClick = useCallback(() => {
+    history.push("/home");
+  }, []);
+
+  const onSearchClick = useCallback(() => {
+    setOpenSearch(!openSearch);
+  },[openSearch]);
 
   return (
-    <HeaderWrapper >
+    <HeaderWrapper>
       <Logo onClick={onClick}/>
       <Menu />
-      <NavBar />
+      <NavBar onSearchClick={onSearchClick}/>
+      <Search isOpen={openSearch} setIsOpen={setOpenSearch}/>
       <Title onClick={onClick}>{"Limeblock Marketplace"}</Title>
       <ConnectButton />
     </HeaderWrapper>
   )
 }
 
-export default withRouter(Header);
+export default Header;
 
 const HeaderWrapper = styled.div`
+  position: relative;
   width: 100%;
   height: 70px;
   display: flex;

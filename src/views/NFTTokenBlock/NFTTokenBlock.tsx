@@ -6,6 +6,8 @@ import PurchaseComponent from './PurchaseComponent';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
 import { INFTItem } from 'SDK/ContractsSDK';
+import SaleBlock from 'views/SaleBlock';
+import { Button } from 'components';
 
 const OFFERS_DUMMIES = [
   {
@@ -23,6 +25,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   const { connected, contractsSDK, userAddress }: IConnectData = state;
   const params: { id: string } = useParams();
   const [nftToken, setNFTToken] = useState<INFTItem | any>();
+  const [openSale, setOpenSale] = useState<boolean>(false);
 
   const goToCollection = useCallback(() => {
     history.push(`/collection/${nftToken.collectionId}`);
@@ -33,6 +36,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
       <Offer key={index} price={price} bidder={bidder} />
     );
   }, []);
+
 
   useEffect(() => {
     const renderNFTItem = async () => {
@@ -46,15 +50,26 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <NFTTokenBlockWrapper>
+      {nftToken?.creator === userAddress &&
+        <ButtonWrapper>
+          <Button
+            title={'Sell'}
+            width={"100%"}
+            height={"50px"}
+            onClick={() => setOpenSale(true)}
+          />
+        </ButtonWrapper>
+      }
+
       <ImageWrapper>
-        <Image image={nftToken?.image}/>
+        <Image src={nftToken?.image}/>
       </ImageWrapper>
 
       <DetailsWrapper>
         <CollectionName onClick={goToCollection}>{nftToken?.collectionName}</CollectionName>
         <TokenName>{nftToken?.name}</TokenName>
         <Owner>Owned by <span>{nftToken?.creator}</span>  </Owner>
-        {userAddress !== nftToken?.creator &&
+        {nftToken?.creator !== userAddress &&
           <PurchaseComponent price={nftToken?.price}/>
         }
 
@@ -69,6 +84,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
         </OffersWrapper>
 
       </DetailsWrapper>
+      <SaleBlock setOpenSale={setOpenSale} isOpen={openSale} nftToken={nftToken}/>
     </NFTTokenBlockWrapper>
   )
 };
@@ -81,21 +97,49 @@ const fadeIn = keyframes`
 `;
 
 const NFTTokenBlockWrapper = styled.div`
+  position: relative;
   animation: ${fadeIn} 0.5s ease-out;
   display: flex;
   margin: 30px auto;
   padding: 20px;
 
-
-  @media (max-width: 800px) {
-    max-width: 500px;
-  }
-
   @media (max-width: 1000px) {
     flex-direction: column;
     align-items: center;
-    max-width: 600px;
-    max-height: 1000px;
+  }
+
+  @media (max-width: 800px) {
+    max-width: 580px;
+  }
+
+  @media (max-width: 600px) {
+    width: 430px;
+  }
+
+  @media (max-width: 450px) {
+    width: 330px;
+  }
+`;
+
+const ButtonWrapper = styled.div`
+  position: absolute;
+  right: 40px;
+  top: 40px;
+  width: 150px;
+  background-color: #024bb0;
+  border-radius: 10px;
+
+  :hover {
+    background-color: rgba(2, 75, 176, 0.9);
+  }
+
+  & div {
+    color: #fff;
+    font-size: 16px;
+    margin: 0;
+    :hover {
+      color: #fff;
+    }
   }
 `;
 
@@ -105,6 +149,11 @@ const ImageWrapper = styled.div`
   border: 1px solid rgb(229, 232, 235);
   border-radius: 10px;
   margin: 0 10px;
+  flex-shrink: 0;
+
+  @media (max-width: 1400px) {
+    width: 400px;
+  }
 
   @media (max-width: 1000px) {
     width: 580px;
@@ -115,16 +164,16 @@ const ImageWrapper = styled.div`
     width: 430px;
     height: 500px;
   }
+
+  @media (max-width: 450px) {
+    width: 330px;
+  }
 `;
 
-const Image = styled.div<{ image: string }>`
+const Image = styled.img`
   height: 100%;
   width: 100%;
-  margin: 0 auto;
   border-radius: 10px;
-
-  background: ${({ image }) => image && `transparent url(${image}) center center no-repeat`};
-  background-size: cover;
 `;
 
 const DetailsWrapper = styled.div`
@@ -139,6 +188,8 @@ const CollectionName = styled.div`
   color: rgb(32, 129, 226);
   padding: 20px 0;
   cursor: pointer;
+  max-width: 200px;
+  word-break: break-all;
 `;
 
 const TokenName = styled.div`
@@ -154,6 +205,7 @@ const Owner = styled.div`
   > span {
     color: rgb(32, 129, 226);
     cursor: pointer;
+    word-break: break-all;
   }
 `;
 

@@ -22,16 +22,16 @@ const Tokens: FC<IProps> = ({ tokens }) => {
   }, []);
 
   return (
-    <TokensWrapper>
-      {tokens.map(renderTokens)}
+    <TokensWrapper isContent={!!tokens.length}>
+      {tokens.length ? tokens.map(renderTokens) : <EmptyContent>{"No items to show"}</EmptyContent>}
     </TokensWrapper>
   )
 };
 
 export default Tokens;
 
-const TokensWrapper = styled.div`
-  display: grid;
+const TokensWrapper = styled.div<{ isContent: boolean }>`
+  display: ${({ isContent }) => isContent && 'grid'};
   grid-template-columns: repeat(6, 1fr);
   grid-gap: 10px;
   padding: 30px 40px 20px;
@@ -55,4 +55,10 @@ const TokensWrapper = styled.div`
   @media (max-width: 750px) {
     grid-template-columns: repeat(1, 1fr);
   }
+`;
+
+const EmptyContent = styled.div`
+  font-size: 36px;
+  text-align: center;
+  padding: 40px;
 `;

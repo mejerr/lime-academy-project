@@ -23,7 +23,7 @@ const Marketplace: FC = () => {
   return (
     <MarketplaceWrapper>
       <MarketplaceTitle>{"Explore collections"}</MarketplaceTitle>
-      {!collections.length ? <EmptyContent>{"No collections to show"}</EmptyContent>: <Collections collections={collections}/>}
+      <Collections collections={collections}/>
     </MarketplaceWrapper>
   );
 };
@@ -42,7 +42,6 @@ const MarketplaceWrapper = styled.div`
   max-width: min(1880px, 100% - 40px);
   justify-content: center;
   flex-direction: column;
-  padding-bottom: 20px;
   animation: ${fadeIn} 0.5s ease-out;
 `;
 
@@ -58,12 +57,4 @@ const MarketplaceTitle = styled.div`
     font-size: 20px;
     padding: 40px 20px;
   }
-`;
-
-const EmptyContent = styled.div`
-  font-size: 36px;
-  text-align: center;
-  padding: 40px;
-  background: rgba(55, 55, 55, 0.04);
-  border: 1px solid rgba(55, 55, 55, 0.1);
 `;

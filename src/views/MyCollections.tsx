@@ -76,7 +76,6 @@ const MyCollectionsWrapper = styled.div`
   justify-content: center;
   flex-direction: column;
   animation: ${fadeIn} 0.5s ease-out;
-  padding-bottom: 20px;
 `;
 
 const ActiveContent = styled.div`

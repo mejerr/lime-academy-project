@@ -133,6 +133,7 @@ const BalanceWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 10px 0 5px;
 `;
 
 const ValueIcon = styled.div`

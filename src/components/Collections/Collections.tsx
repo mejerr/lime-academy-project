@@ -22,16 +22,16 @@ const Collections: FC<IProps> = ({ collections = [] }) => {
   }, []);
 
   return (
-    <CollectionsWrapper>
-      {collections.map(renderCollections)}
+    <CollectionsWrapper isContent={!!collections.length}>
+      {collections.length ? collections.map(renderCollections) : <EmptyContent>{"No collections to show"}</EmptyContent>}
     </CollectionsWrapper>
   )
 };
 
 export default Collections;
 
-const CollectionsWrapper = styled.div`
-  display: grid;
+const CollectionsWrapper = styled.div<{ isContent: boolean }>`
+  display: ${({ isContent }) => isContent &&  'grid'};
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 30px;
   padding: 30px 40px 20px;
@@ -48,4 +48,10 @@ const CollectionsWrapper = styled.div`
     grid-template-columns: repeat(1, 1fr);
     padding: 30px 0 20px;
   }
+`;
+
+const EmptyContent = styled.div`
+  font-size: 36px;
+  text-align: center;
+  padding: 40px;
 `;

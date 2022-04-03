@@ -37,7 +37,7 @@ const CollectionBlock: FC = () => {
         creator={collection.creator}
         description={collection.description}
       />
-      {tokens.length ? <NFTTokens tokens={tokens} /> : <EmptyContent>{"No items to show"}</EmptyContent>}
+      <NFTTokens tokens={tokens} />
     </CollectionBlockWrapper>
   );
 };
@@ -51,10 +51,4 @@ const fadeIn = keyframes`
 
 const CollectionBlockWrapper = styled.div`
   animation: ${fadeIn} 0.5s ease-out;
-`;
-
-const EmptyContent = styled.div`
-  font-size: 36px;
-  text-align: center;
-  padding: 40px;
 `;

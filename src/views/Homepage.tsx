@@ -68,6 +68,7 @@ const HomepageWrapper = styled.div`
   display: flex;
   align-items: center;
   animation: ${fadeIn} 0.5s ease-out;
+  padding-bottom: 20px;
 `;
 
 const HomepageContent = styled.div`

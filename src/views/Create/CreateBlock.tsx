@@ -69,18 +69,18 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
     setCollectionDescription(event.target.value);
   }, [collectionDescription]);
 
-  const uploadPicture = async (e) => {
+  const uploadPicture = useCallback(async (e) => {
     const file = e.target.files[0];
 
     try {
       const added = await client.add(file);
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
 
-      activeBlock === 1 ? setNFTFileUrl(() => url) : setCollectionFileUrl(() => url);
+      activeBlock === 1 ? setNFTFileUrl(url) : setCollectionFileUrl(url);
     } catch (error) {
       console.error('Error uploading file: ', error);
     }
-  }
+  }, [activeBlock]);
 
   const uploadToIPFS = useCallback(async () => {
     const data = JSON.stringify({ itemName, itemDescription, image: nftFileUrl });
@@ -108,14 +108,14 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
   }, [itemName, itemDescription, nftFileUrl, contractsSDK, selectedCollectionId]);
 
   const onCreateCollection = useCallback(async () => {
-    if (!contractsSDK || !collectionName.length || !collectionDescription.length) {
+    if (!contractsSDK || !collectionName.length || !collectionDescription.length || !collectionFileUrl.length) {
       return;
     }
 
     await contractsSDK.createCollection(collectionFileUrl, collectionName, collectionDescription);
 
     history.push('/marketplace');
-  }, [collectionName, collectionDescription, contractsSDK]);
+  }, [collectionName, collectionDescription, contractsSDK, collectionFileUrl]);
 
   return (
     <CreateStateContext.Provider

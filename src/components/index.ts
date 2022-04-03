@@ -3,9 +3,10 @@ import BlockHeader from "./BlockHeader";
 import SelectableMenu from "./SelectableMenu";
 import Collection from "./Collections/Collection";
 import Collections from "./Collections/Collections";
-
+import ImageBlock from "./ImageBlock";
 import NFTTokens from "./NFTTokens/NFTTokens";
 import Token from "./NFTTokens/Token";
+import Value from "./Value";
 
 export {
   Button,
@@ -14,5 +15,7 @@ export {
   Collections,
   Collection,
   NFTTokens,
-  Token
+  Token,
+  ImageBlock,
+  Value
 }

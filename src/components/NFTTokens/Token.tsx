@@ -1,17 +1,19 @@
 import React, { FC, useCallback, useContext } from 'react'
 import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { ethereumImage } from 'assets';
 import { Button } from 'components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { ItemStatus } from 'SDK/ContractsSDK';
+import Value from 'components/Value';
 
 interface IProps extends RouteComponentProps {
   collectionId: string;
   tokenId: string;
   creator: string;
   name: string;
-  price: number;
+  price: string;
   image: string;
+  status: ItemStatus;
 }
 
 const Token: FC<IProps> = ({
@@ -21,7 +23,8 @@ const Token: FC<IProps> = ({
   creator,
   name,
   price,
-  image
+  image,
+  status
 }) => {
   const { state } = useContext(AppStateContext);
   const { userAddress }: IConnectData = state;
@@ -39,33 +42,30 @@ const Token: FC<IProps> = ({
           <Name>{name}</Name>
         </Info>
 
-        {price > 0 &&
+        {status === ItemStatus.ForSale &&
           <PriceWrapper>
             <Price>{"Price"}</Price>
-            <Value>
-              <ValueIcon />
-              <Amount>{price}</Amount>
-            </Value>
+            <Value price={price} showDollars={false} />
           </PriceWrapper>
         }
       </InfoWrapper>
       {userAddress !== creator ?
-        price > 0 ?
-        <ButtonWrapper>
-          <Button
-            title={'Buy'}
-            width={"100%"}
-            height={"15px"}
-          />
-        </ButtonWrapper> :
-        <ButtonWrapper>
-          <Button
-            title={'Make offer'}
-            width={"100%"}
-            height={"15px"}
-          />
-        </ButtonWrapper> : null
-        }
+        status === ItemStatus.ForSale ?
+          <ButtonWrapper>
+            <Button
+              title={'Buy'}
+              width={"100%"}
+              height={"15px"}
+            />
+          </ButtonWrapper> :
+          <ButtonWrapper>
+            <Button
+              title={'Make offer'}
+              width={"100%"}
+              height={"15px"}
+            />
+          </ButtonWrapper> : null
+      }
     </TokenWrapper>
   );
 };
@@ -101,6 +101,7 @@ const Image = styled.div<{ image: string }>`
 const InfoWrapper = styled.div`
   display: flex;
   padding: 10px;
+  height: 72px;
 `;
 
 const Info = styled.div`
@@ -114,6 +115,7 @@ const Creator = styled.div`
   width: 100%;
   font-size: 12px;
   color: rgb(112, 122, 131);
+  word-break: break-all;
 
   & span {
     color: #2081E2
@@ -132,6 +134,10 @@ const PriceWrapper = styled.div`
   flex-direction: column;
   align-items: flex-end;
   width: 80px;
+
+  & div {
+    font-size: 14px;
+  }
 `;
 
 const Price = styled.div`
@@ -139,29 +145,6 @@ const Price = styled.div`
   color: rgb(112, 122, 131);
   text-align: right;
   padding: 0 10px;
-`;
-
-const Value = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  width: 80px;
-  padding: 0 10px;
-`;
-
-const ValueIcon = styled.div`
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  background: transparent url(${ethereumImage}) center center no-repeat;
-  background-size: contain;
-`;
-
-const Amount = styled.div`
-  color: rgb(53, 56, 64);
-  font-size: 14px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  text-align: right;
 `;
 
 const ButtonWrapper = styled.div`

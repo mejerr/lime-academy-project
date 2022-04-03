@@ -6,9 +6,8 @@ import PurchaseComponent from './PurchaseComponent';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
 import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
+import { Button, ImageBlock, Value } from 'components';
 import SaleBlock from 'views/SaleBlock';
-import { Button } from 'components';
-import { ethereumImage } from 'assets';
 
 const OFFERS_DUMMIES = [
   {
@@ -60,16 +59,17 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   return (
     <NFTTokenBlockWrapper>
       <ImageWrapper>
-        <Image src={nftToken?.image}/>
+        <ImageBlock
+          image={nftToken?.image}
+          width={'500px'}
+        />
       </ImageWrapper>
 
       {nftToken?.creator === userAddress &&
         <SaleButtonWrapper>
-          <Value>
-            <ValueIcon />
-            <Amount>{nftToken?.price}</Amount>
-            <DollarsAmount>{"($123,123,123)"}</DollarsAmount>
-          </Value>
+          {nftToken?.status === ItemStatus.ForSale &&
+            <Value price={nftToken?.price} />
+          }
           <ButtonWrapper>
             <Button
               title={nftToken?.status === ItemStatus.ForSale ? "Cancel sale" : "Sell"}
@@ -133,25 +133,38 @@ const NFTTokenBlockWrapper = styled.div`
   }
 `;
 
+const ImageWrapper = styled.div`
+  max-height: 100%;
+  max-width: 100%;
+  border: 1px solid rgb(229, 232, 235);
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin: 0 10px 0 20px;
+`;
+
 const SaleButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: absolute;
   right: 40px;
   top: 40px;
 
   @media (max-width: 1000px) {
     position: unset;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     width: 100%;
     padding: 10px 0;
   }
 `;
 
 const ButtonWrapper = styled.div`
-  width: 100%;
+  width: 150px;
   background-color: #024bb0;
   border-radius: 10px;
+
+  @media (max-width: 1000px) {
+    width: 100%;
+  }
 
   :hover {
     background-color: rgba(2, 75, 176, 0.9);
@@ -165,72 +178,6 @@ const ButtonWrapper = styled.div`
       color: #fff;
     }
   }
-`;
-
-const Value = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  background: white;
-`;
-
-const ValueIcon = styled.div`
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  background: transparent url(${ethereumImage}) center center no-repeat;
-  background-size: contain;
-`;
-
-const Amount = styled.div`
-  font-size: 24px;
-
-  @media (max-width: 450px) {
-    font-size: 18px;
-  }
-`;
-
-const DollarsAmount = styled.div`
-  font-size: 15px;
-  margin: 8px 0 0 4px;
-  color: rgb(112, 122, 131);
-
-  @media (max-width: 450px) {
-    font-size: 12px;
-  }
-`;
-
-const ImageWrapper = styled.div`
-  width: 500px;
-  height: 600px;
-  border: 1px solid rgb(229, 232, 235);
-  border-radius: 10px;
-  margin: 0 10px 0 20px;
-  flex-shrink: 0;
-
-  @media (max-width: 1400px) {
-    width: 400px;
-  }
-
-  @media (max-width: 1000px) {
-    width: 580px;
-    height: 500px;
-  }
-
-  @media (max-width: 600px) {
-    width: 430px;
-    height: 500px;
-  }
-
-  @media (max-width: 450px) {
-    width: 330px;
-  }
-`;
-
-const Image = styled.img`
-  height: 100%;
-  width: 100%;
-  border-radius: 10px;
 `;
 
 const DetailsWrapper = styled.div`

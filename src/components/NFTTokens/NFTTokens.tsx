@@ -7,7 +7,7 @@ interface IProps {
 }
 
 const Tokens: FC<IProps> = ({ tokens }) => {
-  const renderTokens = useCallback(({ collectionId, itemId, creator, name, price, image }) => {
+  const renderTokens = useCallback(({ collectionId, itemId, creator, name, price, image, status }) => {
     return (
       <Token
         key={itemId}
@@ -17,6 +17,7 @@ const Tokens: FC<IProps> = ({ tokens }) => {
         name={name}
         price={price}
         image={image}
+        status={status}
       />
     );
   }, []);

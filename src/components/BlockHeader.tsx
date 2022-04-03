@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleUp, faAngleDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { ethereumImage } from 'assets';
+import { ImageBlock } from 'components';
+
 interface IProps {
   image: string;
   name: string,
@@ -36,7 +38,9 @@ const BlockHeader: FC<IProps> = ({
 
   return (
     <BlockWrapper>
-      <BlockImage image={image}/>
+      <ImageWrapper>
+        <ImageBlock image={image} width={'100%'} height={'100%'}/>
+      </ImageWrapper>
       <BlockName>{name}</BlockName>
       <BlockCreator>
         {showCreator && <div>Created by</div>}
@@ -74,11 +78,14 @@ const BlockWrapper = styled.div`
   position: relative;
 `;
 
-const BlockImage = styled.div<{ image: string }>`
+const ImageWrapper = styled.div`
   height: 220px;
   width: 100%;
-  background: ${({ image }) => `transparent url(${image}) center center no-repeat`};
-  background-size: cover;
+
+  & img {
+    border-radius: 0;
+  }
+
 `;
 
 const BlockName = styled.div`

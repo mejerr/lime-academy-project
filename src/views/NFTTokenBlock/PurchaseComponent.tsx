@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { Button } from 'components';
-import { ethereumImage } from 'assets';
+import { Button, Value } from 'components';
 import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
+import { ethereumImage } from 'assets';
 
 interface IProps extends RouteComponentProps {
   nftToken: INFTItem;
@@ -38,11 +38,7 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) 
     <PurchaseWrapper>
       <Price>{"Current price"}</Price>
       {nftToken?.status === ItemStatus.ForSale ?
-        <Value>
-          <ValueIcon />
-          <Amount>{nftToken?.price}</Amount>
-          <DollarsAmount>{"($123,123,123)"}</DollarsAmount>
-        </Value> :
+        <Value price={nftToken?.price} /> :
         <NoPrice>{"Item not for sale, only offers"}</NoPrice>
       }
       <ButtonsWrapper>
@@ -95,34 +91,8 @@ const Price = styled.div`
   color: rgb(112, 122, 131);
 `;
 
-const Value = styled.div`
-  display: flex;
-  width: 100%;
-  height: 45px;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const ValueIcon = styled.div`
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-  background: transparent url(${ethereumImage}) center center no-repeat;
-  background-size: contain;
-`;
-
-const Amount = styled.div`
-  font-size: 30px;
-`;
-
 const NoPrice = styled.div`
   font-size: 24px;
-`;
-
-const DollarsAmount = styled.div`
-  font-size: 15px;
-  margin: 8px 0 0 4px;
-  color: rgb(112, 122, 131);
 `;
 
 const ButtonsWrapper = styled.div`
@@ -216,4 +186,12 @@ const Input = styled.input`
     outline: none !important;
     border: none;
   }
+`;
+
+const ValueIcon = styled.div`
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background: transparent url(${ethereumImage}) center center no-repeat;
+  background-size: contain;
 `;

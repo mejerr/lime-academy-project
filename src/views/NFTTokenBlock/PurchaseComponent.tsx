@@ -1,16 +1,18 @@
-import React, { FC, useState, useCallback } from 'react'
+import React, { FC, useState, useCallback, Dispatch, SetStateAction } from 'react'
 import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
+import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
 
 interface IProps extends RouteComponentProps {
-  price: number;
+  nftToken: INFTItem;
+  setOpenSale: Dispatch<SetStateAction<boolean>>;
 }
 
-const PurchaseComponent: FC<IProps> = ({ history, price = 0 }) => {
+const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) => {
   const [openOffer, setOpenOffer] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
 
@@ -22,7 +24,11 @@ const PurchaseComponent: FC<IProps> = ({ history, price = 0 }) => {
     // send real offer
     setOpenOffer(false);
     setInputValue('');
-  }, []);
+  }, [setInputValue, setOpenOffer]);
+
+  const onBuyItem = useCallback(() => {
+    setOpenSale(true);
+  }, [setOpenSale]);
 
   const onInputChange = useCallback((event) => {
     setInputValue(event.target.value);
@@ -31,10 +37,10 @@ const PurchaseComponent: FC<IProps> = ({ history, price = 0 }) => {
   return (
     <PurchaseWrapper>
       <Price>{"Current price"}</Price>
-      {price > 0 ?
+      {nftToken?.status === ItemStatus.ForSale ?
         <Value>
           <ValueIcon />
-          <Amount>{price}</Amount>
+          <Amount>{nftToken?.price}</Amount>
           <DollarsAmount>{"($123,123,123)"}</DollarsAmount>
         </Value> :
         <NoPrice>{"Item not for sale, only offers"}</NoPrice>
@@ -52,7 +58,7 @@ const PurchaseComponent: FC<IProps> = ({ history, price = 0 }) => {
               title={'Buy now'}
               width={"270px"}
               height={"65px"}
-              onClick={!price ? onOpenOffer : onOpenOffer}
+              onClick={nftToken?.status === ItemStatus.ForSale ? onBuyItem : onOpenOffer}
             />
           </BuyButtonWrapper>
         }
@@ -60,7 +66,7 @@ const PurchaseComponent: FC<IProps> = ({ history, price = 0 }) => {
         <SendButtonWrapper>
           <OfferIcon icon={faPaperPlane} />
           <Button
-            title={openOffer ? 'Place bid' : 'Send Offer'}
+            title={openOffer ? 'Send Offer' : 'Place bid'}
             width={"150px"}
             height={"65px"}
             onClick={openOffer ? onSendOffer : onOpenOffer}
@@ -191,7 +197,7 @@ const InputWrapper = styled.div`
 `;
 
 const ETHText = styled.span`
-  padding: 0 5px;
+  padding: 0 10px 0 5px;
   color: rgb(112, 122, 131);
 `;
 

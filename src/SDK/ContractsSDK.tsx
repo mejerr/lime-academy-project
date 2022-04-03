@@ -5,6 +5,11 @@ import marketplaceABI from 'NFTMarketPlace.json';
 import marketItemABI from 'NFTMarketItem.json';
 import axios from 'axios';
 
+export enum ItemStatus {
+  "ForSale",
+  'Idle'
+}
+
 export interface ICollection {
   collectionId: number;
   name: string;
@@ -20,12 +25,13 @@ interface IFetchedNFTItem {
   price: string;
   collectionId: number;
   createdOn: string;
-  status: string;
+  status: ItemStatus;
 }
 
 export interface INFTItem extends IFetchedNFTItem{
   image: string;
   creator: string;
+  collectionName?: string;
 }
 
 class ContractsSDK {
@@ -167,6 +173,17 @@ class ContractsSDK {
 
     const transaction = await this.marketplace.createSale(tokenId, parsedPrice, { value: listingFee });
     await transaction.wait();
+  }
+
+  public async onCancelSale(tokenId: string) {
+    const transaction = await this.marketplace.cancelSale(tokenId);
+    transaction.wait();
+  }
+
+  public async onBuyMarketItem(tokenId: string) {
+    const price = (await this.marketplace.marketItems(tokenId)).price;
+    const transaction = await this.marketplace.buyMarketItem(tokenId, { value: price });
+    transaction.wait();
   }
 }
 

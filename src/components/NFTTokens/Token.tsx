@@ -35,7 +35,7 @@ const Token: FC<IProps> = ({
       <Image image={image}/>
       <InfoWrapper>
         <Info>
-          <Creator>creator <span>{creator}</span></Creator>
+          <Creator>owner <span>{creator}</span></Creator>
           <Name>{name}</Name>
         </Info>
 

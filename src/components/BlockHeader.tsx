@@ -4,12 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleUp, faAngleDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { ethereumImage } from 'assets';
 import { ImageBlock } from 'components';
+import { useHistory } from 'react-router-dom';
 
 interface IProps {
   image: string;
   name: string,
   creator?: string,
-  userBalance?: string,
+  userBalance?: number,
   description?: string,
   showCreator?: boolean
 }
@@ -18,7 +19,7 @@ const BlockHeader: FC<IProps> = ({
   image,
   name,
   creator,
-  userBalance = '',
+  userBalance = 0,
   description = '',
   showCreator = true
 }) => {
@@ -26,9 +27,15 @@ const BlockHeader: FC<IProps> = ({
   const [openDescription, setOpenDescription] = useState<boolean>(false);
   const descriptionNode = useRef<HTMLHeadingElement>(null);
 
+  const history = useHistory();
+
   const onOpenDescription = useCallback(() => {
     setOpenDescription(!openDescription);
   }, [openDescription]);
+
+  const goToUserCollection = useCallback(() => {
+    history.push(`/my-collection/${creator}`);
+  }, [creator]);
 
   useEffect(() => {
     if (descriptionNode.current) {
@@ -42,15 +49,16 @@ const BlockHeader: FC<IProps> = ({
         <ImageBlock image={image} width={'100%'} height={'100%'}/>
       </ImageWrapper>
       <BlockName>{name}</BlockName>
-      <BlockCreator>
+      <BlockCreator onClick={goToUserCollection}>
         {showCreator && <div>Created by</div>}
         <span>{creator}</span>
       </BlockCreator>
-        {userBalance &&
-          <BalanceWrapper>
-            <ValueIcon/>
-            Balance: {userBalance.substring(0, 10)}
-          </BalanceWrapper> }
+      {!!userBalance &&
+        <BalanceWrapper>
+          <ValueIcon/>
+          Balance: {userBalance.toString().substring(0, 10)}
+        </BalanceWrapper>
+      }
       {description && (<>
         <BlockDescriptionWrapper
           ref={descriptionNode}
@@ -100,9 +108,13 @@ const BlockCreator = styled.div`
   width: 100%;
   text-align: center;
   color: rgb(112, 122, 131);
+  cursor: pointer;
 
   > span {
     color: rgb(32, 129, 226);
+    :hover {
+      color: rgba(32, 129, 226, 0.7);
+    }
   }
 `;
 

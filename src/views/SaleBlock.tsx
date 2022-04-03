@@ -39,8 +39,8 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
   }, [connected, contractsSDK, nftToken]);
 
   return (
-    <SaleWrapper isOpen={isOpen}>
-      <SaleContent>
+    <SaleWrapper isOpen={isOpen} onClick={() => setOpenSale(false)}>
+      <SaleContent onClick={(e) => e.stopPropagation()}>
         <ImageWrapper>
           <Image src={nftToken?.image}/>
         </ImageWrapper>
@@ -48,7 +48,7 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
         <DetailsWrapper>
           <TokenName>Name: <div>{nftToken?.name}</div></TokenName>
           <TokenDescription>Description: <div>{nftToken?.description}</div></TokenDescription>
-          <Owner>Owned by <span>{ellipseAddress(nftToken?.creator, 10)}</span>  </Owner>
+          <Owner>Owned by <span>{ellipseAddress(nftToken?.creator, 10)}</span></Owner>
 
           <PriceLabel>{"Price"}</PriceLabel>
           <AmountWrapper>

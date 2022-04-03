@@ -38,7 +38,12 @@ const App: FC = () => {
           component={CreateBlock}
         />
         <Route
+          path='/my-collection/:id'
+          component={MyCollections}
+        />
+        <Route
           path='/my-collection'
+          exact
           component={MyCollections}
         />
         <Route path='/' exact component={Homepage} />

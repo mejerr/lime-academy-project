@@ -4,6 +4,7 @@ import { BlockHeader, Collections, NFTTokens } from 'components';
 import { nftImage } from 'assets';
 import { ICollection, INFTItem } from 'SDK/ContractsSDK';
 import { AppStateContext, IConnectData } from './AppContextWrapper';
+import { useParams } from 'react-router-dom';
 
 const MyCollections: FC = () => {
   const { state } = useContext(AppStateContext);
@@ -12,31 +13,34 @@ const MyCollections: FC = () => {
   const [collections, setCollections] = useState<ICollection[]>([]);
   const [tokens, setTokens] = useState<INFTItem[]>([]);
 
+  const params: { id: string } = useParams();
+  const myAddress = params.id === userAddress ? userAddress : params.id ? params.id : userAddress;
+
   const changeTab = useCallback((tab) => {
     setActiveTab(tab);
   }, [setActiveTab]);
 
   useEffect(() => {
     const renderCollections = async () => {
-      const result = await contractsSDK.getUserCollections(userAddress);
+      const result = await contractsSDK.getUserCollections(myAddress);
       setCollections(result);
     }
 
     if (activeTab === "Collections" && connected && contractsSDK) {
       renderCollections();
     }
-  }, [connected, contractsSDK, activeTab, userAddress]);
+  }, [connected, contractsSDK, activeTab, myAddress]);
 
   useEffect(() => {
     const renderTokens = async () => {
-      const result = await contractsSDK.getUserNFTs(userAddress);
+      const result = await contractsSDK.getUserNFTs(myAddress);
       setTokens(result);
     }
 
     if (activeTab === "Tokens" && connected && contractsSDK) {
       renderTokens();
     }
-  }, [connected, contractsSDK, activeTab,userAddress]);
+  }, [connected, contractsSDK, activeTab, myAddress]);
 
 
   return (
@@ -44,8 +48,8 @@ const MyCollections: FC = () => {
       <BlockHeader
         image={nftImage}
         name={"unnamed"}
-        creator={userAddress}
-        userBalance={userBalance}
+        creator={myAddress}
+        userBalance={params.id === userAddress ? userBalance : 0}
         showCreator={false}
       />
       <ActiveContent>

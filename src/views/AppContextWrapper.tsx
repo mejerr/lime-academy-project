@@ -14,7 +14,7 @@ interface IProps {
 
 export interface IConnectData {
   userAddress?: string;
-  userBalance?: string;
+  userBalance?: number;
   signer?: any;
   library?: any;
   connected?: boolean;
@@ -25,7 +25,7 @@ export interface IConnectData {
 
 const INITIAL_STATE: IConnectData = {
   userAddress: '',
-  userBalance: '',
+  userBalance: 0,
   signer: null,
   library: null,
   connected: false,
@@ -70,10 +70,12 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
   }
 
   const networkChanged = async () => {
-    const library = new Web3Provider(provider);
-    const network = await library.getNetwork();
-    const chainId = network.chainId;
-    setState({ chainId, library });
+    if (provider) {
+      const library = new Web3Provider(provider);
+      const network = await library.getNetwork();
+      const chainId = network.chainId;
+      setState({ chainId, library });
+    }
   }
 
   const close = async () => {
@@ -124,7 +126,7 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
     const signer = library.getSigner();
     const network = await library.getNetwork();
     const userAddress = await signer.getAddress();
-    const userBalance = ethers.utils.formatEther((await signer.getBalance()).toString());
+    const userBalance = +ethers.utils.formatEther((await signer.getBalance()).toString());
     const chainId = await signer.getChainId();
 
     setProvider(provider);

@@ -35,23 +35,22 @@ export default ImageBlock;
 const ImageWrapper = styled.div<{ width: string, height: string }>`
   width: ${({ width }) => width};
   height: ${({ height }) => height};
-
   cursor: pointer;
 
   @media (max-width: 1400px) {
-    width: 400px;
+    width: ${({ width }) => width === "100%" ? width : '400px'};
   }
 
   @media (max-width: 1000px) {
-    width: 580px;
+    width: ${({ width }) => width === "100%" ? width : '580px'};
   }
 
   @media (max-width: 600px) {
-    width: 430px;
+    width: ${({ width }) => width === "100%" ? width : '430px'};
   }
 
   @media (max-width: 450px) {
-    width: 330px;
+    width: ${({ width }) => width === "100%" ? width : '330px'};
   }
 `;
 

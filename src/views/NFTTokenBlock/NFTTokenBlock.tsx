@@ -10,14 +10,8 @@ import { Button, ImageBlock, Value } from 'components';
 import SaleBlock from 'views/SaleBlock';
 
 const OFFERS_DUMMIES = [
-  {
-    price: 213,
-    bidder: "maneskin"
-  },
-  {
-    price: 456,
-    bidder: "dsadsa"
-  },
+  {price: 213, bidder: "maneskin"},
+  {price: 456, bidder: "dsadsa" },
 ];
 
 const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
@@ -29,6 +23,10 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
   const goToCollection = useCallback(() => {
     history.push(`/collection/${nftToken?.collectionId}`);
+  }, [nftToken]);
+
+  const goToUserCollection = useCallback(() => {
+    history.push(`/my-collection/${nftToken?.creator}`);
   }, [nftToken]);
 
   const renderOffers = useCallback(({ price, bidder}, index) => {
@@ -84,7 +82,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
       <DetailsWrapper>
         <CollectionName onClick={goToCollection}>{nftToken?.collectionName}</CollectionName>
         <TokenName>{nftToken?.name}</TokenName>
-        <Owner>Owned by <span>{nftToken?.creator}</span>  </Owner>
+        <Owner onClick={goToUserCollection}>Owned by <span>{nftToken?.creator}</span>  </Owner>
         {nftToken?.creator !== userAddress &&
           <PurchaseComponent nftToken={nftToken} setOpenSale={setOpenSale}/>
         }
@@ -210,6 +208,9 @@ const Owner = styled.div`
     color: rgb(32, 129, 226);
     cursor: pointer;
     word-break: break-all;
+    :hover {
+      color: rgba(32, 129, 226, 0.7);
+    }
   }
 `;
 

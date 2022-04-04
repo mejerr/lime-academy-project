@@ -23,6 +23,12 @@ export interface ICollection {
   image: string;
 }
 
+export interface IBid {
+  bidId: number;
+  amount: string;
+  bidder: string;
+}
+
 interface IFetchedNFTItem {
   itemId: number;
   name: string;
@@ -48,13 +54,13 @@ class ContractsSDK {
     this.userAddress = userAddress;
 
     this.marketItem =  new ethers.Contract(
-      '0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1',
+      '0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44',
       marketItemABI.abi,
       signer
     );
 
     this.marketplace =  new ethers.Contract(
-      '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE',
+      '0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f',
       marketplaceABI.abi,
       signer
     );
@@ -206,6 +212,32 @@ class ContractsSDK {
   public async onBuyMarketItem(tokenId: string) {
     const price = (await this.marketplace.marketItems(tokenId)).price;
     const transaction = await this.marketplace.buyMarketItem(tokenId, { value: price });
+    transaction.wait();
+  }
+
+  public async onGetItemOffers(tokenId: string) {
+    const bidsLength = Number((await this.marketplace.getItemBidsLength()).toString());
+    const bidsIds: IBid[] = [];
+
+    for (let i = 1; i <= bidsLength; i++) {
+      const bid = this.marketplace.itemBids(tokenId, i);
+      bidsIds.push(bid);
+    };
+
+    const result = await Promise.all(bidsIds).then(bids => (
+      bids.map(({ bidId, amount, bidder }): IBid => ({
+        bidId: Number(bidId.toString()),
+        amount: ethers.utils.formatUnits(amount.toString(), 'ether'),
+        bidder
+      }))
+    ));
+
+    return result;
+  }
+
+  public async onBidOnItem(tokenId: string, amount: string) {
+    const parsedPrice = ethers.utils.parseEther(amount);
+    const transaction = await this.marketplace.bidMarketItem(tokenId, { value: parsedPrice });
     transaction.wait();
   }
 }

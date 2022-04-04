@@ -40,7 +40,7 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
 
   const [collectionFileUrl, setCollectionFileUrl] = useState<string>("");
   const [nftFileUrl, setNFTFileUrl] = useState<string>("");
-  const [selectedCollectionId, setSelectedCollectionId] = useState<number>(1);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<number>(0);
   const [activeBlock, setActiveBlock] = useState<number>(1);
   const [itemName, setItemName] = useState<string>("");
   const [itemDescription, setItemDescription] = useState<string>("");

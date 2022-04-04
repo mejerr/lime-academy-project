@@ -82,6 +82,7 @@ const Image = styled.div<{ image: string }>`
   border-top-right-radius: 10px;
   height: 280px;
   width: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 
   background: ${({ image }) => image && `transparent url(${image}) center center no-repeat`};
   background-size: cover;

@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback, Dispatch, SetStateAction } from 'react'
+import React, { FC, useState, useCallback, Dispatch, SetStateAction, useContext } from 'react'
 import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,6 +6,7 @@ import { faCartShopping, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { Button, Value } from 'components';
 import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
 import { ethereumImage } from 'assets';
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 
 interface IProps extends RouteComponentProps {
   nftToken: INFTItem;
@@ -13,6 +14,9 @@ interface IProps extends RouteComponentProps {
 }
 
 const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) => {
+  const { state } = useContext(AppStateContext);
+  const { connected, contractsSDK }: IConnectData = state;
+
   const [openOffer, setOpenOffer] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
 
@@ -20,11 +24,14 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) 
     setOpenOffer(!openOffer);
   }, [openOffer]);
 
-  const onSendOffer = useCallback(() => {
-    // send real offer
+  const onSendOffer = useCallback(async () => {
+    if (connected && contractsSDK && nftToken.itemId && inputValue) {
+      await contractsSDK.onBidOnItem(nftToken?.itemId, inputValue);
+      setInputValue('');
+    }
+
     setOpenOffer(false);
-    setInputValue('');
-  }, [setInputValue, setOpenOffer]);
+  }, [connected, contractsSDK, inputValue, nftToken, setInputValue, setOpenOffer]);
 
   const onBuyItem = useCallback(() => {
     setOpenSale(true);
@@ -52,7 +59,7 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) 
             <BuyIcon icon={faCartShopping} />
             <Button
               title={'Buy now'}
-              width={"270px"}
+              width={"150px"}
               height={"65px"}
               onClick={nftToken?.status === ItemStatus.ForSale ? onBuyItem : onOpenOffer}
             />
@@ -98,6 +105,10 @@ const NoPrice = styled.div`
 const ButtonsWrapper = styled.div`
   display: flex;
   padding: 20px 20px 20px 0;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
 `;
 
 const SendButtonWrapper = styled.div`
@@ -137,22 +148,24 @@ const BuyButtonWrapper = styled(SendButtonWrapper as any)`
       color: #fff;
     }
   }
+
+  @media (max-width: 600px) {
+    margin: 0 10px 10px;
+    width: calc(100% - 20px);
+  }
 `;
 
 const BuyIcon = styled(FontAwesomeIcon)`
   position: absolute;
   color: #fff;
-  top: 25px;
-  left: 75px;
-  width: 22px;
-  height: 22px;
+  top: 23px;
+  left: 13px;
+  width: 20px;
+  height: 20px;
 `;
 
-const OfferIcon = styled(FontAwesomeIcon)`
-  position: absolute;
+const OfferIcon = styled(BuyIcon as any)`
   color: #024bb0;
-  top: 27px;
-  left: 13px;
   width: 18px;
   height: 18px;
 `;
@@ -161,9 +174,16 @@ const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   width: 270px;
+  height: 68px;
   margin: 0 10px;
   border-radius: 10px;
   border: 1px solid #024bb0;
+
+
+  @media (max-width: 600px) {
+    margin-bottom: 10px;
+    width: calc(100% - 20px);
+  }
 `;
 
 const ETHText = styled.span`

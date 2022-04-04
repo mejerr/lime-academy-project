@@ -1,24 +1,18 @@
-import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
-import { UNIT_DATA } from 'helpers/constants';
+import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
 import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
-import { Button, ImageBlock, Value } from 'components';
+import { Button, ImageBlock, Offers, Value } from 'components';
 import PurchaseComponent from './PurchaseComponent';
-import Offer from './Offer';
 import SaleBlock from 'views/SaleBlock';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
-const OFFERS_DUMMIES = [
-  {price: 213, bidder: "maneskin"},
-  {price: 456, bidder: "dsadsa" },
-];
-
 const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
+
   const params: { id: string } = useParams();
   const [nftToken, setNFTToken] = useState<INFTItem | any>();
   const [openSale, setOpenSale] = useState<boolean>(false);
@@ -31,12 +25,6 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   const goToUserCollection = useCallback(() => {
     history.push(`/my-collection/${nftToken?.creator}`);
   }, [nftToken]);
-
-  const renderOffers = useCallback(({ price, bidder}, index) => {
-    return (
-      <Offer key={index} price={price} bidder={bidder} />
-    );
-  }, []);
 
   const cancelSale = useCallback(async () => {
       if (connected && contractsSDK) {
@@ -94,20 +82,10 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
           Owned by <span ref={creatorNode} onClick={goToUserCollection}>{nftToken?.creator}</span>
           <CopyIcon icon={faCopy} onClick={copyToClipboard}/>
         </Owner>
-        {nftToken?.creator !== userAddress &&
-          <PurchaseComponent nftToken={nftToken} setOpenSale={setOpenSale}/>
-        }
 
-        <OffersWrapper>
-          <OffersTitle>{"Offers"}</OffersTitle>
-          <OffersData>
-            {UNIT_DATA.map(({ name }) => <Unit key={name}>{name}</Unit>)}
-          </OffersData>
-          <OffersContent>
-            {OFFERS_DUMMIES.map(renderOffers)}
-          </OffersContent>
-        </OffersWrapper>
+        {nftToken?.creator !== userAddress && <PurchaseComponent nftToken={nftToken} setOpenSale={setOpenSale}/>}
 
+        <Offers tokenId={nftToken?.itemId}/>
       </DetailsWrapper>
       <SaleBlock setOpenSale={setOpenSale} isOpen={openSale} nftToken={nftToken}/>
     </NFTTokenBlockWrapper>
@@ -231,43 +209,3 @@ const CopyIcon = styled(FontAwesomeIcon)`
   margin-left: 10px;
   cursor: pointer;
 `;
-
-const OffersWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border: 1px solid rgb(229, 232, 235);
-  border-radius: 10px;
-  margin: 20px 0;
-`;
-
-const OffersTitle = styled.div`
-  width: 100%;
-  min-height: 70px;
-  color: #04111D;
-  font-weight: 600;
-  padding: 20px;
-`;
-
-const OffersData = styled.div`
-  display: flex;
-  width: 100%;
-  border-bottom: 1px solid rgb(229, 232, 235);
-  border-top: 1px solid rgb(229, 232, 235);
-  padding: 10px 20px;
-`;
-
-const Unit = styled.div`
-  font-size: 14px;
-  width: 28%;
-`;
-
-const OffersContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  padding: 0 20px;
-`;
-

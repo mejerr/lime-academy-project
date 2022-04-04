@@ -302,6 +302,8 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
             payable(msg.sender)
         );
 
+        bidsIds.push(newBidId);
+
         emit BidCreated(newBidId, msg.value, msg.sender);
     }
 

@@ -15,11 +15,10 @@ const SelectableMenu: FC<IProps> = ({
   showSelected = true,
   collectionProps = []
 }) => {
-
   const { width, height, onClick, justifyContent, arrow = false } = options;
   const [activeOption, setActiveOption] = useState<number>(0);
   const selectedTitle = collectionProps[activeOption] ? collectionProps[activeOption].name : "No collections added";
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const onMenuClick = useCallback(() => {
     if (!collectionProps.length) {
@@ -34,7 +33,7 @@ const SelectableMenu: FC<IProps> = ({
     onClick(collectionId);
   }, []);
 
-  const renderOptions = ({ name, collectionId }, index) => {
+  const renderOptions = ({ name, collectionId }, index: number) => {
     return (
       <OptionWrapper key={collectionId}>
         <Button

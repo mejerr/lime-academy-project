@@ -7,6 +7,7 @@ import ImageBlock from "./ImageBlock";
 import NFTTokens from "./NFTTokens/NFTTokens";
 import Token from "./NFTTokens/Token";
 import Value from "./Value";
+import Offers from "./Offers/Offers";
 
 export {
   Button,
@@ -17,5 +18,6 @@ export {
   NFTTokens,
   Token,
   ImageBlock,
-  Value
+  Value,
+  Offers
 }

@@ -41,12 +41,13 @@ const RequiredFields: FC = () => {
       const collections: ICollection[] = await contractsSDK.getUserCollections(userAddress);
       const collectionProps: ICollectionProps[] = collections.map(({ name, collectionId }): ICollectionProps => ({ name, collectionId }));
       setCollectionProps(collectionProps);
+      setSelectedCollectionId(collectionProps[0]?.collectionId);
     }
 
     if (connected && contractsSDK) {
       renderCollections();
     }
-  }, [connected, contractsSDK]);
+  }, [connected, contractsSDK, setSelectedCollectionId, collectionProps]);
 
   const OPTIONS = {
     width: "100%",

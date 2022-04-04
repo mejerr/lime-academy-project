@@ -1,7 +1,9 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components';
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
+import { ellipseAddress } from '../../helpers/utilities';
+import { getEthPriceNow } from 'get-eth-price';
 
 interface IProps {
   price: number;
@@ -9,14 +11,29 @@ interface IProps {
 }
 
 const Offer: FC<IProps> = ({ price, bidder }) => {
+  const [USDPrice, setUSDPrice] = useState<string>('0');
+
+  useEffect(() => {
+    const parseEtherUSD = async () => {
+      const result = await getEthPriceNow();
+      // tslint:disable-next-line: no-string-literal
+      const ethUSD = result[Object.keys(result)[0]]['ETH']['USD'];
+      setUSDPrice((price * ethUSD).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    }
+
+    if (price > 0) {
+      parseEtherUSD();
+    }
+  }, [price]);
+
   return (
     <OfferContainer>
       <PriceETH>
         <ValueIcon />
         <div>{`${price} ETH`}</div>
       </PriceETH>
-      <PriceUSD>{"$123.123.123"}</PriceUSD>
-      <Bidder>{bidder}</Bidder>
+      <PriceUSD>{`$${USDPrice}`}</PriceUSD>
+      <Bidder>{ellipseAddress(bidder, 5)}</Bidder>
       <OfferButtonsWrapper>
         <AcceptButtonWrapper>
           <Button

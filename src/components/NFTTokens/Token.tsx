@@ -4,6 +4,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button } from 'components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { ItemStatus } from 'SDK/ContractsSDK';
+import { ellipseAddress } from 'helpers/utilities';
 import Value from 'components/Value';
 
 interface IProps extends RouteComponentProps {
@@ -38,7 +39,7 @@ const Token: FC<IProps> = ({
       <Image image={image}/>
       <InfoWrapper>
         <Info>
-          <Creator>owner <span>{creator}</span></Creator>
+          <Creator>owner <span>{ellipseAddress(creator, 10)}</span></Creator>
           <Name>{name}</Name>
         </Info>
 

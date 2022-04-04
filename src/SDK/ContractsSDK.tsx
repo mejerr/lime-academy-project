@@ -10,6 +10,11 @@ export enum ItemStatus {
   'Idle'
 }
 
+export interface ICreator {
+  name: string;
+  image: string;
+}
+
 export interface ICollection {
   collectionId: number;
   name: string;
@@ -43,17 +48,35 @@ class ContractsSDK {
     this.userAddress = userAddress;
 
     this.marketItem =  new ethers.Contract(
-      '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+      '0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1',
       marketItemABI.abi,
       signer
     );
 
     this.marketplace =  new ethers.Contract(
-      '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
+      '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE',
       marketplaceABI.abi,
       signer
     );
+  }
 
+  public async onChangeCreatorName(creatorAddress: string, name: string) {
+    const transanction = await this.marketplace.changeCreatorName(creatorAddress, name);
+    transanction.wait();
+  }
+
+  public async onChangeCreatorImage(creatorAddress: string, image: string) {
+    const transanction = await this.marketplace.changeCreatorImage(creatorAddress, image);
+    transanction.wait();
+  }
+
+  public async onGetCreatorInfo(creatorAddress: string) {
+    const { name, image }: ICreator = await this.marketplace.creatorsInfo(creatorAddress);
+
+    return {
+      name,
+      image
+    }
   }
 
   public async getCollections() {

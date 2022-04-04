@@ -7,6 +7,11 @@ interface INFTMarketPlace {
         Idle
     }
 
+    struct Creator {
+        string name;
+        string image;
+    }
+
     struct Collection {
         uint256 collectionId;
         string name;
@@ -72,6 +77,11 @@ interface INFTMarketPlace {
     event ListingFeeToOwner(uint256 listingFee);
     event ListingFeeUpdated(uint256 newListingFee);
     event Deposit(uint256 price);
+
+    function changeCreatorName(address creator, string calldata name) external;
+
+    function changeCreatorImage(address creator, string calldata image)
+        external;
 
     function getLockedBidAmount() external view returns (uint256);
 

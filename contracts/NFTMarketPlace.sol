@@ -24,6 +24,7 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
     mapping(uint256 => Collection) public collections;
     mapping(uint256 => MarketItem) public marketItems;
     mapping(uint256 => mapping(uint256 => Bid)) public itemBids;
+    mapping(address => Creator) public creatorsInfo;
 
     uint256[] public collectionsIds;
     uint256[] public marketItemsIds;
@@ -71,6 +72,26 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
 
     constructor(address _marketItemAddress) {
         marketItemContract = NFTMarketItem(_marketItemAddress);
+    }
+
+    function changeCreatorName(address creator, string calldata name)
+        external
+        virtual
+        override
+    {
+        require(creator == msg.sender, "Marketplace: name not owned by you");
+
+        creatorsInfo[creator].name = name;
+    }
+
+    function changeCreatorImage(address creator, string calldata image)
+        external
+        virtual
+        override
+    {
+        require(creator == msg.sender, "Marketplace: name not owned by you");
+
+        creatorsInfo[creator].image = image;
     }
 
     function getLockedBidAmount()

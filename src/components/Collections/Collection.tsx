@@ -2,6 +2,7 @@ import React, { FC, useCallback } from 'react'
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
+import { ellipseAddress } from 'helpers/utilities';
 
 interface IProps extends RouteComponentProps {
   id: number;
@@ -32,7 +33,7 @@ const Collection: FC<IProps> = ({
         <SmallImage smallImage={smallImage}/>
       </SmallImageWrapper>
       <Name>{name}</Name>
-      <Creator>creator <span>{creator}</span></Creator>
+      <Creator>creator <span>{ellipseAddress(creator, 10)}</span></Creator>
       <Description>{description}</Description>
     </CollectionWrapper>
   )

@@ -1,12 +1,10 @@
 // tslint:disable: no-empty
 import React, { ChangeEvent, FC, useCallback, useContext, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
-import { create as ipfsHttpClient } from 'ipfs-http-client';
-import Create from './Create';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-
-const client = ipfsHttpClient({ url: "https://ipfs.infura.io:5001/api/v0" });
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import Create from './Create';
+import { uploadPicture, uploadToIPFS } from 'helpers/utilities';
 
 interface ICreateState {
   name: string;
@@ -69,39 +67,18 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
     setCollectionDescription(event.target.value);
   }, [collectionDescription]);
 
-  const uploadPicture = useCallback(async (e) => {
+  const onUploadPicture = useCallback(async (e) => {
     const file = e.target.files[0];
-
-    try {
-      const added = await client.add(file);
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-
-      activeBlock === 1 ? setNFTFileUrl(url) : setCollectionFileUrl(url);
-    } catch (error) {
-      console.error('Error uploading file: ', error);
-    }
+    const url = await uploadPicture(file);
+    activeBlock === 1 ? setNFTFileUrl(url) : setCollectionFileUrl(url);
   }, [activeBlock]);
-
-  const uploadToIPFS = useCallback(async () => {
-    const data = JSON.stringify({ itemName, itemDescription, image: nftFileUrl });
-
-    try {
-      const added = await client.add(data)
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-
-      return url;
-    } catch (error) {
-      console.error('Error uploading file: ', error);
-      return;
-    }
-  }, [itemName, itemDescription, nftFileUrl]);
 
   const onCreateItem = useCallback(async () => {
     if (!itemName.length || !itemDescription.length || !nftFileUrl.length || !contractsSDK || !selectedCollectionId) {
       return;
     }
 
-    const tokenURI = await uploadToIPFS();
+    const tokenURI = await uploadToIPFS(itemName, itemDescription, nftFileUrl);
     await contractsSDK.createNFTItem(tokenURI, itemName, itemDescription, selectedCollectionId);
 
     history.push(`/collection/${selectedCollectionId}`);
@@ -133,7 +110,7 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
           activeBlock === 1 ? onItemNameChange(e) : onCollectionNameChange(e),
         onDescriptionChange: (e: ChangeEvent<HTMLTextAreaElement>) =>
           activeBlock === 1 ? onItemDescriptionChange(e) : onCollectionDescriptionChange(e),
-        onImageChange: uploadPicture,
+        onImageChange: onUploadPicture,
         setSelectedCollectionId
       }}
     >

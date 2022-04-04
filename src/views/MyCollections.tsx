@@ -1,8 +1,7 @@
 import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, Collections, NFTTokens } from 'components';
-import { nftImage } from 'assets';
-import { ICollection, INFTItem } from 'SDK/ContractsSDK';
+import { ICollection, ICreator, INFTItem } from 'SDK/ContractsSDK';
 import { AppStateContext, IConnectData } from './AppContextWrapper';
 import { useParams } from 'react-router-dom';
 
@@ -12,6 +11,7 @@ const MyCollections: FC = () => {
   const [activeTab, setActiveTab] = useState<string>("Tokens");
   const [collections, setCollections] = useState<ICollection[]>([]);
   const [tokens, setTokens] = useState<INFTItem[]>([]);
+  const [userInfo, setUserInfo] = useState<ICreator | any>({});
 
   const params: { id: string } = useParams();
   const myAddress = params.id === userAddress ? userAddress : params.id ? params.id : userAddress;
@@ -21,33 +21,32 @@ const MyCollections: FC = () => {
   }, [setActiveTab]);
 
   useEffect(() => {
+    const renderUserInfo = async () => {
+      const result: ICreator = await contractsSDK.onGetCreatorInfo(myAddress);
+      setUserInfo(result);
+    }
+
     const renderCollections = async () => {
       const result = await contractsSDK.getUserCollections(myAddress);
       setCollections(result);
     }
 
-    if (activeTab === "Collections" && connected && contractsSDK) {
-      renderCollections();
-    }
-  }, [connected, contractsSDK, activeTab, myAddress]);
-
-  useEffect(() => {
     const renderTokens = async () => {
       const result = await contractsSDK.getUserNFTs(myAddress);
       setTokens(result);
     }
 
-    if (activeTab === "Tokens" && connected && contractsSDK) {
-      renderTokens();
+    if (connected && contractsSDK) {
+      renderUserInfo();
+      activeTab === "Collections" ? renderCollections() : renderTokens();
     }
   }, [connected, contractsSDK, activeTab, myAddress]);
-
 
   return (
     <MyCollectionsWrapper>
       <BlockHeader
-        image={nftImage}
-        name={"unnamed"}
+        image={userInfo?.image}
+        name={userInfo?.name}
         creator={myAddress}
         userBalance={params.id === userAddress ? userBalance : 0}
         showCreator={false}

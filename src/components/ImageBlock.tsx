@@ -7,7 +7,7 @@ interface IProps {
   height?: string;
 }
 
-const ImageBlock: FC<IProps>  = ({ image, width, height = '500px' }) => {
+const ImageBlock: FC<IProps>  = ({ image = '', width, height = '500px' }) => {
   const [openImage, setOpenImage] = useState<boolean>(false);
 
   const onImageClick = useCallback(() => {
@@ -22,7 +22,7 @@ const ImageBlock: FC<IProps>  = ({ image, width, height = '500px' }) => {
       {openImage &&
         <OpenedImageBackground onClick={onImageClick}>
           <OpenedImage onClick={(e) => e.stopPropagation()}>
-            <Image src={image}/>
+            <Image src={image} alt="image"/>
           </OpenedImage>
         </OpenedImageBackground>
       }
@@ -79,7 +79,7 @@ const OpenedImageBackground = styled.div`
 
 const OpenedImage = styled.div`
   width: auto;
-  height: auto;
+  height: 100%;
   max-width: 100%;
-  max-width: 100%;
+  max-height: 100%;
 `;

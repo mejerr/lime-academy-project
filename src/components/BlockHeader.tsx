@@ -1,10 +1,22 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
+import React, { FC, Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleUp, faAngleDown, IconDefinition, faCopy } from '@fortawesome/free-solid-svg-icons';
+import {
+  faAngleUp,
+  faAngleDown,
+  IconDefinition,
+  faCopy,
+  faEdit,
+  faCancel,
+  faCheck,
+  faImage,
+  faUpload
+} from '@fortawesome/free-solid-svg-icons';
 import { ethereumImage } from 'assets';
 import { ImageBlock } from 'components';
 import { useHistory } from 'react-router-dom';
+import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { uploadPicture } from 'helpers/utilities';
 
 interface IProps {
   image: string;
@@ -23,24 +35,58 @@ const BlockHeader: FC<IProps> = ({
   description = '',
   showCreator = true
 }) => {
+  const { state } = useContext(AppStateContext);
+  const { connected, contractsSDK }: IConnectData = state;
   const [height, setHeight] = useState<string>("120px");
   const [openDescription, setOpenDescription] = useState<boolean>(false);
+  const [creatorName, setCreatorName] = useState<string>('');
+  const [creatorImage, setCreatorImage] = useState<string>('');
+  const [showInput, setShowInput] = useState<boolean>(false);
   const descriptionNode = useRef<HTMLHeadingElement>(null);
   const creatorNode = useRef<HTMLHeadingElement>(null);
   const history = useHistory();
-
-  const onOpenDescription = useCallback(() => {
-    setOpenDescription(!openDescription);
-  }, [openDescription]);
 
   const goToUserCollection = useCallback(() => {
     history.push(`/my-collection/${creator}`);
   }, [creator]);
 
+  const onOpenDescription = useCallback(() => {
+    setOpenDescription(!openDescription);
+  }, [openDescription]);
+
   const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(creatorNode.current?.innerText ||'');
     alert("Copied the text: " + creatorNode.current?.innerText ||'');
   }, [creatorNode]);
+
+  const onOpenInput = useCallback(() => {
+    setShowInput(!showInput);
+  }, [showInput]);
+
+  const onNameInputChange = useCallback((e) => {
+    setCreatorName(e.target.value);
+  }, []);
+
+  const onChangeNameClick = useCallback(async () => {
+    if (connected && contractsSDK && creatorName.length) {
+      await contractsSDK.onChangeCreatorName(creator, creatorName);
+      setShowInput(false);
+      window.location.reload();
+    }
+  }, [connected, contractsSDK, creatorName]);
+
+  const onUploadPicture = useCallback(async (e) => {
+    const file = e.target.files[0];
+    const url = await uploadPicture(file);
+    setCreatorImage(url);
+  }, []);
+
+  const onAcceptPicture = useCallback(async () => {
+    if (connected && contractsSDK) {
+      await contractsSDK.onChangeCreatorImage(creator, creatorImage);
+      window.location.reload();
+    }
+  }, [connected, contractsSDK, creator, creatorImage]);
 
   useEffect(() => {
     if (descriptionNode.current) {
@@ -51,13 +97,40 @@ const BlockHeader: FC<IProps> = ({
   return (
     <BlockWrapper>
       <ImageWrapper>
-        <ImageBlock image={image} width={'100%'} height={'100%'}/>
+        {creatorImage ? <Image src={creatorImage}/> : !image && <EmptyIcon icon={faImage} />}
+        {image && !creatorImage && <ImageBlock image={image} width={'100%'} height={'100%'}/>}
       </ImageWrapper>
-      <BlockName>{name}</BlockName>
+
+      <BlockName>
+        {showInput ?
+          <Fragment>
+            <NameInput placeholder={"Name"} onChange={onNameInputChange}/>
+            <Icon icon={faCheck} onClick={onChangeNameClick}/>
+            <Icon icon={faCancel} onClick={onOpenInput}/>
+          </Fragment> :
+          <Fragment>
+            {name || 'unnamed'}
+            <Icon icon={faEdit} onClick={onOpenInput}/>
+          </Fragment>
+        }
+        <UploadImageWrapper>
+          {creatorImage ? <UploadImageButton onClick={onAcceptPicture}>Upload image</UploadImageButton> :
+            <Fragment>
+              <Icon icon={faUpload}/>
+              <ImageInput
+                type="file"
+                name="Asset"
+                onChange={onUploadPicture}
+              />
+            </Fragment>
+          }
+        </UploadImageWrapper>
+      </BlockName>
+
       <BlockCreator >
         {showCreator && <div>Created by</div>}
         <span onClick={goToUserCollection} ref={creatorNode}>{creator}</span>
-        <CopyIcon icon={faCopy} onClick={copyToClipboard}/>
+        <Icon icon={faCopy} onClick={copyToClipboard}/>
       </BlockCreator>
       {!!userBalance &&
         <BalanceWrapper>
@@ -65,19 +138,21 @@ const BlockHeader: FC<IProps> = ({
           Balance: {userBalance.toString().substring(0, 10)}
         </BalanceWrapper>
       }
-      {description && (<>
-        <BlockDescriptionWrapper
-          ref={descriptionNode}
-          style={{ height }}
-          isOpen={openDescription}
-          onClick={onOpenDescription}
-        >
-          <BlockDescription>
-            {description}
-          </BlockDescription>
-        </BlockDescriptionWrapper>
-        <ArrowIcon icon={openDescription ? faAngleUp : faAngleDown} onClick={onOpenDescription}/>
-      </>)}
+      {description && (
+        <Fragment>
+          <BlockDescriptionWrapper
+            ref={descriptionNode}
+            style={{ height }}
+            isOpen={openDescription}
+            onClick={onOpenDescription}
+          >
+            <BlockDescription>
+              {description}
+            </BlockDescription>
+          </BlockDescriptionWrapper>
+          <ArrowIcon icon={openDescription ? faAngleUp : faAngleDown} onClick={onOpenDescription}/>
+        </Fragment>
+      )}
     </BlockWrapper>
   );
 };
@@ -93,19 +168,38 @@ const BlockWrapper = styled.div`
 `;
 
 const ImageWrapper = styled.div`
+  position: relative;
   height: 220px;
   width: 100%;
+  display: flex;
+  justify-content: center;
 
   & img {
     border-radius: 0;
   }
+
+  :hover {
+    background: rgba(0, 0, 0, 0.2);
+  }
 `;
 
 const BlockName = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 40px;
   width: 100%;
   text-align: center;
   margin: 20px 0;
+  word-break: break-all;
+`;
+
+const NameInput = styled.input`
+  font-size: 30px;
+  height: 45px;
+  padding: 5px;
+  background: #fff;
+  border-radius: 4px;
 `;
 
 const BlockCreator = styled.div`
@@ -125,11 +219,54 @@ const BlockCreator = styled.div`
   }
 `;
 
-const CopyIcon = styled(FontAwesomeIcon)`
+const ImageInput = styled.input`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  object-fit: cover;
+`;
+
+const EmptyIcon = styled(FontAwesomeIcon)`
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+`;
+
+const Icon = styled(FontAwesomeIcon)`
   width: 20px;
   height: 20px;
   margin-left: 10px;
   cursor: pointer;
+`;
+
+const UploadImageWrapper = styled.div`
+  position: relative;
+  display: flex;
+`;
+
+const UploadImageButton = styled.div`
+  font-size: 16px;
+  background-color: #024bb0;
+  border-radius: 10px;
+  margin-left: 10px;
+  padding: 10px;
+  color: #fff;
+  cursor: pointer;
+
+  :hover {
+    background-color: rgba(2, 75, 176, 0.9);
+  }
 `;
 
 const BlockDescriptionWrapper = styled.div<{ isOpen: boolean }>`

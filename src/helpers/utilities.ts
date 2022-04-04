@@ -1,7 +1,10 @@
 import supportedChains from "./chains";
 import Noty from 'noty';
-import '../../node_modules/noty/lib/noty.css';  
-import '../../node_modules/noty/lib/themes/mint.css';  
+import '../../node_modules/noty/lib/noty.css';
+import '../../node_modules/noty/lib/themes/mint.css';
+import { create as ipfsHttpClient } from 'ipfs-http-client';
+
+const client = ipfsHttpClient({ url: "https://ipfs.infura.io:5001/api/v0" });
 
 const NOTIFICATION_TIMEOUT = 3500;
 
@@ -134,10 +137,37 @@ export function getChainData(chainId: number): any {
 }
 
 export function showNotification(text:string) {
-    new Noty({ 
+    new Noty({
       text,
       timeout: NOTIFICATION_TIMEOUT,
       type: 'success'
-      
+
   }).show();
 }
+
+export const uploadPicture = async (
+  file: string,
+): Promise<string> => {
+  let url = "";
+  try {
+    const added = await client.add(file);
+    url = `https://ipfs.infura.io/ipfs/${added.path}`;
+  } catch (error) {
+    console.error('Error uploading file: ', error);
+  }
+
+  return url;
+};
+
+export const uploadToIPFS = async (itemName: string, itemDescription: string, image: string) => {
+  const data = JSON.stringify({ itemName, itemDescription, image });
+  let url = '';
+  try {
+    const added = await client.add(data)
+    url = `https://ipfs.infura.io/ipfs/${added.path}`;
+  } catch (error) {
+    console.error('Error uploading file: ', error);
+  }
+
+  return url;
+};

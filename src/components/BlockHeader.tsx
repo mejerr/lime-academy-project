@@ -1,5 +1,6 @@
-import React, { FC, Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
+import React, { FC, Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAngleUp,
@@ -14,7 +15,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ethereumImage } from 'assets';
 import { ImageBlock } from 'components';
-import { useHistory } from 'react-router-dom';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { uploadPicture } from 'helpers/utilities';
 
@@ -36,7 +36,8 @@ const BlockHeader: FC<IProps> = ({
   showCreator = true
 }) => {
   const { state } = useContext(AppStateContext);
-  const { connected, contractsSDK }: IConnectData = state;
+  const { connected, contractsSDK, userAddress }: IConnectData = state;
+
   const [height, setHeight] = useState<string>("120px");
   const [openDescription, setOpenDescription] = useState<boolean>(false);
   const [creatorName, setCreatorName] = useState<string>('');
@@ -46,9 +47,13 @@ const BlockHeader: FC<IProps> = ({
   const creatorNode = useRef<HTMLHeadingElement>(null);
   const history = useHistory();
 
-  const goToUserCollection = useCallback(() => {
+  const onAddressClick = useCallback(() => {
+    if (!showCreator) {
+      copyToClipboard();
+      return;
+    }
     history.push(`/my-collection/${creator}`);
-  }, [creator]);
+  }, [creator, showCreator]);
 
   const onOpenDescription = useCallback(() => {
     setOpenDescription(!openDescription);
@@ -110,26 +115,28 @@ const BlockHeader: FC<IProps> = ({
           </Fragment> :
           <Fragment>
             {name || 'unnamed'}
-            <Icon icon={faEdit} onClick={onOpenInput}/>
+            {userAddress === creator && <Icon icon={faEdit} onClick={onOpenInput}/>}
           </Fragment>
         }
-        <UploadImageWrapper>
-          {creatorImage ? <UploadImageButton onClick={onAcceptPicture}>Upload image</UploadImageButton> :
-            <Fragment>
-              <Icon icon={faUpload}/>
-              <ImageInput
-                type="file"
-                name="Asset"
-                onChange={onUploadPicture}
-              />
-            </Fragment>
-          }
-        </UploadImageWrapper>
+        {userAddress === creator &&
+          <UploadImageWrapper>
+            {creatorImage ? <UploadImageButton onClick={onAcceptPicture}>Upload image</UploadImageButton> :
+              <Fragment>
+                <Icon icon={faUpload}/>
+                <ImageInput
+                  type="file"
+                  name="Asset"
+                  onChange={onUploadPicture}
+                />
+              </Fragment>
+            }
+          </UploadImageWrapper>
+        }
       </BlockName>
 
       <BlockCreator >
         {showCreator && <div>Created by</div>}
-        <span onClick={goToUserCollection} ref={creatorNode}>{creator}</span>
+        <span onClick={onAddressClick} ref={creatorNode}>{creator}</span>
         <Icon icon={faCopy} onClick={copyToClipboard}/>
       </BlockCreator>
       {!!userBalance &&

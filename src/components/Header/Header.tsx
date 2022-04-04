@@ -15,16 +15,16 @@ const Header: FC = () => {
     history.push("/home");
   }, []);
 
-  const onSearchClick = useCallback(() => {
-    setOpenSearch(!openSearch);
-  },[openSearch]);
+  const onSearchClick = useCallback((open: boolean) => {
+    setOpenSearch(open);
+  }, []);
 
   return (
     <HeaderWrapper>
       <Logo onClick={onClick}/>
-      <Menu />
+      <Menu onSearchClick={onSearchClick}/>
       <NavBar onSearchClick={onSearchClick}/>
-      <Search isOpen={openSearch} setIsOpen={setOpenSearch}/>
+      {openSearch && <Search setIsOpen={setOpenSearch}/>}
       <Title onClick={onClick}>{"Limeblock Marketplace"}</Title>
       <ConnectButton />
     </HeaderWrapper>

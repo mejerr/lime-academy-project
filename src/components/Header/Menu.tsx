@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useContext, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { withRouter } from 'react-router-dom';
-import { RouteComponentProps } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { ICollectionProps } from 'views/Create/RequiredFields';
@@ -11,7 +10,8 @@ import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 const COLLECTION_PROPS: ICollectionProps[] = [
   { name: "Marketplace", collectionId: 1},
   { name: "Create", collectionId: 2},
-  { name: "My Collection", collectionId: 3}
+  { name: "My Collection", collectionId: 3},
+  { name: "Search", collectionId: 4}
 ];
 
 enum PATHS {
@@ -20,27 +20,39 @@ enum PATHS {
   '/my-collection'
 }
 
-const Menu: FC<RouteComponentProps> = ({ history } ) => {
+interface IProps {
+  onSearchClick: (open: boolean) => void;
+}
+
+const Menu: FC<IProps> = ({ onSearchClick } ) => {
   const { state, onConnect } = useContext(AppStateContext);
   const { connected }: IConnectData = state;
-
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const history = useHistory();
 
   const openMenu = useCallback(() => {
     setMenuOpen(!menuOpen);
+    onSearchClick(false);
   }, [menuOpen]);
+
+  const onSearchPathClick = useCallback((pathId: number) => {
+    if (pathId === 4) {
+      history.push(PATHS[pathId - 2]);
+      onSearchClick(true);
+    } else {
+      history.push(PATHS[pathId - 1]);
+    }
+    setMenuOpen(false);
+  }, []);
 
   const onClick = useCallback((pathId) => {
     if (!connected) {
-        onConnect({ onSuccess: () => {
-          history.push(PATHS[pathId - 1]);
-          setMenuOpen(false);
-        } });
+        onConnect({ onSuccess: () => onSearchPathClick(pathId) });
         return;
      }
 
-     history.push(PATHS[pathId - 1]);
-     setMenuOpen(false);
+     onSearchPathClick(pathId);
   }, [connected]);
 
   const OPTIONS = {
@@ -63,7 +75,7 @@ const Menu: FC<RouteComponentProps> = ({ history } ) => {
   )
 }
 
-export default withRouter(Menu);
+export default Menu;
 
 const MenuWrapper = styled.div`
   width: 70px;

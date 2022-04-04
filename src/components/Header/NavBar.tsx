@@ -1,7 +1,7 @@
-import React, { FC, useCallback, useContext } from 'react'
-import styled from 'styled-components'
+import React, { FC, useCallback, useContext } from 'react';
+import styled from 'styled-components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
-import { useHistory } from 'react-router-dom';
+import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import Button from '../Button';
 
 interface INavButtons {
@@ -11,11 +11,11 @@ interface INavButtons {
   onClick: () => void
 }
 
-interface IProps {
-  onSearchClick: () => void;
+interface IProps extends RouteComponentProps {
+  onSearchClick: (open: boolean) => void;
 }
 
-const NavBar: FC<IProps> = ({ onSearchClick }) => {
+const NavBar: FC<IProps> = ({  onSearchClick }) => {
   const history = useHistory();
   const { pathname } = history.location;
   const { state, onConnect } = useContext(AppStateContext);
@@ -53,7 +53,7 @@ const NavBar: FC<IProps> = ({ onSearchClick }) => {
       title: 'Search',
       isActive: false,
       width: "80px",
-      onClick: onSearchClick
+      onClick: () => onSearchClick(true)
     }
   ];
 
@@ -74,6 +74,8 @@ const NavBar: FC<IProps> = ({ onSearchClick }) => {
   )
 }
 
+export default withRouter(NavBar);
+
 const NavBarWrapper = styled.div`
   display: flex;
 
@@ -82,4 +84,3 @@ const NavBarWrapper = styled.div`
   }
 `;
 
-export default NavBar;

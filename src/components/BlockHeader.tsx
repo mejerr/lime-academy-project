@@ -113,6 +113,7 @@ const BlockCreator = styled.div`
   width: 100%;
   text-align: center;
   color: rgb(112, 122, 131);
+  padding: 0 10px;
 
   > span {
     color: rgb(32, 129, 226);

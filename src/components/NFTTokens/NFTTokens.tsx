@@ -1,30 +1,28 @@
 import React, { FC, useCallback } from 'react'
-import { INFTItem } from 'SDK/ContractsSDK';
+import { IToken } from 'SDK/ContractsSDK';
 import styled from 'styled-components';
 import Token from './Token';
 
 interface IProps {
-  tokens: INFTItem[]
+  tokens: IToken[]
 }
 
 const Tokens: FC<IProps> = ({ tokens }) => {
-  const renderTokens = useCallback(({ collectionId, itemId, creator, name, price, image, status }) => {
-    return (
+  const renderTokens = useCallback(({ collectionId, tokenId, creator, name, price, image, status }) => (
       <Token
-        key={itemId}
+        key={tokenId}
         collectionId={collectionId}
-        itemId={itemId}
+        tokenId={tokenId}
         creator={creator}
         name={name}
         price={price}
         image={image}
         status={status}
       />
-    );
-  }, []);
+    ), []);
 
   return (
-    <TokensWrapper isContent={!!tokens.length}>
+    <TokensWrapper isNotEmpty={!!tokens.length}>
       {tokens.length ? tokens.map(renderTokens) : <EmptyContent>{"No items to show"}</EmptyContent>}
     </TokensWrapper>
   )
@@ -32,8 +30,8 @@ const Tokens: FC<IProps> = ({ tokens }) => {
 
 export default Tokens;
 
-const TokensWrapper = styled.div<{ isContent: boolean }>`
-  display: ${({ isContent }) => isContent && 'grid'};
+const TokensWrapper = styled.div<{ isNotEmpty: boolean }>`
+  display: ${({ isNotEmpty }) => isNotEmpty && 'grid'};
   grid-template-columns: repeat(6, 1fr);
   grid-gap: 10px;
   padding: 30px 40px 20px;

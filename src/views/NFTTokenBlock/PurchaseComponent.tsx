@@ -4,12 +4,12 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { Button, Value } from 'components';
-import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
+import { IToken, TokenStatus } from 'SDK/ContractsSDK';
 import { ethereumImage } from 'assets';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 
 interface IProps extends RouteComponentProps {
-  nftToken: INFTItem;
+  nftToken: IToken;
   setOpenSale: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -25,8 +25,8 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) 
   }, [openOffer]);
 
   const onSendOffer = useCallback(async () => {
-    if (connected && contractsSDK && nftToken.itemId && inputValue) {
-      await contractsSDK.onBidOnItem(nftToken?.itemId, inputValue);
+    if (connected && contractsSDK && nftToken.tokenId && inputValue) {
+      await contractsSDK.onBidOnItem(nftToken?.tokenId, inputValue);
       setInputValue('');
     }
 
@@ -44,7 +44,7 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) 
   return (
     <PurchaseWrapper>
       <Price>{"Current price"}</Price>
-      {nftToken?.status === ItemStatus.ForSale ?
+      {nftToken?.status === TokenStatus.ForSale ?
         <Value price={nftToken?.price} /> :
         <NoPrice>{"Item not for sale, only offers"}</NoPrice>
       }
@@ -55,7 +55,7 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) 
             <ValueIcon />
             <ETHText>{"ETH"}</ETHText>
           </InputWrapper> :
-          <BuyButtonWrapper onClick={nftToken?.status === ItemStatus.ForSale ? onBuyItem : onOpenOffer}>
+          <BuyButtonWrapper onClick={nftToken?.status === TokenStatus.ForSale ? onBuyItem : onOpenOffer}>
             <BuyIcon icon={faCartShopping} />
             <Button
               title={'Buy now'}

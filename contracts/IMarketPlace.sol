@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 pragma solidity ^0.8.0;
 
-interface INFTMarketPlace {
-    enum ItemListingStatus {
+interface IMarketPlace {
+    enum TokenStatus {
         ForSale,
         Idle
     }
@@ -22,46 +22,39 @@ interface INFTMarketPlace {
         uint256 collectionId;
         string name;
         string description;
-        uint256 createdOn;
         address creator;
         string image;
     }
 
     struct MarketItem {
-        uint256 itemId;
+        uint256 tokenId;
         string name;
         string description;
         uint256 price;
         uint256 collectionId;
-        uint256 createdOn;
-        ItemListingStatus status;
+        TokenStatus status;
     }
 
     struct Bid {
         uint256 bidId;
         uint256 amount;
-        BidStatus status;
         address payable bidder;
+        BidStatus status;
     }
 
-    event CollectionCreated(
-        uint256 indexed collectionId,
-        uint256 createdOn,
-        address creator
-    );
+    event CollectionCreated(uint256 indexed collectionId, address creator);
 
-    event ItemMinted(
-        uint256 indexed itemId,
+    event TokenMinted(
+        uint256 indexed tokenId,
         uint256 price,
-        uint256 collectionId,
-        uint256 createdOn
+        uint256 collectionId
     );
 
-    event CreateMarketSale(uint256 itemId, uint256 price);
-    event CancelMarketSale(uint256 itemId);
+    event CreateMarketSale(uint256 tokenId, uint256 price);
+    event CancelMarketSale(uint256 tokenId);
 
     event ItemBought(
-        uint256 indexed itemId,
+        uint256 indexed tokenId,
         address buyer,
         address owner,
         uint256 price
@@ -108,23 +101,23 @@ interface INFTMarketPlace {
         string calldata name,
         string calldata description,
         uint256 collectionId
-    ) external payable returns (uint256);
+    ) external payable;
 
     function getMarketItemsLength() external view returns (uint256);
 
-    function createSale(uint256 itemId, uint256 _price) external payable;
+    function createSale(uint256 tokenId, uint256 _price) external payable;
 
-    function cancelSale(uint256 itemId) external;
+    function cancelSale(uint256 tokenId) external;
 
     function buyMarketItem(uint256 tokenId) external payable;
 
-    function bidMarketItem(uint256 itemId) external payable;
+    function bidMarketItem(uint256 tokenId) external payable;
 
     function getItemBidsLength() external view returns (uint256);
 
-    function acceptItemBid(uint256 tokenId, uint256 bidId) external payable;
+    function acceptBid(uint256 tokenId, uint256 bidId) external payable;
 
-    function cancelItemBid(uint256 tokenId, uint256 bidId) external payable;
+    function cancelBid(uint256 tokenId, uint256 bidId) external payable;
 
     receive() external payable;
 }

@@ -3,24 +3,24 @@ import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button } from 'components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
-import { ItemStatus } from 'SDK/ContractsSDK';
+import { TokenStatus } from 'SDK/ContractsSDK';
 import { ellipseAddress } from 'helpers/utilities';
 import Value from 'components/Value';
 
 interface IProps extends RouteComponentProps {
   collectionId: string;
-  itemId: string;
+  tokenId: string;
   creator: string;
   name: string;
   price: number;
   image: string;
-  status: ItemStatus;
+  status: TokenStatus;
 }
 
 const Token: FC<IProps> = ({
   history,
   collectionId,
-  itemId,
+  tokenId,
   creator,
   name,
   price,
@@ -31,8 +31,8 @@ const Token: FC<IProps> = ({
   const { userAddress }: IConnectData = state;
 
   const onClick = useCallback(() => {
-    history.push(`/collection/${collectionId}/token/${itemId}`);
-  }, [collectionId, itemId]);
+    history.push(`/collection/${collectionId}/token/${tokenId}`);
+  }, [collectionId, tokenId]);
 
   return (
     <TokenWrapper onClick={onClick}>
@@ -43,7 +43,7 @@ const Token: FC<IProps> = ({
           <Name>{name}</Name>
         </Info>
 
-        {status === ItemStatus.ForSale &&
+        {status === TokenStatus.ForSale &&
           <PriceWrapper>
             <Price>{"Price"}</Price>
             <Value price={price} showDollars={false} />
@@ -51,7 +51,7 @@ const Token: FC<IProps> = ({
         }
       </InfoWrapper>
       {userAddress !== creator ?
-        status === ItemStatus.ForSale ?
+        status === TokenStatus.ForSale ?
           <ButtonWrapper>
             <Button
               title={'Buy'}

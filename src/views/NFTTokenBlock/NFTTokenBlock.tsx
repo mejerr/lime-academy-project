@@ -2,7 +2,7 @@ import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 
 import styled, { keyframes } from 'styled-components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
-import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
+import { IToken, TokenStatus } from 'SDK/ContractsSDK';
 import { Button, ImageBlock, Offers, Value } from 'components';
 import PurchaseComponent from './PurchaseComponent';
 import SaleBlock from 'views/SaleBlock';
@@ -14,7 +14,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
   const params: { id: string } = useParams();
-  const [nftToken, setNFTToken] = useState<INFTItem | any>();
+  const [nftToken, setNFTToken] = useState<IToken | any>();
   const [openSale, setOpenSale] = useState<boolean>(false);
   const creatorNode = useRef<HTMLHeadingElement>(null);
 
@@ -28,7 +28,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
   const cancelSale = useCallback(async () => {
       if (connected && contractsSDK) {
-        await contractsSDK.onCancelSale(nftToken?.itemId);
+        await contractsSDK.onCancelSale(nftToken?.tokenId);
         // Remove window reload if possible
         window.location.reload();
       }
@@ -41,7 +41,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     const renderNFTItem = async () => {
-      const nftItem: INFTItem = await contractsSDK.getNFTItem(params.id);
+      const nftItem: IToken = await contractsSDK.getNFTItem(params.id);
       setNFTToken(nftItem);
     }
 
@@ -61,15 +61,15 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
       {nftToken?.creator === userAddress &&
         <SaleButtonWrapper>
-          {nftToken?.status === ItemStatus.ForSale &&
+          {nftToken?.status === TokenStatus.ForSale &&
             <Value price={nftToken?.price} />
           }
           <ButtonWrapper>
             <Button
-              title={nftToken?.status === ItemStatus.ForSale ? "Cancel sale" : "Sell"}
+              title={nftToken?.status === TokenStatus.ForSale ? "Cancel sale" : "Sell"}
               width={"100%"}
               height={"50px"}
-              onClick={nftToken?.status === ItemStatus.ForSale ? cancelSale : () => setOpenSale(true)}
+              onClick={nftToken?.status === TokenStatus.ForSale ? cancelSale : () => setOpenSale(true)}
             />
           </ButtonWrapper>
         </SaleButtonWrapper>
@@ -85,7 +85,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
         {nftToken?.creator !== userAddress && <PurchaseComponent nftToken={nftToken} setOpenSale={setOpenSale}/>}
 
-        <Offers tokenId={nftToken?.itemId} nftCreator={nftToken?.creator}/>
+        <Offers tokenId={nftToken?.tokenId} nftCreator={nftToken?.creator}/>
       </DetailsWrapper>
       <SaleBlock setOpenSale={setOpenSale} isOpen={openSale} nftToken={nftToken}/>
     </NFTTokenBlockWrapper>

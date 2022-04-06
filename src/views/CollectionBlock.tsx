@@ -2,14 +2,14 @@ import React, { FC, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, NFTTokens } from 'components';
 import { AppStateContext, IConnectData } from './AppContextWrapper';
-import { ICollection, INFTItem } from 'SDK/ContractsSDK';
+import { ICollection, IToken } from 'SDK/ContractsSDK';
 import { useParams } from 'react-router-dom';
 
 const CollectionBlock: FC = () => {
   const params: { id: string } = useParams();
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
-  const [tokens, setTokens] = useState<INFTItem[]>([]);
+  const [tokens, setTokens] = useState<IToken[]>([]);
   const [collection, setCollection] = useState<ICollection | any>({});
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const CollectionBlock: FC = () => {
     }
 
     const renderTokens = async () => {
-      const result: INFTItem[] = await contractsSDK.getCollectionNFTs(+params.id);
+      const result: IToken[] = await contractsSDK.getCollectionNFTs(+params.id);
       setTokens(result);
     }
 

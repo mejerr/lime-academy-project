@@ -3,13 +3,13 @@ import styled, { keyframes } from 'styled-components'
 import { AppStateContext, IConnectData } from './AppContextWrapper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { INFTItem, ItemStatus } from 'SDK/ContractsSDK';
+import { IToken, TokenStatus } from 'SDK/ContractsSDK';
 import { ellipseAddress } from 'helpers/utilities';
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
 
 interface IProps {
-  nftToken: INFTItem;
+  nftToken: IToken;
   isOpen: boolean;
   setOpenSale: Dispatch<SetStateAction<boolean>>;
 }
@@ -17,7 +17,7 @@ interface IProps {
 const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
-  const buttonTitle = nftToken?.status === ItemStatus.ForSale ? nftToken?.creator === userAddress ? "Cancel Sale" : "Buy" : "Sell";
+  const buttonTitle = nftToken?.status === TokenStatus.ForSale ? nftToken?.creator === userAddress ? "Cancel Sale" : "Buy" : "Sell";
   const [price, setPrice] = useState<number>(0);
 
   const onPriceInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
@@ -26,14 +26,14 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
 
   const onSellClick = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onCreateSale(nftToken?.itemId, price)
+      await contractsSDK.onCreateSale(nftToken?.tokenId, price)
       window.location.reload();
     }
   }, [connected, contractsSDK, price, nftToken]);
 
   const onBuyClick = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onBuyMarketItem(nftToken?.itemId)
+      await contractsSDK.onBuyMarketItem(nftToken?.tokenId)
       window.location.reload();
     }
   }, [connected, contractsSDK, nftToken]);
@@ -53,7 +53,7 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
           <PriceLabel>{"Price"}</PriceLabel>
           <AmountWrapper>
             <InputWrapper>
-              {nftToken?.status === ItemStatus.ForSale ? <PriceAmount>{nftToken?.price}</PriceAmount>: <Input onChange={onPriceInputChange} placeholder={"Amount"} />}
+              {nftToken?.status === TokenStatus.ForSale ? <PriceAmount>{nftToken?.price}</PriceAmount>: <Input onChange={onPriceInputChange} placeholder={"Amount"} />}
               <ValueIcon />
               <ETHText>{"ETH"}</ETHText>
             </InputWrapper>
@@ -62,7 +62,7 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
                 title={buttonTitle}
                 width={"100%"}
                 height={"65px"}
-                onClick={nftToken?.status === ItemStatus.ForSale ? onBuyClick : onSellClick}
+                onClick={nftToken?.status === TokenStatus.ForSale ? onBuyClick : onSellClick}
               />
             </ButtonWrapper>
           </AmountWrapper>

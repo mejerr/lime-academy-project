@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { BlockHeader, Collections, NFTTokens } from 'components';
-import { ICollection, ICreator, INFTItem } from 'SDK/ContractsSDK';
+import { ICollection, ICreator, IToken } from 'SDK/ContractsSDK';
 import { AppStateContext, IConnectData } from './AppContextWrapper';
 import { useParams } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ const MyCollections: FC = () => {
   const { connected, contractsSDK, userAddress, userBalance }: IConnectData = state;
   const [activeTab, setActiveTab] = useState<string>("Tokens");
   const [collections, setCollections] = useState<ICollection[]>([]);
-  const [tokens, setTokens] = useState<INFTItem[]>([]);
+  const [tokens, setTokens] = useState<IToken[]>([]);
   const [userInfo, setUserInfo] = useState<ICreator | any>({});
 
   const params: { id: string } = useParams();

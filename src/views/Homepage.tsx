@@ -1,10 +1,10 @@
-import React, { FC, useCallback, useContext } from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { FC, useCallback, useContext } from 'react';
+import styled, { keyframes } from 'styled-components';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Button } from "components";
 import { nftImage } from 'assets';
-import { AppStateContext, IConnectData } from './AppContextWrapper';
+import { AppStateContext, IConnectData } from '../AppContextWrapper';
 
 const Homepage: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect } = useContext(AppStateContext);

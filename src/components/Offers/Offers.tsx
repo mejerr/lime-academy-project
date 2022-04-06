@@ -1,9 +1,9 @@
 
 
-import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
-import { BidStatus, IBid } from 'SDK/ContractsSDK';
+import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { BidStatus, IBid } from 'SDK/ContractsSDK';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import Offer from './Offer';
 
 interface IProps {

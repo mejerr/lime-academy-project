@@ -1,12 +1,12 @@
-import React, { FC, useCallback, useContext } from 'react'
+import React, { FC, useCallback, useContext } from 'react';
+import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
-import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignIn } from '@fortawesome/free-solid-svg-icons';
 import { ellipseAddress } from '../../helpers/utilities';
 import Button from '../Button';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 
 const ConnectButton: FC<RouteComponentProps> = ({ history }) => {
   const { state, onConnect, killSession } = useContext(AppStateContext);

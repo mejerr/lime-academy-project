@@ -1,8 +1,8 @@
-import React, { FC, useCallback, useContext } from 'react'
+import React, { FC, useCallback, useContext } from 'react';
 import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button } from 'components';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { TokenStatus } from 'SDK/ContractsSDK';
 import { ellipseAddress } from 'helpers/utilities';
 import Value from 'components/Value';

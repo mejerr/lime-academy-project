@@ -1,5 +1,5 @@
-import React, { FC, useCallback } from 'react'
-import styled from 'styled-components'
+import React, { FC, useCallback } from 'react';
+import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { ellipseAddress } from 'helpers/utilities';

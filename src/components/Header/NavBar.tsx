@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useContext } from 'react';
 import styled from 'styled-components';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import Button from '../Button';
 

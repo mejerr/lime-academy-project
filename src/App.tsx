@@ -9,7 +9,7 @@ import MyCollections from 'views/MyCollections';
 import CreateBlock from 'views/Create/CreateBlock';
 import NFTTokenBlock from 'views/NFTTokenBlock/NFTTokenBlock';
 import CollectionBlock from 'views/CollectionBlock';
-import AppContextWrapper from 'views/AppContextWrapper';
+import AppContextWrapper from 'AppContextWrapper';
 import Header from 'components/Header/Header';
 
 

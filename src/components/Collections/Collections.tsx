@@ -1,6 +1,6 @@
-import React, { FC, useCallback } from 'react'
-import { ICollection } from 'SDK/ContractsSDK';
+import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
+import { ICollection } from 'SDK/ContractsSDK';
 import Collection from './Collection';
 
 interface IProps {

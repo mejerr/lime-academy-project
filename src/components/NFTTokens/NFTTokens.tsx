@@ -1,6 +1,6 @@
-import React, { FC, useCallback } from 'react'
-import { IToken } from 'SDK/ContractsSDK';
+import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
+import { IToken } from 'SDK/ContractsSDK';
 import Token from './Token';
 
 interface IProps {

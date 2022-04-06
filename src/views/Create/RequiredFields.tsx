@@ -2,7 +2,7 @@ import React, { FC, useState, useCallback, useContext, ChangeEvent, useEffect } 
 import styled from 'styled-components';
 import { SelectableMenu } from 'components';
 import { CreateStateContext } from './CreateBlock';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { ICollection } from 'SDK/ContractsSDK';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';

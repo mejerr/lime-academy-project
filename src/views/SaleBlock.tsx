@@ -1,6 +1,6 @@
-import React, { ChangeEvent, Dispatch, FC, SetStateAction, useCallback, useContext, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
-import { AppStateContext, IConnectData } from './AppContextWrapper';
+import React, { ChangeEvent, Dispatch, FC, SetStateAction, useCallback, useContext, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
+import { AppStateContext, IConnectData } from '../AppContextWrapper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { IToken, TokenStatus } from 'SDK/ContractsSDK';

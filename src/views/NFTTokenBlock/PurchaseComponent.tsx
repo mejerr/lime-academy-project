@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback, Dispatch, SetStateAction, useContext } from 'react'
+import React, { FC, useState, useCallback, Dispatch, SetStateAction, useContext } from 'react';
 import styled from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,7 +6,7 @@ import { faCartShopping, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { Button, Value } from 'components';
 import { IToken, TokenStatus } from 'SDK/ContractsSDK';
 import { ethereumImage } from 'assets';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 
 interface IProps extends RouteComponentProps {
   nftToken: IToken;

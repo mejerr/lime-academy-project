@@ -1,6 +1,6 @@
-import React, { FC, Fragment, useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom';
+import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
 import { ellipseAddress } from '../../helpers/utilities';

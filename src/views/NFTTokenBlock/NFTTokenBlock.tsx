@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
 import { IToken, TokenStatus } from 'SDK/ContractsSDK';
 import { Button, ImageBlock, Offers, Value } from 'components';

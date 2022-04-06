@@ -2,7 +2,7 @@
 import React, { ChangeEvent, FC, useCallback, useContext, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import Create from './Create';
 import { uploadPicture, uploadToIPFS } from 'helpers/utilities';
 

@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ethereumImage } from 'assets';
 import { ImageBlock } from 'components';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { uploadPicture } from 'helpers/utilities';
 import Button from './Button';
 

@@ -1,8 +1,8 @@
-import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
 import { BlockHeader, Collections, NFTTokens } from 'components';
 import { ICollection, ICreator, IToken } from 'SDK/ContractsSDK';
-import { AppStateContext, IConnectData } from './AppContextWrapper';
+import { AppStateContext, IConnectData } from '../AppContextWrapper';
 import { useParams } from 'react-router-dom';
 
 const MyCollections: FC = () => {

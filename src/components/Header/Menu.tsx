@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { ICollectionProps } from 'views/Create/RequiredFields';
 import { SelectableMenu } from 'components';
-import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 
 const COLLECTION_PROPS: ICollectionProps[] = [
   { name: "Marketplace", collectionId: 1},

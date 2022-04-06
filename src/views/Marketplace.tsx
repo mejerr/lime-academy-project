@@ -2,7 +2,7 @@ import React, { FC, useContext, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Collections } from 'components';
 import { ICollection } from 'SDK/ContractsSDK';
-import { AppStateContext, IConnectData } from './AppContextWrapper';
+import { AppStateContext, IConnectData } from '../AppContextWrapper';
 
 const Marketplace: FC = () => {
   const { state } = useContext(AppStateContext);

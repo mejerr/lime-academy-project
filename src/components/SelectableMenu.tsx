@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useState } from 'react'
-import styled from 'styled-components'
+import React, { FC, useCallback, useState } from 'react';
+import styled from 'styled-components';
 import { Button } from 'components';
 import { IOption, ICollectionProps } from 'views/Create/RequiredFields';
 import { fadeIn } from 'App';

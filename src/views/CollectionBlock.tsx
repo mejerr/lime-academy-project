@@ -1,7 +1,7 @@
-import React, { FC, useContext, useEffect, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { FC, useContext, useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
 import { BlockHeader, NFTTokens } from 'components';
-import { AppStateContext, IConnectData } from './AppContextWrapper';
+import { AppStateContext, IConnectData } from '../AppContextWrapper';
 import { ICollection, IToken } from 'SDK/ContractsSDK';
 import { useParams } from 'react-router-dom';
 

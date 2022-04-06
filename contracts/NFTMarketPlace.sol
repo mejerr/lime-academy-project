@@ -74,6 +74,23 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         marketItemContract = NFTMarketItem(_marketItemAddress);
     }
 
+    /* Get listing fee */
+    function getListingFee() external view virtual override returns (uint256) {
+        return listingFee;
+    }
+
+    /* Get collected listing fee */
+    function getCollectedListingFee()
+        external
+        view
+        virtual
+        override
+        returns (uint256)
+    {
+        return collectedListingFee;
+    }
+
+    /* Change address owned username */
     function changeCreatorName(address creator, string calldata name)
         external
         virtual
@@ -84,6 +101,7 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         creatorsInfo[creator].name = name;
     }
 
+    /* Change address owned image */
     function changeCreatorImage(address creator, string calldata image)
         external
         virtual
@@ -92,21 +110,6 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         require(creator == msg.sender, "Marketplace: name not owned by you");
 
         creatorsInfo[creator].image = image;
-    }
-
-    function getLockedBidAmount()
-        external
-        view
-        virtual
-        override
-        onlyOwner
-        returns (uint256)
-    {
-        return lockedBidAmount;
-    }
-
-    function getListingFee() external view virtual override returns (uint256) {
-        return listingFee;
     }
 
     /* Transfers collected listing fees to owner */
@@ -124,18 +127,6 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         payable(msg.sender).transfer(fee);
 
         emit ListingFeeToOwner(collectedListingFee);
-    }
-
-    /* Update listing fee */
-    function updateListingFee(uint256 _listingFee)
-        external
-        payable
-        virtual
-        override
-        onlyOwner
-    {
-        listingFee = _listingFee;
-        emit ListingFeeUpdated(_listingFee);
     }
 
     /* Creates a collection of future NFTs */
@@ -202,6 +193,7 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         return newTokenId;
     }
 
+    /* Get items array length */
     function getMarketItemsLength()
         external
         view
@@ -304,6 +296,7 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         emit BidCreated(newBidId, msg.value, msg.sender);
     }
 
+    /* Get bids array length */
     function getItemBidsLength() public view override returns (uint256) {
         return bidsIds.length;
     }
@@ -364,6 +357,7 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         emit BidCancelled(tokenId, bidId, msg.sender);
     }
 
+    /* Receive money in the smart contract */
     receive() external payable virtual override {
         emit Deposit(msg.value);
     }

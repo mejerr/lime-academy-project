@@ -17,6 +17,7 @@ import { ethereumImage } from 'assets';
 import { ImageBlock } from 'components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import { uploadPicture } from 'helpers/utilities';
+import Button from './Button';
 
 interface IProps {
   image: string;
@@ -35,6 +36,7 @@ const BlockHeader: FC<IProps> = ({
   description = '',
   showCreator = true
 }) => {
+  const history = useHistory();
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
@@ -43,9 +45,10 @@ const BlockHeader: FC<IProps> = ({
   const [creatorName, setCreatorName] = useState<string>('');
   const [creatorImage, setCreatorImage] = useState<string>('');
   const [showInput, setShowInput] = useState<boolean>(false);
+  const [listingFee, setListingFee] = useState<number>(0);
   const descriptionNode = useRef<HTMLHeadingElement>(null);
   const creatorNode = useRef<HTMLHeadingElement>(null);
-  const history = useHistory();
+
   const isCollection = history.location.pathname.startsWith("/collection");
 
   const onAddressClick = useCallback(() => {
@@ -94,11 +97,26 @@ const BlockHeader: FC<IProps> = ({
     }
   }, [connected, contractsSDK, creator, creatorImage]);
 
+  const onTransferClick = useCallback(async () => {
+    if (connected && contractsSDK) {
+      await contractsSDK.onTransferListingFee();
+    }
+  }, [connected, contractsSDK]);
+
   useEffect(() => {
     if (descriptionNode.current) {
       setHeight(openDescription ? `${descriptionNode.current.scrollHeight - 40}px` : "120px");
     }
-  }, [openDescription]);
+
+    const initListingFee = async () =>{
+      const result = await contractsSDK.onGetListingFee();
+      setListingFee(result);
+    }
+
+    if (connected && contractsSDK) {
+      initListingFee();
+    }
+  }, [connected, contractsSDK, openDescription]);
 
   return (
     <BlockWrapper>
@@ -135,6 +153,18 @@ const BlockHeader: FC<IProps> = ({
           </UploadImageWrapper>
         }
       </BlockName>
+
+      <BlockListingFee>
+        <ListingFee>Collected Listing fees: {listingFee}</ListingFee>
+        <TransferButton>
+          <Button
+            title={"Transfer"}
+            width={"100%"}
+            height={"100%"}
+            onClick={onTransferClick}
+          />
+        </TransferButton>
+      </BlockListingFee>
 
       <BlockCreator >
         {showCreator && <div>Created by</div>}
@@ -204,6 +234,7 @@ const BlockName = styled.div`
 `;
 
 const NameInput = styled.input`
+  width: 250px;
   font-size: 30px;
   height: 45px;
   padding: 5px;
@@ -236,6 +267,40 @@ const ImageInput = styled.input`
   top: 0;
   opacity: 0;
   cursor: pointer;
+`;
+
+const BlockListingFee = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+  }
+`;
+
+const ListingFee = styled.div`
+  font-size: 16px;
+`;
+
+const TransferButton = styled.div`
+  height: 30px;
+  font-size: 16px;
+  background-color: #024bb0;
+  border-radius: 10px;
+  margin-left: 10px;
+  padding: 10px;
+  color: #fff;
+  cursor: pointer;
+
+  :hover {
+    background-color: rgba(2, 75, 176, 0.9);
+  }
+
+  & div {
+    margin: 0;
+    color: #fff;
+  }
 `;
 
 const Image = styled.img`

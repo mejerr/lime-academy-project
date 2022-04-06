@@ -272,6 +272,16 @@ class ContractsSDK {
     const transaction = await this.marketplace.cancelItemBid(tokenId, bidId);
     transaction.wait();
   }
+
+  public async onGetListingFee() {
+    const listingFee = await this.marketplace.getCollectedListingFee();
+    return ethers.utils.formatUnits(listingFee.toString(), 'ether');
+  }
+
+  public async onTransferListingFee() {
+    const transaction = await this.marketplace.transferListingFee();
+    transaction.wait();
+  }
 }
 
 export default ContractsSDK;

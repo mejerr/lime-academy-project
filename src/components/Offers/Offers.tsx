@@ -63,9 +63,11 @@ const Offers: FC<IProps> = ({ tokenId = 0, nftCreator = '' }) => {
   return (
     <OffersWrapper>
       <OffersTitle>{"Offers"}</OffersTitle>
-      <OffersData>
-        {UNIT_DATA.map(({ name }) => <Unit key={name}>{name}</Unit>)}
-      </OffersData>
+      {!!offers.length &&
+        <OffersData>
+          {UNIT_DATA.map(({ name }) => <Unit key={name}>{name}</Unit>)}
+        </OffersData>
+      }
       <OffersContent>
         {offers.length ? offers.map(renderOffers) : <EmptyContent>No offers</EmptyContent>}
       </OffersContent>

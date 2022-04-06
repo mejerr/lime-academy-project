@@ -82,7 +82,6 @@ interface INFTMarketPlace {
     );
 
     event ListingFeeToOwner(uint256 listingFee);
-    event ListingFeeUpdated(uint256 newListingFee);
     event Deposit(uint256 price);
 
     function changeCreatorName(address creator, string calldata name) external;
@@ -90,13 +89,11 @@ interface INFTMarketPlace {
     function changeCreatorImage(address creator, string calldata image)
         external;
 
-    function getLockedBidAmount() external view returns (uint256);
-
     function getListingFee() external view returns (uint256);
 
-    function transferListingFee() external payable;
+    function getCollectedListingFee() external view returns (uint256);
 
-    function updateListingFee(uint256 listingFee) external payable;
+    function transferListingFee() external payable;
 
     function createCollection(
         string calldata image,

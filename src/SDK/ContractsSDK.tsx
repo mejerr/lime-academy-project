@@ -1,8 +1,8 @@
 // tslint:disable: no-empty
 import { ethers } from 'ethers';
 
-import marketPlaceABI from 'NFTMarketPlace.json';
-import marketItemABI from 'NFTMarketItem.json';
+import marketItemABI from '../artifacts/contracts/NFT.sol/NFT.json';
+import marketPlaceABI from '../artifacts/contracts/MarketPlace.sol/MarketPlace.json';
 import axios from 'axios';
 
 const zeroAddress = '0x0000000000000000000000000000000000000000';
@@ -62,13 +62,13 @@ class ContractsSDK {
     this.userAddress = userAddress;
 
     this.marketItem =  new ethers.Contract(
-      '0x7a2088a1bFc9d81c55368AE168C2C02570cB814F',
+      '0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf',
       marketItemABI.abi,
       signer
     );
 
     this.marketPlace =  new ethers.Contract(
-      '0x09635F643e140090A9A8Dcd712eD6285858ceBef',
+      '0x9d4454B023096f34B160D6B654540c56A1F81688',
       marketPlaceABI.abi,
       signer
     );

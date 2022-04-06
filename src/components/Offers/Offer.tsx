@@ -1,17 +1,28 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, Fragment, useCallback, useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
 import { ellipseAddress } from '../../helpers/utilities';
 import { getEthPriceNow } from 'get-eth-price';
+import { BidStatus } from 'SDK/ContractsSDK';
 
 interface IProps {
   price: number;
   bidder: string;
+  status: BidStatus;
+  isNftCreator: boolean;
+  onAcceptClick: () => void;
+  onRejectClick: () => void;
 }
 
-const Offer: FC<IProps> = ({ price, bidder }) => {
+const Offer: FC<IProps> = ({ price, bidder, status, isNftCreator, onAcceptClick, onRejectClick }) => {
   const [USDPrice, setUSDPrice] = useState<string>('0');
+  const history = useHistory();
+
+  const goToAddress = useCallback(() => {
+    history.push(`/my-collection/${bidder}`)
+  }, [bidder]);
 
   useEffect(() => {
     const parseEtherUSD = async () => {
@@ -28,28 +39,36 @@ const Offer: FC<IProps> = ({ price, bidder }) => {
 
   return (
     <OfferContainer>
-      <PriceETH>
-        <ValueIcon />
-        <div>{`${price} ETH`}</div>
-      </PriceETH>
-      <PriceUSD>{`$${USDPrice}`}</PriceUSD>
-      <Bidder>{ellipseAddress(bidder, 5)}</Bidder>
-      <OfferButtonsWrapper>
-        <AcceptButtonWrapper>
-          <Button
-            title={'Accept'}
-            width={"50px"}
-            height={"25px"}
-          />
-        </AcceptButtonWrapper>
-        <RejectButtonWrapper>
-          <Button
-            title={'Reject'}
-            width={"50px"}
-            height={"25px"}
-          />
-        </RejectButtonWrapper>
-      </OfferButtonsWrapper>
+      {status === BidStatus.Idle &&
+        <Fragment>
+          <PriceETH>
+            <ValueIcon />
+            <div>{`${price} ETH`}</div>
+          </PriceETH>
+          <PriceUSD>{`$${USDPrice}`}</PriceUSD>
+          <Bidder onClick={goToAddress}>{ellipseAddress(bidder, 5)}</Bidder>
+          {isNftCreator &&
+            <OfferButtonsWrapper>
+            <AcceptButtonWrapper>
+              <Button
+                title={'Accept'}
+                width={"50px"}
+                height={"25px"}
+                onClick={onAcceptClick}
+              />
+            </AcceptButtonWrapper>
+            <RejectButtonWrapper>
+              <Button
+                title={'Reject'}
+                width={"50px"}
+                height={"25px"}
+                onClick={onRejectClick}
+              />
+            </RejectButtonWrapper>
+            </OfferButtonsWrapper>
+          }
+        </Fragment>
+      }
     </OfferContainer>
   );
 };

@@ -85,7 +85,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
         {nftToken?.creator !== userAddress && <PurchaseComponent nftToken={nftToken} setOpenSale={setOpenSale}/>}
 
-        <Offers tokenId={nftToken?.itemId}/>
+        <Offers tokenId={nftToken?.itemId} nftCreator={nftToken?.creator}/>
       </DetailsWrapper>
       <SaleBlock setOpenSale={setOpenSale} isOpen={openSale} nftToken={nftToken}/>
     </NFTTokenBlockWrapper>

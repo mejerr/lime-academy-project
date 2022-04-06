@@ -5,9 +5,17 @@ import marketplaceABI from 'NFTMarketPlace.json';
 import marketItemABI from 'NFTMarketItem.json';
 import axios from 'axios';
 
+const zeroAddress = '0x0000000000000000000000000000000000000000';
+
 export enum ItemStatus {
   "ForSale",
-  'Idle'
+  "Idle"
+}
+
+export enum BidStatus {
+  "Accepted",
+  "Rejected",
+  "Idle"
 }
 
 export interface ICreator {
@@ -26,6 +34,7 @@ export interface ICollection {
 export interface IBid {
   bidId: number;
   amount: string;
+  status: BidStatus;
   bidder: string;
 }
 
@@ -54,13 +63,13 @@ class ContractsSDK {
     this.userAddress = userAddress;
 
     this.marketItem =  new ethers.Contract(
-      '0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44',
+      '0x7a2088a1bFc9d81c55368AE168C2C02570cB814F',
       marketItemABI.abi,
       signer
     );
 
     this.marketplace =  new ethers.Contract(
-      '0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f',
+      '0x09635F643e140090A9A8Dcd712eD6285858ceBef',
       marketplaceABI.abi,
       signer
     );
@@ -197,6 +206,11 @@ class ContractsSDK {
   }
 
   public async onCreateSale(tokenId: number, price: number) {
+    const isMarketApproved = await this.marketItem.getApproved(tokenId) === this.marketplace.address;
+    if (!isMarketApproved) {
+      await this.marketItem.approve(this.marketplace.address, tokenId);
+    }
+
     const listingFee = (await this.marketplace.getListingFee()).toString();
     const parsedPrice = ethers.utils.parseEther(price.toString());
 
@@ -205,6 +219,8 @@ class ContractsSDK {
   }
 
   public async onCancelSale(tokenId: string) {
+    await this.marketItem.approve(zeroAddress, tokenId);
+
     const transaction = await this.marketplace.cancelSale(tokenId);
     transaction.wait();
   }
@@ -220,14 +236,15 @@ class ContractsSDK {
     const bidsIds: IBid[] = [];
 
     for (let i = 1; i <= bidsLength; i++) {
-      const bid = this.marketplace.itemBids(tokenId, i);
+      const bid = await this.marketplace.itemBids(tokenId, i);
       bidsIds.push(bid);
     };
 
     const result = await Promise.all(bidsIds).then(bids => (
-      bids.map(({ bidId, amount, bidder }): IBid => ({
+      bids.map(({ bidId, amount, status, bidder }): IBid => ({
         bidId: Number(bidId.toString()),
         amount: ethers.utils.formatUnits(amount.toString(), 'ether'),
+        status,
         bidder
       }))
     ));
@@ -235,9 +252,24 @@ class ContractsSDK {
     return result;
   }
 
-  public async onBidOnItem(tokenId: string, amount: string) {
+  public async onBidOnItem(tokenId: number, amount: string) {
     const parsedPrice = ethers.utils.parseEther(amount);
     const transaction = await this.marketplace.bidMarketItem(tokenId, { value: parsedPrice });
+    transaction.wait();
+  }
+
+  public async onAcceptBid(tokenId: number, bidId: number) {
+    const isMarketApproved = await this.marketItem.getApproved(tokenId) === this.marketplace.address;
+    if (!isMarketApproved) {
+      await this.marketItem.approve(this.marketplace.address, tokenId);
+    }
+
+    const transaction = await this.marketplace.acceptItemBid(tokenId, bidId);
+    transaction.wait();
+  }
+
+  public async onCancelBid(tokenId: number, bidId: number) {
+    const transaction = await this.marketplace.cancelItemBid(tokenId, bidId);
     transaction.wait();
   }
 }

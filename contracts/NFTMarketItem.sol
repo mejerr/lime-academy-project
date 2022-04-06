@@ -15,12 +15,4 @@ contract NFTMarketItem is ERC721URIStorage {
         _mint(owner, tokenId);
         _setTokenURI(tokenId, tokenURI);
     }
-
-    function setApprovalForAll(address sender, bool approved)
-        public
-        virtual
-        override
-    {
-        super._setApprovalForAll(sender, _msgSender(), approved);
-    }
 }

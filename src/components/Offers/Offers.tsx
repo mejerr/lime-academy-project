@@ -1,13 +1,14 @@
 
 
 import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
-import { IBid } from 'SDK/ContractsSDK';
+import { BidStatus, IBid } from 'SDK/ContractsSDK';
 import styled from 'styled-components';
 import { AppStateContext, IConnectData } from 'views/AppContextWrapper';
 import Offer from './Offer';
 
 interface IProps {
-  tokenId: number
+  tokenId: number,
+  nftCreator: string
 }
 
 const UNIT_DATA = [
@@ -16,28 +17,48 @@ const UNIT_DATA = [
   { name: "From"}
 ];
 
-const Offers: FC<IProps> = ({ tokenId = 0 }) => {
+const Offers: FC<IProps> = ({ tokenId = 0, nftCreator = '' }) => {
   const { state } = useContext(AppStateContext);
-  const { connected, contractsSDK }: IConnectData = state;
+  const { connected, contractsSDK, userAddress }: IConnectData = state;
   const [offers, setOffers] = useState<IBid[]>([]);
 
-  const renderOffers = useCallback(({ bidId, amount, bidder}) => {
+  const onAcceptClick = useCallback(async (bidId: number) => {
+    if (connected && contractsSDK && tokenId) {
+      await contractsSDK.onAcceptBid(tokenId, bidId);
+    }
+  }, [connected, contractsSDK, tokenId]);
+
+  const onRejectClick = useCallback(async (bidId: number) => {
+    if (connected && contractsSDK && tokenId) {
+      await contractsSDK.onCancelBid(tokenId, bidId);
+    }
+  }, [connected, contractsSDK, tokenId]);
+
+  const renderOffers = useCallback(({ bidId, amount, status, bidder}) => {
     return (
-      <Offer key={bidId} price={amount} bidder={bidder} />
+      <Offer
+        key={bidId}
+        price={amount}
+        bidder={bidder}
+        status={status}
+        onAcceptClick={() => onAcceptClick(bidId)}
+        onRejectClick={() => onRejectClick(bidId)}
+        isNftCreator={nftCreator === userAddress}
+      />
     );
-  }, []);
+  }, [onAcceptClick, onRejectClick]);
 
   useEffect(() => {
     const renderOffers = async () => {
       const result = await contractsSDK.onGetItemOffers(tokenId);
-      setOffers(result);
+      const idleBids = result.filter((bid: IBid) => bid.status === BidStatus.Idle);
+      setOffers(idleBids);
     }
 
     if (connected && contractsSDK && tokenId) {
       renderOffers();
     }
   }, [connected, contractsSDK, tokenId]);
-
 
   return (
     <OffersWrapper>
@@ -46,7 +67,7 @@ const Offers: FC<IProps> = ({ tokenId = 0 }) => {
         {UNIT_DATA.map(({ name }) => <Unit key={name}>{name}</Unit>)}
       </OffersData>
       <OffersContent>
-        {offers.map(renderOffers)}
+        {offers.length ? offers.map(renderOffers) : <EmptyContent>No offers</EmptyContent>}
       </OffersContent>
     </OffersWrapper>
   );
@@ -93,6 +114,8 @@ const OffersContent = styled.div`
   padding: 0 20px;
 `;
 
-
-
-
+const EmptyContent = styled.div`
+  font-size: 36px;
+  text-align: center;
+  padding: 40px;
+`;

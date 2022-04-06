@@ -7,6 +7,12 @@ interface INFTMarketPlace {
         Idle
     }
 
+    enum BidStatus {
+        Accepted,
+        Rejected,
+        Idle
+    }
+
     struct Creator {
         string name;
         string image;
@@ -34,6 +40,7 @@ interface INFTMarketPlace {
     struct Bid {
         uint256 bidId;
         uint256 amount;
+        BidStatus status;
         address payable bidder;
     }
 

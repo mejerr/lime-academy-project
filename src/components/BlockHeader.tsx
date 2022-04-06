@@ -46,6 +46,7 @@ const BlockHeader: FC<IProps> = ({
   const descriptionNode = useRef<HTMLHeadingElement>(null);
   const creatorNode = useRef<HTMLHeadingElement>(null);
   const history = useHistory();
+  const isCollection = history.location.pathname.startsWith("/collection");
 
   const onAddressClick = useCallback(() => {
     if (!showCreator) {
@@ -115,12 +116,13 @@ const BlockHeader: FC<IProps> = ({
           </Fragment> :
           <Fragment>
             {name || 'unnamed'}
-            {userAddress === creator && <Icon icon={faEdit} onClick={onOpenInput}/>}
+            {userAddress === creator && !isCollection && <Icon icon={faEdit} onClick={onOpenInput}/>}
           </Fragment>
         }
-        {userAddress === creator &&
+        {userAddress === creator && !isCollection &&
           <UploadImageWrapper>
-            {creatorImage ? <UploadImageButton onClick={onAcceptPicture}>Upload image</UploadImageButton> :
+            {creatorImage ?
+              <UploadImageButton onClick={onAcceptPicture}>Upload image</UploadImageButton> :
               <Fragment>
                 <Icon icon={faUpload}/>
                 <ImageInput

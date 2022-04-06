@@ -223,8 +223,6 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         onlyValueEnough
         nonReentrant
     {
-        marketItemContract.setApprovalForAll(_msgSender(), true);
-
         collectedListingFee += msg.value;
         marketItems[tokenId].price = _price;
         marketItems[tokenId].status = ItemListingStatus.ForSale;
@@ -240,8 +238,6 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         onlyItemOwner(tokenId)
         onlyForSale(tokenId)
     {
-        marketItemContract.setApprovalForAll(_msgSender(), false);
-
         marketItems[tokenId].price = 0;
         marketItems[tokenId].status = ItemListingStatus.Idle;
 
@@ -254,8 +250,8 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         payable
         virtual
         override
-        nonReentrant
         onlyForSale(tokenId)
+        nonReentrant
     {
         address itemOwner = marketItemContract.ownerOf(tokenId);
 
@@ -299,6 +295,7 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
         itemBids[tokenId][newBidId] = Bid(
             newBidId,
             msg.value,
+            BidStatus.Idle,
             payable(msg.sender)
         );
 
@@ -334,11 +331,10 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
 
         marketItemContract.transferFrom(msg.sender, bidder, tokenId);
 
+        itemBids[tokenId][bidId].status = BidStatus.Accepted;
         lockedBidAmount -= amount;
         address(this).balance - amount;
         payable(msg.sender).transfer(amount);
-
-        delete itemBids[tokenId][bidId];
 
         emit BidAccepted(tokenId, bidId, amount, bidder);
     }
@@ -362,9 +358,8 @@ contract NFTMarketPlace is Ownable, ReentrancyGuard, INFTMarketPlace {
 
         lockedBidAmount -= amount;
         address(this).balance - amount;
+        itemBids[tokenId][bidId].status = BidStatus.Rejected;
         payable(bidder).transfer(amount);
-
-        delete itemBids[tokenId][bidId];
 
         emit BidCancelled(tokenId, bidId, msg.sender);
     }

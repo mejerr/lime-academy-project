@@ -55,13 +55,12 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) 
             <ValueIcon />
             <ETHText>{"ETH"}</ETHText>
           </InputWrapper> :
-          <BuyButtonWrapper>
+          <BuyButtonWrapper onClick={nftToken?.status === ItemStatus.ForSale ? onBuyItem : onOpenOffer}>
             <BuyIcon icon={faCartShopping} />
             <Button
               title={'Buy now'}
               width={"150px"}
               height={"65px"}
-              onClick={nftToken?.status === ItemStatus.ForSale ? onBuyItem : onOpenOffer}
             />
           </BuyButtonWrapper>
         }
@@ -137,6 +136,7 @@ const SendButtonWrapper = styled.div`
 const BuyButtonWrapper = styled(SendButtonWrapper as any)`
   width: 270px;
   background-color: #024bb0;
+  cursor: pointer;
 
   :hover {
     background-color: rgba(2, 75, 176, 0.9);

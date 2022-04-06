@@ -119,7 +119,7 @@ const BlockHeader: FC<IProps> = ({
   }, [connected, contractsSDK, openDescription]);
 
   return (
-    <BlockWrapper>
+    <BlockHeaderWrapper>
       <ImageWrapper>
         {creatorImage ? <Image src={creatorImage}/> : !image && <EmptyIcon icon={faImage} />}
         {image && !creatorImage && <ImageBlock image={image} width={'100%'} height={'100%'}/>}
@@ -192,13 +192,13 @@ const BlockHeader: FC<IProps> = ({
           <ArrowIcon icon={openDescription ? faAngleUp : faAngleDown} onClick={onOpenDescription}/>
         </Fragment>
       )}
-    </BlockWrapper>
+    </BlockHeaderWrapper>
   );
 };
 
 export default BlockHeader;
 
-const BlockWrapper = styled.div`
+const BlockHeaderWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -4,8 +4,8 @@ import SelectableMenu from "./SelectableMenu";
 import Collection from "./Collections/Collection";
 import Collections from "./Collections/Collections";
 import ImageBlock from "./ImageBlock";
-import NFTTokens from "./NFTTokens/NFTTokens";
-import Token from "./NFTTokens/Token";
+import Tokens from "./Tokens/Tokens";
+import Token from "./Tokens/Token";
 import Value from "./Value";
 import Offers from "./Offers/Offers";
 
@@ -15,7 +15,7 @@ export {
   SelectableMenu,
   Collections,
   Collection,
-  NFTTokens,
+  Tokens,
   Token,
   ImageBlock,
   Value,

@@ -17,7 +17,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 task('deployNFTMarketItem', 'Deploys market item on a provided network').setAction(
   async (taskArguments, hre) => {
-    const deployToken = require('./scripts/deployNFTMarketItem');
+    const deployToken = require('./scripts/deploy');
     await deployToken(taskArguments);
   },
 );
@@ -37,6 +37,9 @@ const config: HardhatUserConfig = {
         }
       }
     }],
+  },
+  paths: {
+    artifacts: "./src/artifacts"
   },
   networks: {
     hardhat: {

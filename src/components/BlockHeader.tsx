@@ -78,7 +78,7 @@ const BlockHeader: FC<IProps> = ({
 
   const onChangeNameClick = useCallback(async () => {
     if (connected && contractsSDK && creatorName.length) {
-      await contractsSDK.onChangeCreatorName(creator, creatorName);
+      await contractsSDK.onChangeCreatorName(creatorName);
       setShowInput(false);
       window.location.reload();
     }
@@ -92,7 +92,7 @@ const BlockHeader: FC<IProps> = ({
 
   const onAcceptPicture = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onChangeCreatorImage(creator, creatorImage);
+      await contractsSDK.onChangeCreatorImage(creatorImage);
       window.location.reload();
     }
   }, [connected, contractsSDK, creator, creatorImage]);

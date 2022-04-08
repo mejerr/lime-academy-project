@@ -62,25 +62,25 @@ class ContractsSDK {
     this.userAddress = userAddress;
 
     this.marketItem =  new ethers.Contract(
-      '0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf',
+      '0x5FbDB2315678afecb367f032d93F642f64180aa3',
       marketItemABI.abi,
       signer
     );
 
     this.marketPlace =  new ethers.Contract(
-      '0x9d4454B023096f34B160D6B654540c56A1F81688',
+      '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       marketPlaceABI.abi,
       signer
     );
   }
 
-  public async onChangeCreatorName(creatorAddress: string, name: string) {
-    const transanction = await this.marketPlace.changeCreatorName(creatorAddress, name);
+  public async onChangeCreatorName(name: string) {
+    const transanction = await this.marketPlace.changeCreatorName(name);
     transanction.wait();
   }
 
-  public async onChangeCreatorImage(creatorAddress: string, image: string) {
-    const transanction = await this.marketPlace.changeCreatorImage(creatorAddress, image);
+  public async onChangeCreatorImage(image: string) {
+    const transanction = await this.marketPlace.changeCreatorImage(image);
     transanction.wait();
   }
 
@@ -266,7 +266,7 @@ class ContractsSDK {
   }
 
   public async onCancelBid(tokenId: number, bidId: number) {
-    const transaction = await this.marketPlace.cancelBid(tokenId, bidId);
+    const transaction = await this.marketPlace.rejectBid(tokenId, bidId);
     transaction.wait();
   }
 

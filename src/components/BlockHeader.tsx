@@ -46,6 +46,9 @@ const BlockHeader: FC<IProps> = ({
   const [creatorImage, setCreatorImage] = useState<string>('');
   const [showInput, setShowInput] = useState<boolean>(false);
   const [listingFee, setListingFee] = useState<number>(0);
+  const [marketOwner, setMarketOwner] = useState<string>('');
+  const [updateState, setUpdateState] = useState<boolean>(false);
+
   const descriptionNode = useRef<HTMLHeadingElement>(null);
   const creatorNode = useRef<HTMLHeadingElement>(null);
 
@@ -78,9 +81,8 @@ const BlockHeader: FC<IProps> = ({
 
   const onChangeNameClick = useCallback(async () => {
     if (connected && contractsSDK && creatorName.length) {
-      await contractsSDK.onChangeCreatorName(creatorName);
+      await contractsSDK.onChangeCreatorName(creatorName, setUpdateState);
       setShowInput(false);
-      window.location.reload();
     }
   }, [connected, contractsSDK, creatorName]);
 
@@ -92,14 +94,13 @@ const BlockHeader: FC<IProps> = ({
 
   const onAcceptPicture = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onChangeCreatorImage(creatorImage);
-      window.location.reload();
+      await contractsSDK.onChangeCreatorImage(creatorImage, setUpdateState);
     }
   }, [connected, contractsSDK, creator, creatorImage]);
 
   const onTransferClick = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onTransferListingFee();
+      await contractsSDK.onTransferListingFee(setUpdateState);
     }
   }, [connected, contractsSDK]);
 
@@ -108,16 +109,16 @@ const BlockHeader: FC<IProps> = ({
       setHeight(openDescription ? `${descriptionNode.current.scrollHeight - 40}px` : "120px");
     }
 
-    const initListingFee = async () =>{
+    const initListingFee = async () => {
       const result = await contractsSDK.onGetListingFee();
       setListingFee(result);
+      setMarketOwner(await contractsSDK?.marketPlace.owner());
     }
 
     if (connected && contractsSDK) {
       initListingFee();
     }
-  }, [connected, contractsSDK, openDescription]);
-
+  }, [connected, contractsSDK, openDescription, updateState]);
   return (
     <BlockHeaderWrapper>
       <ImageWrapper>
@@ -154,17 +155,19 @@ const BlockHeader: FC<IProps> = ({
         }
       </BlockName>
 
-      <BlockListingFee>
-        <ListingFee>Collected Listing fees: {listingFee}</ListingFee>
-        <TransferButton>
-          <Button
-            title={"Transfer"}
-            width={"100%"}
-            height={"100%"}
-            onClick={onTransferClick}
-          />
-        </TransferButton>
-      </BlockListingFee>
+      {userAddress === marketOwner && !isCollection &&
+        <BlockListingFee>
+          <ListingFee>Collected Listing fees: {listingFee}</ListingFee>
+          <TransferButton>
+            <Button
+              title={"Transfer"}
+              width={"100%"}
+              height={"100%"}
+              onClick={onTransferClick}
+            />
+          </TransferButton>
+        </BlockListingFee>
+      }
 
       <BlockCreator >
         {showCreator && <div>Created by</div>}

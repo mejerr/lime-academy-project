@@ -11,9 +11,10 @@ import { AppStateContext, IConnectData } from 'AppContextWrapper';
 interface IProps extends RouteComponentProps {
   nftToken: IToken;
   setOpenSale: Dispatch<SetStateAction<boolean>>;
+  setUpdateState: Dispatch<SetStateAction<boolean>>;
 }
 
-const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) => {
+const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale, setUpdateState }) => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
 
@@ -26,7 +27,7 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale }) 
 
   const onSendOffer = useCallback(async () => {
     if (connected && contractsSDK && nftToken.tokenId && inputValue) {
-      await contractsSDK.onBidOnItem(nftToken?.tokenId, inputValue);
+      await contractsSDK.onBidOnItem(nftToken?.tokenId, inputValue, setUpdateState);
       setInputValue('');
     }
 

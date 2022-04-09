@@ -16,6 +16,8 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   const params: { id: string } = useParams();
   const [nftToken, setNFTToken] = useState<IToken | any>();
   const [openSale, setOpenSale] = useState<boolean>(false);
+  const [updateState, setUpdateState] = useState<boolean>(false);
+
   const creatorNode = useRef<HTMLHeadingElement>(null);
 
   const goToCollection = useCallback(() => {
@@ -28,9 +30,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
   const cancelSale = useCallback(async () => {
       if (connected && contractsSDK) {
-        await contractsSDK.onCancelSale(nftToken?.tokenId);
-        // Remove window reload if possible
-        window.location.reload();
+        await contractsSDK.onCancelSale(nftToken?.tokenId, setUpdateState);
       }
   }, [connected, contractsSDK, nftToken]);
 
@@ -43,12 +43,13 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
     const renderNFTItem = async () => {
       const nftItem: IToken = await contractsSDK.getNFTItem(params.id);
       setNFTToken(nftItem);
+      setUpdateState(false);
     }
 
     if (connected && contractsSDK) {
       renderNFTItem();
     }
-  }, [connected, contractsSDK]);
+  }, [connected, contractsSDK, updateState]);
 
   return (
     <NFTTokenBlockWrapper>
@@ -83,11 +84,26 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
           <CopyIcon icon={faCopy} onClick={copyToClipboard}/>
         </Owner>
 
-        {nftToken?.creator !== userAddress && <PurchaseComponent nftToken={nftToken} setOpenSale={setOpenSale}/>}
+        {nftToken?.creator !== userAddress &&
+          <PurchaseComponent
+            nftToken={nftToken}
+            setOpenSale={setOpenSale}
+            setUpdateState={setUpdateState}
+          />
+        }
 
-        <Offers tokenId={nftToken?.tokenId} nftCreator={nftToken?.creator}/>
+        <Offers
+          nftToken={nftToken}
+          updateState={updateState}
+          setUpdateState={setUpdateState}
+        />
       </DetailsWrapper>
-      <SaleBlock setOpenSale={setOpenSale} isOpen={openSale} nftToken={nftToken}/>
+      <SaleBlock
+        isOpen={openSale}
+        nftToken={nftToken}
+        setOpenSale={setOpenSale}
+        setUpdateState={setUpdateState}
+      />
     </NFTTokenBlockWrapper>
   )
 };

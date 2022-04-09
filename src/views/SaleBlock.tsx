@@ -12,9 +12,10 @@ interface IProps {
   nftToken: IToken;
   isOpen: boolean;
   setOpenSale: Dispatch<SetStateAction<boolean>>;
+  setUpdateState: Dispatch<SetStateAction<boolean>>;
 }
 
-const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
+const SaleBlock: FC<IProps> = ({ isOpen, nftToken, setOpenSale, setUpdateState }) => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
   const buttonTitle = nftToken?.status === TokenStatus.ForSale ? nftToken?.creator === userAddress ? "Cancel Sale" : "Buy" : "Sell";
@@ -26,15 +27,13 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
 
   const onSellClick = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onCreateSale(nftToken?.tokenId, price)
-      window.location.reload();
+      await contractsSDK.onCreateSale(nftToken?.tokenId, price, setUpdateState, setOpenSale)
     }
   }, [connected, contractsSDK, price, nftToken]);
 
   const onBuyClick = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onBuyMarketItem(nftToken?.tokenId)
-      window.location.reload();
+      await contractsSDK.onBuyMarketItem(nftToken?.tokenId, setUpdateState, setOpenSale)
     }
   }, [connected, contractsSDK, nftToken]);
 

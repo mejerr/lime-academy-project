@@ -1,7 +1,8 @@
 // tslint:disable: no-empty
+import { Dispatch, SetStateAction } from 'react';
 import { ethers } from 'ethers';
 
-import marketItemABI from '../artifacts/contracts/NFT.sol/NFT.json';
+import nftABI from '../artifacts/contracts/NFT.sol/NFT.json';
 import marketPlaceABI from '../artifacts/contracts/MarketPlace.sol/MarketPlace.json';
 import axios from 'axios';
 
@@ -47,7 +48,7 @@ interface IFetchedToken {
   status: TokenStatus;
 }
 
-export interface IToken extends IFetchedToken{
+export interface IToken extends IFetchedToken {
   image: string;
   creator: string;
   collectionName?: string;
@@ -55,33 +56,35 @@ export interface IToken extends IFetchedToken{
 
 class ContractsSDK {
   public marketPlace: ethers.Contract;
-  public marketItem: ethers.Contract;
+  public nft: ethers.Contract;
   public userAddress: string;
 
   constructor(signer: ethers.Signer, userAddress: string) {
     this.userAddress = userAddress;
 
-    this.marketItem =  new ethers.Contract(
-      '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-      marketItemABI.abi,
+    this.nft =  new ethers.Contract(
+      '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+      nftABI.abi,
       signer
     );
 
     this.marketPlace =  new ethers.Contract(
-      '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+      '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       marketPlaceABI.abi,
       signer
     );
   }
 
-  public async onChangeCreatorName(name: string) {
+  public async onChangeCreatorName(name: string, setUpdateState: Dispatch<SetStateAction<boolean>>) {
     const transanction = await this.marketPlace.changeCreatorName(name);
-    transanction.wait();
+    await transanction.wait();
+    setUpdateState(true);
   }
 
-  public async onChangeCreatorImage(image: string) {
+  public async onChangeCreatorImage(image: string, setUpdateState: Dispatch<SetStateAction<boolean>>) {
     const transanction = await this.marketPlace.changeCreatorImage(image);
-    transanction.wait();
+    await transanction.wait();
+    setUpdateState(true);
   }
 
   public async onGetCreatorInfo(creatorAddress: string) {
@@ -147,7 +150,7 @@ class ContractsSDK {
 
     const result = Promise.all(nftItemsIds).then((nftItems) => {
       return Promise.all(nftItems.map(async ({ tokenId, name, description, price, collectionId, status }): Promise<IToken> => {
-        const tokenUri = await this.marketItem.tokenURI(tokenId)
+        const tokenUri = await this.nft.tokenURI(tokenId)
         const meta = await axios.get(tokenUri);
         const parsedPrice = ethers.utils.formatUnits(price.toString(), 'ether');
 
@@ -158,7 +161,7 @@ class ContractsSDK {
           price: +parsedPrice,
           collectionId: Number(collectionId.toString()),
           status,
-          creator: await this.marketItem.ownerOf(tokenId),
+          creator: await this.nft.ownerOf(tokenId),
           image: meta.data.image
         }
       }))
@@ -180,7 +183,7 @@ class ContractsSDK {
   public async getNFTItem(tokenId: number) {
     const { name, description, price, collectionId, status }: IToken = await this.marketPlace.marketItems(tokenId);
     const parsedPrice = ethers.utils.formatUnits(price.toString(), 'ether');
-    const tokenUri = await this.marketItem.tokenURI(tokenId)
+    const tokenUri = await this.nft.tokenURI(tokenId)
     const meta = await axios.get(tokenUri);
     const { name: collectionName } = await this.marketPlace.collections(collectionId);
 
@@ -191,7 +194,7 @@ class ContractsSDK {
       price: +parsedPrice,
       collectionId: Number(collectionId.toString()),
       status,
-      creator: await this.marketItem.ownerOf(tokenId),
+      creator: await this.nft.ownerOf(tokenId),
       image: meta.data.image,
       collectionName
     }
@@ -202,30 +205,43 @@ class ContractsSDK {
     await tokenId.wait();
   }
 
-  public async onCreateSale(tokenId: number, price: number) {
-    const isMarketApproved = await this.marketItem.getApproved(tokenId) === this.marketPlace.address;
+  public async onCreateSale(
+    tokenId: number,
+    price: number,
+    setUpdateState: Dispatch<SetStateAction<boolean>>,
+    setOpenSale: Dispatch<SetStateAction<boolean>>
+    ) {
+    const isMarketApproved = await this.nft.getApproved(tokenId) === this.marketPlace.address;
     if (!isMarketApproved) {
-      await this.marketItem.approve(this.marketPlace.address, tokenId);
+      await this.nft.approve(this.marketPlace.address, tokenId);
     }
-
     const listingFee = (await this.marketPlace.getListingFee()).toString();
     const parsedPrice = ethers.utils.parseEther(price.toString());
 
     const transaction = await this.marketPlace.createSale(tokenId, parsedPrice, { value: listingFee });
     await transaction.wait();
+    setUpdateState(true);
+    setOpenSale(false);
   }
 
-  public async onCancelSale(tokenId: string) {
-    await this.marketItem.approve(zeroAddress, tokenId);
+  public async onCancelSale(tokenId: string, setUpdateState: Dispatch<SetStateAction<boolean>>) {
+    await this.nft.approve(zeroAddress, tokenId);
 
     const transaction = await this.marketPlace.cancelSale(tokenId);
-    transaction.wait();
+    await transaction.wait();
+    setUpdateState(true)
   }
 
-  public async onBuyMarketItem(tokenId: string) {
+  public async onBuyMarketItem(
+    tokenId: string,
+    setUpdateState: Dispatch<SetStateAction<boolean>>,
+    setOpenSale: Dispatch<SetStateAction<boolean>>
+    ) {
     const price = (await this.marketPlace.marketItems(tokenId)).price;
     const transaction = await this.marketPlace.buyMarketItem(tokenId, { value: price });
-    transaction.wait();
+    await transaction.wait();
+    setUpdateState(true);
+    setOpenSale(false);
   }
 
   public async onGetItemOffers(tokenId: string) {
@@ -249,25 +265,40 @@ class ContractsSDK {
     return result;
   }
 
-  public async onBidOnItem(tokenId: number, amount: string) {
+  public async onBidOnItem(
+    tokenId: number,
+    amount: string,
+    setUpdateState: Dispatch<SetStateAction<boolean>>
+    ) {
     const parsedPrice = ethers.utils.parseEther(amount);
     const transaction = await this.marketPlace.bidMarketItem(tokenId, { value: parsedPrice });
-    transaction.wait();
+    await transaction.wait();
+    setUpdateState(true);
   }
 
-  public async onAcceptBid(tokenId: number, bidId: number) {
-    const isMarketApproved = await this.marketItem.getApproved(tokenId) === this.marketPlace.address;
+  public async onAcceptBid(
+    tokenId: number,
+    bidId: number,
+    setUpdateState: Dispatch<SetStateAction<boolean>>
+    ) {
+    const isMarketApproved = await this.nft.getApproved(tokenId) === this.marketPlace.address;
     if (!isMarketApproved) {
-      await this.marketItem.approve(this.marketPlace.address, tokenId);
+      await this.nft.approve(this.marketPlace.address, tokenId);
     }
 
     const transaction = await this.marketPlace.acceptBid(tokenId, bidId);
-    transaction.wait();
+    await transaction.wait();
+    setUpdateState(true);
   }
 
-  public async onCancelBid(tokenId: number, bidId: number) {
+  public async onCancelBid(
+    tokenId: number,
+    bidId: number,
+    setUpdateState: Dispatch<SetStateAction<boolean>>
+    ) {
     const transaction = await this.marketPlace.rejectBid(tokenId, bidId);
-    transaction.wait();
+    await transaction.wait();
+    setUpdateState(true);
   }
 
   public async onGetListingFee() {
@@ -275,9 +306,10 @@ class ContractsSDK {
     return ethers.utils.formatUnits(listingFee.toString(), 'ether');
   }
 
-  public async onTransferListingFee() {
+  public async onTransferListingFee(setUpdateState: Dispatch<SetStateAction<boolean>>) {
     const transaction = await this.marketPlace.transferListingFee();
-    transaction.wait();
+    await transaction.wait();
+    setUpdateState(true);
   }
 }
 

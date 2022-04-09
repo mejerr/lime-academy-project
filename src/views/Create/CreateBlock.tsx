@@ -69,6 +69,9 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
 
   const onUploadPicture = useCallback(async (e) => {
     const file = e.target.files[0];
+    if (!file) {
+      return;
+    }
     const url = await uploadPicture(file);
     activeBlock === 1 ? setNFTFileUrl(url) : setCollectionFileUrl(url);
   }, [activeBlock]);

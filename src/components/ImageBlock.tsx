@@ -35,6 +35,7 @@ export default ImageBlock;
 const ImageWrapper = styled.div<{ width: string, height: string }>`
   width: ${({ width }) => width};
   height: ${({ height }) => height};
+  border: 2px solid rgb(229, 232, 235);
   cursor: pointer;
 
   @media (max-width: 1400px) {

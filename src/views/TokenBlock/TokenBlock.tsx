@@ -9,7 +9,7 @@ import SaleBlock from 'views/SaleBlock';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
-const NFTTokenBlock: FC = () => {
+const TokenBlock: FC = () => {
   const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
@@ -58,7 +58,7 @@ const NFTTokenBlock: FC = () => {
   }, [connected, contractsSDK, updateState]);
 
   return (
-    <NFTTokenBlockWrapper>
+    <TokenBlockWrapper>
       <ImageWrapper>
         <ImageBlock
           image={nftToken?.image}
@@ -110,18 +110,18 @@ const NFTTokenBlock: FC = () => {
         setOpenSale={setOpenSale}
         setUpdateState={setUpdateState}
       />
-    </NFTTokenBlockWrapper>
+    </TokenBlockWrapper>
   )
 };
 
-export default NFTTokenBlock;
+export default TokenBlock;
 
 const fadeIn = keyframes`
   0% { opacity: 0; }
   100% { opacity: 1; }
 `;
 
-const NFTTokenBlockWrapper = styled.div`
+const TokenBlockWrapper = styled.div`
   position: relative;
   animation: ${fadeIn} 0.5s ease-out;
   display: flex;
@@ -143,9 +143,11 @@ const NFTTokenBlockWrapper = styled.div`
 `;
 
 const ImageWrapper = styled.div`
-  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 500px;
   max-width: 100%;
-  border: 1px solid rgb(229, 232, 235);
   border-radius: 10px;
   flex-shrink: 0;
   margin: 0 10px 0 20px;

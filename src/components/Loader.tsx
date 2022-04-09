@@ -29,7 +29,7 @@ const Loader: FC<IProps> = ({ size = 60, isLoading = false }) => {
   const rgb = `rgb(${colors.lightBlue})`;
 
   return (
-    <LoaderWrapper isLoading={isLoading}>
+    <LoaderWrapper isLoading={true}>
       <LoaderSVG viewBox="0 0 186 187" size={size}>
         <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
           <path
@@ -64,9 +64,8 @@ const LoaderWrapper = styled.div<{ isLoading: boolean }>`
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(0, 0, 0, 25%);
+  background: rgba(0, 0, 0, 40%);
   z-index: 100;
-  pointer-events: none;
 `;
 
 const LoaderSVG = styled.svg<{ size: number }>`

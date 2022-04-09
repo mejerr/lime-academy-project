@@ -7,7 +7,7 @@ import Homepage from './views/Homepage';
 import Marketplace from 'views/Marketplace';
 import MyCollections from 'views/MyCollections';
 import CreateBlock from 'views/Create/CreateBlock';
-import NFTTokenBlock from 'views/NFTTokenBlock/NFTTokenBlock';
+import TokenBlock from 'views/TokenBlock/TokenBlock';
 import CollectionBlock from 'views/CollectionBlock';
 import AppContextWrapper from 'AppContextWrapper';
 import Header from 'components/Header/Header';
@@ -24,7 +24,7 @@ const App: FC = () => {
         />
         <Route
           path='/collection/:id/token/:id'
-          component={NFTTokenBlock}
+          component={TokenBlock}
         />
         <Route
           path='/collection/:id'

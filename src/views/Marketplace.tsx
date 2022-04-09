@@ -5,14 +5,16 @@ import { ICollection } from 'SDK/ContractsSDK';
 import { AppStateContext, IConnectData } from '../AppContextWrapper';
 
 const Marketplace: FC = () => {
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
   const [collections, setCollections] = useState<ICollection[]>([]);
 
   useEffect(() => {
     const renderCollections = async () => {
+      setIsLoading(true);
       const result: ICollection[] = await contractsSDK.getCollections();
       setCollections(result);
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {

@@ -14,7 +14,7 @@ interface IProps {
 }
 
 const PurchaseComponent: FC<IProps> = ({ nftToken = {}, setOpenSale, setUpdateState }) => {
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
 
   const [openOffer, setOpenOffer] = useState<boolean>(false);
@@ -26,8 +26,10 @@ const PurchaseComponent: FC<IProps> = ({ nftToken = {}, setOpenSale, setUpdateSt
 
   const onSendOffer = useCallback(async () => {
     if (connected && contractsSDK && nftToken.tokenId && inputValue) {
+      setIsLoading(true);
       await contractsSDK.onBidOnItem(nftToken?.tokenId, inputValue, setUpdateState);
       setInputValue('');
+      setIsLoading(false);
     }
 
     setOpenOffer(false);

@@ -37,7 +37,7 @@ const BlockHeader: FC<IProps> = ({
   showCreator = true
 }) => {
   const history = useHistory();
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
   const [height, setHeight] = useState<string>("120px");
@@ -81,8 +81,10 @@ const BlockHeader: FC<IProps> = ({
 
   const onChangeNameClick = useCallback(async () => {
     if (connected && contractsSDK && creatorName.length) {
+      setIsLoading(true);
       await contractsSDK.onChangeCreatorName(creatorName, setUpdateState);
       setShowInput(false);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK, creatorName]);
 
@@ -94,13 +96,17 @@ const BlockHeader: FC<IProps> = ({
 
   const onAcceptPicture = useCallback(async () => {
     if (connected && contractsSDK) {
+      setIsLoading(true);
       await contractsSDK.onChangeCreatorImage(creatorImage, setUpdateState);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK, creator, creatorImage]);
 
   const onTransferClick = useCallback(async () => {
     if (connected && contractsSDK) {
+      setIsLoading(true);
       await contractsSDK.onTransferListingFee(setUpdateState);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK]);
 
@@ -110,9 +116,11 @@ const BlockHeader: FC<IProps> = ({
     }
 
     const initListingFee = async () => {
+      setIsLoading(true);
       const result = await contractsSDK.onGetListingFee();
       setListingFee(result);
       setMarketOwner(await contractsSDK?.marketPlace.owner());
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {

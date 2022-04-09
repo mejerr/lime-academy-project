@@ -7,13 +7,14 @@ import { useParams } from 'react-router-dom';
 
 const CollectionBlock: FC = () => {
   const params: { id: string } = useParams();
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
   const [tokens, setTokens] = useState<IToken[]>([]);
   const [collection, setCollection] = useState<ICollection | any>({});
 
   useEffect(() => {
     const renderCollection = async () => {
+      setIsLoading(true);
       const result: ICollection = await contractsSDK.getCollection(+params.id);
       setCollection(result);
     }
@@ -21,6 +22,7 @@ const CollectionBlock: FC = () => {
     const renderTokens = async () => {
       const result: IToken[] = await contractsSDK.getCollectionNFTs(+params.id);
       setTokens(result);
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {

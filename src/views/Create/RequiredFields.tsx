@@ -28,7 +28,7 @@ const RequiredFields: FC = () => {
     onImageChange,
     setSelectedCollectionId
   } = useContext(CreateStateContext);
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
   const [collectionProps, setCollectionProps] = useState<ICollectionProps[]>([]);
 
@@ -38,10 +38,12 @@ const RequiredFields: FC = () => {
 
   useEffect(() => {
     const renderCollections = async () => {
+      setIsLoading(true);
       const collections: ICollection[] = await contractsSDK.getUserCollections(userAddress);
       const mappedCollectionProps: ICollectionProps[] = collections.map(({ name, collectionId }): ICollectionProps => ({ name, collectionId }));
       setCollectionProps(mappedCollectionProps);
       setSelectedCollectionId(mappedCollectionProps[0]?.collectionId);
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {

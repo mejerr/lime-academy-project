@@ -12,7 +12,6 @@ import CollectionBlock from 'views/CollectionBlock';
 import AppContextWrapper from 'AppContextWrapper';
 import Header from 'components/Header/Header';
 
-
 const App: FC = () => {
   const history = useHistory();
 

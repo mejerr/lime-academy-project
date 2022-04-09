@@ -35,7 +35,7 @@ export const CreateStateContext = React.createContext({
 });
 
 const CreateBlock: FC = () => {
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { contractsSDK }: IConnectData = state;
 
   const [collectionFileUrl, setCollectionFileUrl] = useState<string>("");
@@ -84,13 +84,15 @@ const CreateBlock: FC = () => {
     }
 
     const tokenURI = await uploadToIPFS(itemName, itemDescription, nftFileUrl);
+    setIsLoading(true);
     await contractsSDK.createNFTItem(
       tokenURI,
       itemName,
       itemDescription,
       selectedCollectionId,
       { onSuccess: () => history.push(`/collection/${selectedCollectionId}`) }
-      );
+    );
+    setIsLoading(false);
   }, [itemName, itemDescription, nftFileUrl, contractsSDK, selectedCollectionId]);
 
   const onCreateCollection = useCallback(async () => {
@@ -98,12 +100,14 @@ const CreateBlock: FC = () => {
       return;
     }
 
+    setIsLoading(true);
     await contractsSDK.createCollection(
       collectionFileUrl,
       collectionName,
       collectionDescription,
       { onSuccess: () => history.push('/marketplace') }
-      );
+    );
+    setIsLoading(false);
   }, [collectionName, collectionDescription, contractsSDK, collectionFileUrl]);
 
   return (

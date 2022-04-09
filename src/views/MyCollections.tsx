@@ -6,7 +6,7 @@ import { AppStateContext, IConnectData } from '../AppContextWrapper';
 import { useParams } from 'react-router-dom';
 
 const MyCollections: FC = () => {
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress, userBalance }: IConnectData = state;
   const [activeTab, setActiveTab] = useState<string>("Tokens");
   const [collections, setCollections] = useState<ICollection[]>([]);
@@ -22,18 +22,24 @@ const MyCollections: FC = () => {
 
   useEffect(() => {
     const renderUserInfo = async () => {
+      setIsLoading(true);
       const result: ICreator = await contractsSDK.onGetCreatorInfo(myAddress);
       setUserInfo(result);
+      setIsLoading(false);
     }
 
     const renderCollections = async () => {
+      setIsLoading(true);
       const result = await contractsSDK.getUserCollections(myAddress);
       setCollections(result);
+      setIsLoading(false);
     }
 
     const renderTokens = async () => {
+      setIsLoading(true);
       const result = await contractsSDK.getUserNFTs(myAddress);
       setTokens(result);
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {

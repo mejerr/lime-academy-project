@@ -19,19 +19,23 @@ const UNIT_DATA = [
 ];
 
 const Offers: FC<IProps> = ({ nftToken = {}, updateState = false, setUpdateState }) => {
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
   const [offers, setOffers] = useState<IBid[]>([]);
 
   const onAcceptClick = useCallback(async (bidId: number) => {
     if (connected && contractsSDK && nftToken?.tokenId) {
+      setIsLoading(true);
       await contractsSDK.onAcceptBid(nftToken?.tokenId, bidId, setUpdateState);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK, nftToken]);
 
   const onRejectClick = useCallback(async (bidId: number) => {
     if (connected && contractsSDK && nftToken?.tokenId) {
+      setIsLoading(true);
       await contractsSDK.onCancelBid(nftToken?.tokenId, bidId, setUpdateState);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK, nftToken]);
 

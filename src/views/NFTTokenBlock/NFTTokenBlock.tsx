@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 const NFTTokenBlock: FC = () => {
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
   const params: { id: string } = useParams();
@@ -32,7 +32,9 @@ const NFTTokenBlock: FC = () => {
 
   const cancelSale = useCallback(async () => {
       if (connected && contractsSDK) {
+        setIsLoading(true);
         await contractsSDK.onCancelSale(nftToken?.tokenId, setUpdateState);
+        setIsLoading(false);
       }
   }, [connected, contractsSDK, nftToken]);
 
@@ -43,9 +45,11 @@ const NFTTokenBlock: FC = () => {
 
   useEffect(() => {
     const renderNFTItem = async () => {
+      setIsLoading(true);
       const nftItem: IToken = await contractsSDK.getNFTItem(params.id);
       setNFTToken(nftItem);
       setUpdateState(false);
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {

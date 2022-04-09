@@ -68,19 +68,21 @@ interface IMarketPlace {
         address bidder
     );
 
+    event CreatorNameChanged(string name, address creator);
+    event CreatorImageChanged(string image, address creator);
+
+    event ListingFeeToOwner(uint256 listingFee);
+    event Deposit(uint256 price);
+
     event BidCancelled(
         uint256 indexed tokenId,
         uint256 indexed bidId,
         address canceller
     );
 
-    event ListingFeeToOwner(uint256 listingFee);
-    event Deposit(uint256 price);
+    function changeCreatorName(string calldata name) external;
 
-    function changeCreatorName(address creator, string calldata name) external;
-
-    function changeCreatorImage(address creator, string calldata image)
-        external;
+    function changeCreatorImage(string calldata image) external;
 
     function getListingFee() external view returns (uint256);
 
@@ -117,7 +119,9 @@ interface IMarketPlace {
 
     function acceptBid(uint256 tokenId, uint256 bidId) external payable;
 
-    function cancelBid(uint256 tokenId, uint256 bidId) external payable;
+    function rejectBid(uint256 tokenId, uint256 bidId) external payable;
+
+    function getBalance() external view returns (uint256);
 
     receive() external payable;
 }

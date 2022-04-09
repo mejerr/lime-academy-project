@@ -17,7 +17,7 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
     Counters.Counter private _bidIds;
 
     uint256 private lockedBidAmount = 0;
-    uint256 private listingFee = 0.025 ether;
+    uint256 private constant LISTING_FEE = 0.025 ether;
     uint256 private collectedListingFee = 0;
     NFT private immutable marketItemContract;
 
@@ -56,7 +56,7 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
 
     modifier onlyValueEnough() {
         require(
-            msg.value == listingFee,
+            msg.value == LISTING_FEE,
             "Marketplace: price must be equal to listing price"
         );
         _;
@@ -75,8 +75,15 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
     }
 
     /* Get listing fee */
-    function getListingFee() external view virtual override returns (uint256) {
-        return listingFee;
+    function getListingFee()
+        external
+        view
+        virtual
+        override
+        onlyOwner
+        returns (uint256)
+    {
+        return LISTING_FEE;
     }
 
     /* Get collected listing fee */
@@ -88,28 +95,6 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
         returns (uint256)
     {
         return collectedListingFee;
-    }
-
-    /* Change address owned username */
-    function changeCreatorName(address creator, string calldata name)
-        external
-        virtual
-        override
-    {
-        require(creator == msg.sender, "Marketplace: name not owned by you");
-
-        creatorsInfo[creator].name = name;
-    }
-
-    /* Change address owned image */
-    function changeCreatorImage(address creator, string calldata image)
-        external
-        virtual
-        override
-    {
-        require(creator == msg.sender, "Marketplace: image not owned by you");
-
-        creatorsInfo[creator].image = image;
     }
 
     /* Transfers collected listing fees to owner */
@@ -127,6 +112,24 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
         payable(msg.sender).transfer(fee);
 
         emit ListingFeeToOwner(collectedListingFee);
+    }
+
+    /* Change address owned username */
+    function changeCreatorName(string calldata name) external virtual override {
+        creatorsInfo[msg.sender].name = name;
+
+        emit CreatorNameChanged(name, msg.sender);
+    }
+
+    /* Change address owned image */
+    function changeCreatorImage(string calldata image)
+        external
+        virtual
+        override
+    {
+        creatorsInfo[msg.sender].image = image;
+
+        emit CreatorImageChanged(image, msg.sender);
     }
 
     /* Creates a collection of future NFTs */
@@ -268,7 +271,7 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
         onlyTokenExists(tokenId)
         nonReentrant
     {
-        require(msg.value > 0, "Marketplace: offer must be at least one wei");
+        require(msg.value > 0, "Marketplace: bid must be at least one wei");
         require(
             marketItemContract.ownerOf(tokenId) != msg.sender,
             "Marketplace: you can not bid your own item"
@@ -308,11 +311,6 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
         address bidder = itemBids[tokenId][bidId].bidder;
         uint256 amount = itemBids[tokenId][bidId].amount;
 
-        require(
-            lockedBidAmount >= amount,
-            "Marketplace: Transaction failed. Contract has not enough wei"
-        );
-
         marketItems[tokenId].price = 0;
         marketItems[tokenId].status = TokenStatus.Idle;
 
@@ -327,7 +325,7 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
     }
 
     /* Cancels bid from bidder for specific market item */
-    function cancelBid(uint256 tokenId, uint256 bidId)
+    function rejectBid(uint256 tokenId, uint256 bidId)
         external
         payable
         override
@@ -338,17 +336,16 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
         address bidder = itemBids[tokenId][bidId].bidder;
         uint256 amount = itemBids[tokenId][bidId].amount;
 
-        require(
-            lockedBidAmount >= amount,
-            "Marketplace: Transaction failed. Contract has not enough wei"
-        );
-
         lockedBidAmount -= amount;
         address(this).balance - amount;
         itemBids[tokenId][bidId].status = BidStatus.Rejected;
         payable(bidder).transfer(amount);
 
         emit BidCancelled(tokenId, bidId, msg.sender);
+    }
+
+    function getBalance() external view override returns (uint256) {
+        return address(this).balance;
     }
 
     /* Receive money in the smart contract */

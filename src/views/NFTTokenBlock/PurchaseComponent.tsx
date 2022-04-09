@@ -1,6 +1,5 @@
 import React, { FC, useState, useCallback, Dispatch, SetStateAction, useContext } from 'react';
 import styled from 'styled-components';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { Button, Value } from 'components';
@@ -8,13 +7,13 @@ import { IToken, TokenStatus } from 'SDK/ContractsSDK';
 import { ethereumImage } from 'assets';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
 
-interface IProps extends RouteComponentProps {
+interface IProps {
   nftToken: IToken;
   setOpenSale: Dispatch<SetStateAction<boolean>>;
   setUpdateState: Dispatch<SetStateAction<boolean>>;
 }
 
-const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale, setUpdateState }) => {
+const PurchaseComponent: FC<IProps> = ({ nftToken = {}, setOpenSale, setUpdateState }) => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
 
@@ -80,7 +79,7 @@ const PurchaseComponent: FC<IProps> = ({ history, nftToken = {}, setOpenSale, se
   );
 };
 
-export default withRouter(PurchaseComponent);
+export default PurchaseComponent;
 
 const PurchaseWrapper = styled.div`
   display: flex;

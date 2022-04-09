@@ -1,16 +1,17 @@
 import React, { FC, useCallback, useContext } from 'react';
 import styled from 'styled-components';
-import { RouteComponentProps } from 'react-router';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignIn } from '@fortawesome/free-solid-svg-icons';
 import { ellipseAddress } from '../../helpers/utilities';
-import Button from '../Button';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
+import Button from '../Button';
 
-const ConnectButton: FC<RouteComponentProps> = ({ history }) => {
+const ConnectButton: FC = () => {
   const { state, onConnect, killSession } = useContext(AppStateContext);
   const { connected, userAddress }: IConnectData = state;
+
+  const history = useHistory();
 
   const onLogin = useCallback(() => {
     onConnect({ onSuccess: () => history.push('/marketplace') });
@@ -46,7 +47,7 @@ const ConnectButton: FC<RouteComponentProps> = ({ history }) => {
   )
 }
 
-export default withRouter(ConnectButton);
+export default ConnectButton;
 
 const ConnectButtonWrapper = styled.div`
   display: flex;

@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
-import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { IToken, TokenStatus } from 'SDK/ContractsSDK';
 import { Button, ImageBlock, Offers, Value } from 'components';
 import PurchaseComponent from './PurchaseComponent';
@@ -9,7 +9,7 @@ import SaleBlock from 'views/SaleBlock';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
-const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
+const NFTTokenBlock: FC = () => {
   const { state } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
@@ -19,6 +19,8 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   const [updateState, setUpdateState] = useState<boolean>(false);
 
   const creatorNode = useRef<HTMLHeadingElement>(null);
+
+  const history = useHistory();
 
   const goToCollection = useCallback(() => {
     history.push(`/collection/${nftToken?.collectionId}`);
@@ -108,7 +110,7 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
   )
 };
 
-export default withRouter(NFTTokenBlock);
+export default NFTTokenBlock;
 
 const fadeIn = keyframes`
   0% { opacity: 0; }

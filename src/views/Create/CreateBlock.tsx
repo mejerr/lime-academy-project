@@ -1,7 +1,7 @@
 // tslint:disable: no-empty
 import React, { ChangeEvent, FC, useCallback, useContext, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import Create from './Create';
 import { uploadPicture, uploadToIPFS } from 'helpers/utilities';
@@ -34,7 +34,7 @@ export const CreateStateContext = React.createContext({
   setSelectedCollectionId: (id: number) => {}
 });
 
-const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
+const CreateBlock: FC = () => {
   const { state } = useContext(AppStateContext);
   const { contractsSDK }: IConnectData = state;
 
@@ -46,6 +46,8 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
   const [itemDescription, setItemDescription] = useState<string>("");
   const [collectionName, setCollectionName] = useState<string>("");
   const [collectionDescription, setCollectionDescription] = useState<string>("");
+
+  const history = useHistory();
 
   const onBlockClick = useCallback((id) => {
     setActiveBlock(id);
@@ -145,7 +147,7 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
   );
 };
 
-export default withRouter(CreateBlock);
+export default CreateBlock;
 
 const CreateBlockWrapper = styled.div`
   max-width: min(1280px, 100% - 40px);;

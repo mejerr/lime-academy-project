@@ -271,7 +271,7 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
         onlyTokenExists(tokenId)
         nonReentrant
     {
-        require(msg.value > 0, "Marketplace: offer must be at least one wei");
+        require(msg.value > 0, "Marketplace: bid must be at least one wei");
         require(
             marketItemContract.ownerOf(tokenId) != msg.sender,
             "Marketplace: you can not bid your own item"
@@ -311,11 +311,6 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
         address bidder = itemBids[tokenId][bidId].bidder;
         uint256 amount = itemBids[tokenId][bidId].amount;
 
-        require(
-            lockedBidAmount >= amount,
-            "Marketplace: Transaction failed. Contract has not enough wei"
-        );
-
         marketItems[tokenId].price = 0;
         marketItems[tokenId].status = TokenStatus.Idle;
 
@@ -341,17 +336,16 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
         address bidder = itemBids[tokenId][bidId].bidder;
         uint256 amount = itemBids[tokenId][bidId].amount;
 
-        require(
-            lockedBidAmount >= amount,
-            "Marketplace: Transaction failed. Contract has not enough wei"
-        );
-
         lockedBidAmount -= amount;
         address(this).balance - amount;
         itemBids[tokenId][bidId].status = BidStatus.Rejected;
         payable(bidder).transfer(amount);
 
         emit BidCancelled(tokenId, bidId, msg.sender);
+    }
+
+    function getBalance() external view override returns (uint256) {
+        return address(this).balance;
     }
 
     /* Receive money in the smart contract */

@@ -121,5 +121,7 @@ interface IMarketPlace {
 
     function rejectBid(uint256 tokenId, uint256 bidId) external payable;
 
+    function getBalance() external view returns (uint256);
+
     receive() external payable;
 }

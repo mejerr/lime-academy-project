@@ -82,9 +82,13 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
     }
 
     const tokenURI = await uploadToIPFS(itemName, itemDescription, nftFileUrl);
-    await contractsSDK.createNFTItem(tokenURI, itemName, itemDescription, selectedCollectionId);
-
-    history.push(`/collection/${selectedCollectionId}`);
+    await contractsSDK.createNFTItem(
+      tokenURI,
+      itemName,
+      itemDescription,
+      selectedCollectionId,
+      { onSuccess: () => history.push(`/collection/${selectedCollectionId}`) }
+      );
   }, [itemName, itemDescription, nftFileUrl, contractsSDK, selectedCollectionId]);
 
   const onCreateCollection = useCallback(async () => {
@@ -92,9 +96,12 @@ const CreateBlock: FC<RouteComponentProps> = ({ history }) => {
       return;
     }
 
-    await contractsSDK.createCollection(collectionFileUrl, collectionName, collectionDescription);
-
-    history.push('/marketplace');
+    await contractsSDK.createCollection(
+      collectionFileUrl,
+      collectionName,
+      collectionDescription,
+      { onSuccess: () => history.push('/marketplace') }
+      );
   }, [collectionName, collectionDescription, contractsSDK, collectionFileUrl]);
 
   return (

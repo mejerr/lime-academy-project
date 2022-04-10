@@ -15,23 +15,22 @@ const ConnectButton: FC = () => {
 
   const onLogin = useCallback(() => {
     onConnect({ onSuccess: () => history.push('/marketplace') });
-  }, [onConnect]);
+  }, [onConnect, history]);
 
   const onLogout = useCallback(() => {
     killSession({ onSuccess: () => history.push('/home') });
-  }, [killSession]);
+  }, [killSession, history]);
 
   return (
     <ConnectButtonWrapper >
       {connected ? (
-        userAddress && (
+        userAddress &&
           <Account>
             <Address connected={connected}>{ellipseAddress(userAddress, 8)}</Address>
             <DisconnectButton onClick={onLogout}>
               {'Disconnect'}
             </DisconnectButton>
           </Account>
-        )
       ) :
         <ButtonWrapper onClick={onLogin}>
           <LoginIcon icon={faSignIn}/>

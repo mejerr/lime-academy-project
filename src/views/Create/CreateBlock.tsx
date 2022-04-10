@@ -44,10 +44,10 @@ const CreateBlock: FC = () => {
   const { state, setIsLoading } = useContext(AppStateContext);
   const { contractsSDK }: IConnectData = state;
 
+  const [activeBlock, setActiveBlock] = useState<number>(1);
   const [collectionFileUrl, setCollectionFileUrl] = useState<string>("");
   const [nftFileUrl, setNFTFileUrl] = useState<string>("");
   const [selectedCollectionId, setSelectedCollectionId] = useState<number>(0);
-  const [activeBlock, setActiveBlock] = useState<number>(1);
   const [itemName, setItemName] = useState<string>("");
   const [itemDescription, setItemDescription] = useState<string>("");
   const [collectionName, setCollectionName] = useState<string>("");
@@ -92,39 +92,38 @@ const CreateBlock: FC = () => {
     setEmptyDescription(!itemDescription.length ? true : false);
     setEmptyCollection(!selectedCollectionId ? true : false);
 
-    if (!contractsSDK || !nftFileUrl.length) {
+    if (!contractsSDK || !nftFileUrl.length || !itemName.length || !itemDescription.length || !selectedCollectionId) {
       return;
     }
 
-    const tokenURI = await uploadToIPFS(itemName, itemDescription, nftFileUrl);
     setIsLoading(true);
-    await contractsSDK.createNFTItem(
+    const tokenURI = await uploadToIPFS(itemName, itemDescription, nftFileUrl);
+    await contractsSDK.onCreateNFTItem(
       tokenURI,
       itemName,
       itemDescription,
       selectedCollectionId,
       { onSuccess: () => history.push(`/collection/${selectedCollectionId}`) }
     );
-    setIsLoading(false);
   }, [itemName, itemDescription, nftFileUrl, contractsSDK, selectedCollectionId]);
 
   const onCreateCollection = useCallback(async () => {
     setEmptyName(!collectionName.length ? true : false);
     setEmptyDescription(!collectionDescription.length ? true : false);
 
-    if (!contractsSDK || !collectionFileUrl.length) {
+    if (!contractsSDK || !collectionFileUrl.length || !collectionName.length || !collectionDescription.length) {
       return;
     }
 
     setIsLoading(true);
-    await contractsSDK.createCollection(
+    await contractsSDK.onCreateCollection(
       collectionFileUrl,
       collectionName,
       collectionDescription,
       { onSuccess: () => history.push('/marketplace') }
     );
     setIsLoading(false);
-  }, [collectionName, collectionDescription, contractsSDK, collectionFileUrl]);
+  }, [collectionName, collectionDescription, contractsSDK, collectionFileUrl,history]);
 
   useEffect(() => {
     setEmptyName(false);

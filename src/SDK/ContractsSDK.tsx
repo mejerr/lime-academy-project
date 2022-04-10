@@ -106,7 +106,7 @@ class ContractsSDK {
     }
   }
 
-  public async getCollections() {
+  public async onGetCollections() {
     try {
       const collectionLength = Number((await this.marketPlace.getCollectionLength()).toString());
       const collectionIds: ICollection[] = [];
@@ -133,7 +133,7 @@ class ContractsSDK {
     }
   }
 
-  public async getCollection(id: number) {
+  public async onGetCollection(id: number) {
     try {
       const { collectionId, name, description, creator, image }: ICollection = await this.marketPlace.collections(id);
       return {
@@ -149,9 +149,9 @@ class ContractsSDK {
     }
   }
 
-  public async getUserCollections(userAddress: string) {
+  public async onGetUserCollections(userAddress: string) {
     try {
-      const collections: ICollection[] = await this.getCollections();
+      const collections: ICollection[] = await this.onGetCollections();
       return collections.filter(({ creator }) => creator === userAddress);
     } catch (e: any) {
       toast.info(e.message);
@@ -159,14 +159,14 @@ class ContractsSDK {
     }
   }
 
-  public async createCollection(
+  public async onCreateCollection(
     image: string,
     name: string,
     description: string,
     { onSuccess }
     ) {
     try {
-      const collectionCreation = await this.marketPlace.createCollection(image, name, description);
+      const collectionCreation = await this.marketPlace.onCreateCollection(image, name, description);
       await collectionCreation.wait();
       onSuccess();
     } catch (e: any) {
@@ -174,7 +174,7 @@ class ContractsSDK {
     }
   }
 
-  public async getNFTs() {
+  public async onGetNFTs() {
     try {
       const nftItemsLength = Number((await this.marketPlace.getMarketItemsLength()).toString());
       const nftItemsIds: IFetchedToken[] = [];
@@ -210,9 +210,9 @@ class ContractsSDK {
     }
   }
 
-  public async getCollectionNFTs(collectionId: number) {
+  public async onGetCollectionNFTs(collectionId: number) {
     try {
-      const nfts = await this.getNFTs();
+      const nfts = await this.onGetNFTs();
       return nfts.filter(nft => nft.collectionId === collectionId);
     } catch (e: any) {
       toast.info(e.message);
@@ -220,9 +220,9 @@ class ContractsSDK {
     }
   }
 
-  public async getUserNFTs(userAddress: string) {
+  public async onGetUserNFTs(userAddress: string) {
     try {
-      const nfts = await this.getNFTs();
+      const nfts = await this.onGetNFTs();
       return nfts.filter(nft => nft.creator === userAddress);
     } catch (e: any) {
       toast.info(e.message);
@@ -230,7 +230,7 @@ class ContractsSDK {
     }
   }
 
-  public async getNFTItem(tokenId: number) {
+  public async onGetNFTItem(tokenId: number) {
     try {
       const { name, description, price, collectionId, status }: IToken = await this.marketPlace.marketItems(tokenId);
       const parsedPrice = ethers.utils.formatUnits(price.toString(), 'ether');
@@ -255,7 +255,7 @@ class ContractsSDK {
     }
   }
 
-  public async createNFTItem(
+  public async onCreateNFTItem(
     tokenURI: string,
     name: string,
     description: string,
@@ -344,7 +344,7 @@ class ContractsSDK {
       return result;
     } catch (e: any) {
       toast.info(e.message);
-      return {};
+      return [];
     }
   }
 

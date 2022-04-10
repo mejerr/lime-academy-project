@@ -32,20 +32,18 @@ const SelectableMenu: FC<IProps> = ({
     onClick(collectionId);
   }, []);
 
-  const renderOptions = ({ name, collectionId }, index: number) => {
-    return (
-      <OptionWrapper key={collectionId}>
-        <Button
-          title={name}
-          width={width}
-          height={height}
-          onClick={() => onOptionClick(index, collectionId)}
-          justifyContent={justifyContent}
-          arrow={arrow}
-        />
-      </OptionWrapper>
-    );
-  };
+  const renderOptions = ({ name, collectionId }, index: number) => (
+    <OptionWrapper key={collectionId}>
+      <Button
+        title={name}
+        width={width}
+        height={height}
+        onClick={() => onOptionClick(index, collectionId)}
+        justifyContent={justifyContent}
+        arrow={arrow}
+      />
+    </OptionWrapper>
+  );
 
   return (
     <SelectableMenuWrapper showSelected={showSelected} onClick={onMenuClick}>

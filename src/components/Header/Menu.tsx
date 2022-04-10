@@ -44,7 +44,7 @@ const Menu: FC<IProps> = ({ onSearchClick } ) => {
       history.push(PATHS[pathId - 1]);
     }
     setMenuOpen(false);
-  }, []);
+  }, [history]);
 
   const onClick = useCallback((pathId) => {
     if (!connected) {
@@ -72,7 +72,7 @@ const Menu: FC<IProps> = ({ onSearchClick } ) => {
         </MenuContent>
       }
     </MenuWrapper>
-  )
+  );
 }
 
 export default Menu;

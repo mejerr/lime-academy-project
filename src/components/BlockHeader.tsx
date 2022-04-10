@@ -11,10 +11,9 @@ import {
   faUpload
 } from '@fortawesome/free-solid-svg-icons';
 import { ethereumImage } from 'assets';
-import { ImageBlock } from 'components';
+import { ImageBlock, Button } from 'components';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { uploadPicture } from 'helpers/utilities';
-import Button from './Button';
 
 interface IProps {
   image: string;
@@ -33,7 +32,6 @@ const BlockHeader: FC<IProps> = ({
   description = '',
   showCreator = true
 }) => {
-  const history = useHistory();
   const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
@@ -43,8 +41,9 @@ const BlockHeader: FC<IProps> = ({
   const [listingFee, setListingFee] = useState<number>(0);
   const [marketOwner, setMarketOwner] = useState<string>('');
   const [updateState, setUpdateState] = useState<boolean>(false);
-
   const creatorNode = useRef<HTMLHeadingElement>(null);
+
+  const history = useHistory();
 
   const isCollection = history.location.pathname.startsWith("/collection");
 
@@ -54,7 +53,7 @@ const BlockHeader: FC<IProps> = ({
       return;
     }
     history.push(`/my-collection/${creator}`);
-  }, [creator, showCreator]);
+  }, [creator, showCreator, history]);
 
   const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(creatorNode.current?.innerText ||'');
@@ -176,13 +175,11 @@ const BlockHeader: FC<IProps> = ({
         </BalanceWrapper>
       }
       {description && (
-        <Fragment>
-          <BlockDescriptionWrapper>
-            <BlockDescription>
-              {description}
-            </BlockDescription>
-          </BlockDescriptionWrapper>
-        </Fragment>
+        <BlockDescriptionWrapper>
+          <BlockDescription>
+            {description}
+          </BlockDescription>
+        </BlockDescriptionWrapper>
       )}
     </BlockHeaderWrapper>
   );

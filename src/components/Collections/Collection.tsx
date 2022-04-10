@@ -21,9 +21,10 @@ const Collection: FC<IProps> = ({
   description
 }) => {
   const history = useHistory();
+
   const onClick = useCallback(() => {
     history.push(`/collection/${id}`);
-  }, []);
+  }, [history]);
 
   return (
     <CollectionWrapper onClick={onClick}>

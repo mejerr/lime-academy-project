@@ -1,9 +1,9 @@
 import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { BlockHeader, Collections, Tokens } from 'components';
+import { useParams } from 'react-router-dom';
 import { ICollection, ICreator, IToken } from 'SDK/ContractsSDK';
 import { AppStateContext, IConnectData } from '../AppContextWrapper';
-import { useParams } from 'react-router-dom';
+import { BlockHeader, Collections, Tokens } from 'components';
 
 const MyCollections: FC = () => {
   const { state, setIsLoading } = useContext(AppStateContext);
@@ -30,14 +30,14 @@ const MyCollections: FC = () => {
 
     const renderCollections = async () => {
       setIsLoading(true);
-      const result = await contractsSDK.getUserCollections(myAddress);
+      const result = await contractsSDK.onGetUserCollections(myAddress);
       setCollections(result);
       setIsLoading(false);
     }
 
     const renderTokens = async () => {
       setIsLoading(true);
-      const result = await contractsSDK.getUserNFTs(myAddress);
+      const result = await contractsSDK.onGetUserNFTs(myAddress);
       setTokens(result);
       setIsLoading(false);
     }

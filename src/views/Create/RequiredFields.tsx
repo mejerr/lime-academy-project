@@ -49,17 +49,17 @@ const RequiredFields: FC = () => {
   useEffect(() => {
     const renderCollections = async () => {
       setIsLoading(true);
-      const collections: ICollection[] = await contractsSDK.getUserCollections(userAddress);
+      const collections: ICollection[] = await contractsSDK.onGetUserCollections(userAddress);
       const mappedCollectionProps: ICollectionProps[] = collections.map(({ name, collectionId }): ICollectionProps => ({ name, collectionId }));
       setCollectionProps(mappedCollectionProps);
       setSelectedCollectionId(mappedCollectionProps[0]?.collectionId);
       setIsLoading(false);
     }
 
-    if (connected && contractsSDK) {
+    if (connected && contractsSDK && userAddress) {
       renderCollections();
     }
-  }, [connected, contractsSDK]);
+  }, [connected, contractsSDK, userAddress]);
 
   const OPTIONS = {
     width: "100%",

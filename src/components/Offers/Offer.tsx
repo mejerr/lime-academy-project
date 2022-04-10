@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'components';
 import { ethereumImage } from 'assets';
-import { ellipseAddress } from '../../helpers/utilities';
-import { getEthPriceNow } from 'get-eth-price';
+import { ellipseAddress, parseEtherUSD } from '../../helpers/utilities';
 import { BidStatus } from 'SDK/ContractsSDK';
 
 interface IProps {
@@ -18,22 +17,21 @@ interface IProps {
 
 const Offer: FC<IProps> = ({ price, bidder, status, isNftCreator, onAcceptClick, onRejectClick }) => {
   const [USDPrice, setUSDPrice] = useState<string>('0');
+
   const history = useHistory();
 
   const goToAddress = useCallback(() => {
     history.push(`/my-collection/${bidder}`)
-  }, [bidder]);
+  }, [bidder, history]);
 
   useEffect(() => {
-    const parseEtherUSD = async () => {
-      const result = await getEthPriceNow();
-      // tslint:disable-next-line: no-string-literal
-      const ethUSD = result[Object.keys(result)[0]]['ETH']['USD'];
-      setUSDPrice((price * ethUSD).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    const getEtherUSD = async () => {
+      const parsedEther = await parseEtherUSD(price);
+      setUSDPrice(parsedEther);
     }
 
     if (price > 0) {
-      parseEtherUSD();
+      getEtherUSD();
     }
   }, [price]);
 

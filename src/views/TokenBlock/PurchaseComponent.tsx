@@ -24,8 +24,16 @@ const PurchaseComponent: FC<IProps> = ({ nftToken = {}, setOpenSale, setUpdateSt
     setOpenOffer(!openOffer);
   }, [openOffer]);
 
+  const onBuyItem = useCallback(() => {
+    setOpenSale(true);
+  }, []);
+
+  const onInputChange = useCallback((event) => {
+    setInputValue(event.target.value);
+  }, []);
+
   const onSendOffer = useCallback(async () => {
-    if (connected && contractsSDK && nftToken.tokenId && inputValue) {
+    if (connected && contractsSDK && nftToken?.tokenId && inputValue.length) {
       setIsLoading(true);
       await contractsSDK.onBidOnItem(nftToken?.tokenId, inputValue, setUpdateState);
       setInputValue('');
@@ -33,15 +41,7 @@ const PurchaseComponent: FC<IProps> = ({ nftToken = {}, setOpenSale, setUpdateSt
     }
 
     setOpenOffer(false);
-  }, [connected, contractsSDK, inputValue, nftToken, setInputValue, setOpenOffer]);
-
-  const onBuyItem = useCallback(() => {
-    setOpenSale(true);
-  }, [setOpenSale]);
-
-  const onInputChange = useCallback((event) => {
-    setInputValue(event.target.value);
-  }, []);
+  }, [connected, contractsSDK, inputValue, nftToken]);
 
   return (
     <PurchaseWrapper>
@@ -67,13 +67,12 @@ const PurchaseComponent: FC<IProps> = ({ nftToken = {}, setOpenSale, setUpdateSt
           </BuyButtonWrapper>
         }
 
-        <SendButtonWrapper>
+        <SendButtonWrapper onClick={openOffer ? onSendOffer : onOpenOffer}>
           <OfferIcon icon={faPaperPlane} />
           <Button
             title={openOffer ? 'Send Offer' : 'Place bid'}
             width={"150px"}
             height={"65px"}
-            onClick={openOffer ? onSendOffer : onOpenOffer}
           />
         </SendButtonWrapper>
       </ButtonsWrapper>
@@ -119,6 +118,7 @@ const SendButtonWrapper = styled.div`
   margin: 0 10px;
   border-radius: 10px;
   border: 1px solid #024bb0;
+  cursor: pointer;
 
   :hover {
       box-shadow: rgb(4 17 29 / 25%) 0px 0px 8px 0px;

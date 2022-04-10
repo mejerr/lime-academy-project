@@ -21,6 +21,7 @@ const UNIT_DATA = [
 const Offers: FC<IProps> = ({ nftToken = {}, updateState = false, setUpdateState }) => {
   const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
+
   const [offers, setOffers] = useState<IBid[]>([]);
 
   const onAcceptClick = useCallback(async (bidId: number) => {
@@ -39,19 +40,17 @@ const Offers: FC<IProps> = ({ nftToken = {}, updateState = false, setUpdateState
     }
   }, [connected, contractsSDK, nftToken]);
 
-  const renderOffers = useCallback(({ bidId, amount, status, bidder}) => {
-    return (
-      <Offer
-        key={bidId}
-        price={amount}
-        bidder={bidder}
-        status={status}
-        onAcceptClick={() => onAcceptClick(bidId)}
-        onRejectClick={() => onRejectClick(bidId)}
-        isNftCreator={nftToken?.creator === userAddress}
-      />
-    );
-  }, [onAcceptClick, onRejectClick]);
+  const renderOffers = useCallback(({ bidId, amount, status, bidder}) =>  (
+    <Offer
+      key={bidId}
+      price={amount}
+      bidder={bidder}
+      status={status}
+      onAcceptClick={() => onAcceptClick(bidId)}
+      onRejectClick={() => onRejectClick(bidId)}
+      isNftCreator={nftToken?.creator === userAddress}
+    />
+  ), [nftToken, userAddress]);
 
   useEffect(() => {
     const renderOffers = async () => {

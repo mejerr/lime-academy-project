@@ -26,7 +26,7 @@ const SaleBlock: FC<IProps> = ({ isOpen, nftToken, setOpenSale, setUpdateState }
   }, []);
 
   const onSellClick = useCallback(async () => {
-    if (connected && contractsSDK) {
+    if (connected && contractsSDK && nftToken?.tokenId) {
       setIsLoading(true);
       await contractsSDK.onCreateSale(nftToken?.tokenId, price, setUpdateState, setOpenSale);
       setIsLoading(false);
@@ -34,7 +34,7 @@ const SaleBlock: FC<IProps> = ({ isOpen, nftToken, setOpenSale, setUpdateState }
   }, [connected, contractsSDK, price, nftToken]);
 
   const onBuyClick = useCallback(async () => {
-    if (connected && contractsSDK) {
+    if (connected && contractsSDK && nftToken?.tokenId) {
       setIsLoading(true);
       await contractsSDK.onBuyMarketItem(nftToken?.tokenId, setUpdateState, setOpenSale);
       setIsLoading(false);

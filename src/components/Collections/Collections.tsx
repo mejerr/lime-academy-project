@@ -8,18 +8,17 @@ interface IProps {
 }
 
 const Collections: FC<IProps> = ({ collections = [] }) => {
-  const renderCollections = useCallback(({ collectionId, image, name, creator, description }) => {
-    return (
-      <Collection
-        key={collectionId}
-        id={collectionId}
-        image={image}
-        smallImage={image}
-        name={name}
-        creator={creator}
-        description={description}
-      />);
-  }, []);
+  const renderCollections = useCallback(({ collectionId, image, name, creator, description }) => (
+    <Collection
+      key={collectionId}
+      id={collectionId}
+      image={image}
+      smallImage={image}
+      name={name}
+      creator={creator}
+      description={description}
+    />
+  ), []);
 
   return (
     <CollectionsWrapper isContent={!!collections.length}>

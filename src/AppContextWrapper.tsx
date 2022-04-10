@@ -39,7 +39,7 @@ export const AppStateContext = React.createContext({
   state: INITIAL_STATE,
   killSession: ({ onSuccess = (): void => {} }): void => {},
   onConnect: ({ onSuccess = (): void => {} }): void => {},
-  setIsLoading: (loading: boolean) => {},
+  setIsLoading: (loading: boolean) => {}
 });
 
 const AppContextWrapper: FC<IProps> = ({ children }) => {

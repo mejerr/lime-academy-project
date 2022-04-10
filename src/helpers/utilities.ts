@@ -2,6 +2,7 @@ import supportedChains from "./chains";
 import Noty from 'noty';
 import '../../node_modules/noty/lib/noty.css';
 import '../../node_modules/noty/lib/themes/mint.css';
+import { getEthPriceNow } from 'get-eth-price';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 
 const client = ipfsHttpClient({ url: "https://ipfs.infura.io:5001/api/v0" });
@@ -171,3 +172,11 @@ export const uploadToIPFS = async (itemName: string, itemDescription: string, im
 
   return url;
 };
+
+export const parseEtherUSD = async (price: number) => {
+  const result = await getEthPriceNow();
+  // tslint:disable-next-line: no-string-literal
+  const ethUSD = result[Object.keys(result)[0]]['ETH']['USD'];
+
+  return (price * ethUSD).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}

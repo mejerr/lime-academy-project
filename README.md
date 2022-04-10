@@ -1,4 +1,4 @@
-# NFT Marketplace LimeBlock
+# NFT Marketplace Limeblock
 
 This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
 

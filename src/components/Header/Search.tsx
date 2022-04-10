@@ -20,7 +20,7 @@ const Search: FC<IProps> = ({ setIsOpen }) => {
   const onClick = useCallback((e) => {
     history.push(`/my-collection/0x${userAddress}`);
     setIsOpen(false);
-  }, [userAddress, setIsOpen]);
+  }, [userAddress, setIsOpen, history]);
 
   const onBlur = (event: FocusEvent<HTMLDivElement>) => {
     const currentTarget = event.currentTarget;

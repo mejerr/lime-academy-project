@@ -13,40 +13,39 @@ const TokenBlock: FC = () => {
   const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
-  const params: { id: string } = useParams();
   const [nftToken, setNFTToken] = useState<IToken | any>();
   const [openSale, setOpenSale] = useState<boolean>(false);
   const [updateState, setUpdateState] = useState<boolean>(false);
-
   const creatorNode = useRef<HTMLHeadingElement>(null);
 
+  const params: { id: string } = useParams();
   const history = useHistory();
 
   const goToCollection = useCallback(() => {
     history.push(`/collection/${nftToken?.collectionId}`);
-  }, [nftToken]);
+  }, [nftToken, history]);
 
   const goToUserCollection = useCallback(() => {
     history.push(`/my-collection/${nftToken?.creator}`);
-  }, [nftToken]);
-
-  const cancelSale = useCallback(async () => {
-      if (connected && contractsSDK) {
-        setIsLoading(true);
-        await contractsSDK.onCancelSale(nftToken?.tokenId, setUpdateState);
-        setIsLoading(false);
-      }
-  }, [connected, contractsSDK, nftToken]);
+  }, [nftToken, history]);
 
   const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(creatorNode.current?.innerText ||'');
     alert("Copied the text: " + creatorNode.current?.innerText ||'');
   }, [creatorNode]);
 
+  const cancelSale = useCallback(async () => {
+      if (connected && contractsSDK && nftToken?.tokenId) {
+        setIsLoading(true);
+        await contractsSDK.onCancelSale(nftToken?.tokenId, setUpdateState);
+        setIsLoading(false);
+      }
+  }, [connected, contractsSDK, nftToken]);
+
   useEffect(() => {
     const renderNFTItem = async () => {
       setIsLoading(true);
-      const nftItem: IToken = await contractsSDK.getNFTItem(params.id);
+      const nftItem: IToken = await contractsSDK.onGetNFTItem(params.id);
       setNFTToken(nftItem);
       setUpdateState(false);
       setIsLoading(false);

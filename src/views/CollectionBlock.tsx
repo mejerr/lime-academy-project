@@ -1,17 +1,19 @@
 import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { BlockHeader, Tokens } from 'components';
+import { useParams } from 'react-router-dom';
 import { AppStateContext, IConnectData } from '../AppContextWrapper';
 import { ICollection, IToken, TokenStatus } from 'SDK/ContractsSDK';
-import { useParams } from 'react-router-dom';
+import { BlockHeader, Tokens } from 'components';
 
 const CollectionBlock: FC = () => {
-  const params: { id: string } = useParams();
   const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK }: IConnectData = state;
+
   const [tokens, setTokens] = useState<IToken[]>([]);
   const [collection, setCollection] = useState<ICollection | any>({});
   const [activeTab, setActiveTab] = useState<string>("All Tokens");
+
+  const params: { id: string } = useParams();
 
   const changeTab = useCallback((tab: string) => {
     setActiveTab(tab);
@@ -20,12 +22,14 @@ const CollectionBlock: FC = () => {
   useEffect(() => {
     const renderCollection = async () => {
       setIsLoading(true);
-      const result: ICollection = await contractsSDK.getCollection(+params.id);
+      const result: ICollection = await contractsSDK.onGetCollection(+params.id);
       setCollection(result);
+      setIsLoading(false);
     }
 
     const renderTokens = async () => {
-      const result: IToken[] = await contractsSDK.getCollectionNFTs(+params.id);
+      setIsLoading(true);
+      const result: IToken[] = await contractsSDK.onGetCollectionNFTs(+params.id);
       const filteredTokens: IToken[] = activeTab === "For Sale" ? result.filter(token => token.status === TokenStatus.ForSale) : result;
       setTokens(filteredTokens);
       setIsLoading(false);
@@ -35,7 +39,7 @@ const CollectionBlock: FC = () => {
       renderCollection();
       renderTokens();
     }
-  }, [connected, contractsSDK, activeTab]);
+  }, [connected, contractsSDK, activeTab, params]);
 
   return (
     <CollectionBlockWrapper>

@@ -1,11 +1,10 @@
 import React, { FC, useCallback, useContext } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import { Button } from 'components';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { TokenStatus } from 'SDK/ContractsSDK';
 import { ellipseAddress } from 'helpers/utilities';
-import Value from 'components/Value';
+import { Button, Value } from 'components';
 
 interface IProps {
   collectionId: string;
@@ -33,7 +32,7 @@ const Token: FC<IProps> = ({
 
   const onClick = useCallback(() => {
     history.push(`/collection/${collectionId}/token/${tokenId}`);
-  }, [collectionId, tokenId]);
+  }, [collectionId, tokenId, history]);
 
   return (
     <TokenWrapper onClick={onClick}>

@@ -4,22 +4,22 @@ import { IToken } from 'SDK/ContractsSDK';
 import Token from './Token';
 
 interface IProps {
-  tokens: IToken[]
+  tokens: IToken[];
 }
 
 const Tokens: FC<IProps> = ({ tokens }) => {
   const renderTokens = useCallback(({ collectionId, tokenId, creator, name, price, image, status }) => (
-      <Token
-        key={tokenId}
-        collectionId={collectionId}
-        tokenId={tokenId}
-        creator={creator}
-        name={name}
-        price={price}
-        image={image}
-        status={status}
-      />
-    ), []);
+    <Token
+      key={tokenId}
+      collectionId={collectionId}
+      tokenId={tokenId}
+      creator={creator}
+      name={name}
+      price={price}
+      image={image}
+      status={status}
+    />
+  ), []);
 
   return (
     <TokensWrapper isNotEmpty={!!tokens.length}>

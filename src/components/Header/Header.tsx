@@ -13,7 +13,7 @@ const Header: FC = () => {
 
   const onClick = useCallback(() => {
     history.push("/home");
-  }, []);
+  }, [history]);
 
   const onSearchClick = useCallback((open: boolean) => {
     setOpenSearch(open);

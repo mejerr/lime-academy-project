@@ -1,5 +1,5 @@
 // tslint:disable: no-empty
-import React, { FC, Suspense, useEffect } from 'react';
+import React, { FC, Suspense, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 
@@ -9,10 +9,13 @@ import MyCollections from 'views/MyCollections';
 import CreateBlock from 'views/Create/CreateBlock';
 import TokenBlock from 'views/TokenBlock/TokenBlock';
 import CollectionBlock from 'views/CollectionBlock';
-import AppContextWrapper from 'AppContextWrapper';
+import AppContextWrapper, { AppStateContext } from 'AppContextWrapper';
 import Header from 'components/Header/Header';
 
 const App: FC = () => {
+  const { state } = useContext(AppStateContext);
+  const { connected } = state;
+
   const history = useHistory();
 
   const routes = () => (
@@ -52,6 +55,10 @@ const App: FC = () => {
   );
 
   useEffect(() => {
+    if (!connected) {
+      history.push('/');
+    }
+
     const unlisten = history.listen(() => {
       window.scrollTo(0, 0);
     });
@@ -59,7 +66,7 @@ const App: FC = () => {
     return () => {
       unlisten();
     }
-  }, []);
+  }, [connected, history]);
 
     return (
       <AppContextWrapper>

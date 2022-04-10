@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useContext } from 'react';
 import styled from 'styled-components';
-import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { useHistory } from 'react-router-dom';
+import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import Button from '../Button';
 
 interface INavButtons {
@@ -16,10 +16,11 @@ interface IProps {
 }
 
 const NavBar: FC<IProps> = ({  onSearchClick }) => {
-  const history = useHistory();
-  const { pathname } = history.location;
   const { state, onConnect } = useContext(AppStateContext);
   const { connected }: IConnectData = state;
+
+  const history = useHistory();
+  const { pathname } = history.location;
 
   const onClick = useCallback((pathname) => {
     if (!connected) {

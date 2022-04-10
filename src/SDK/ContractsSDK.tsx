@@ -64,13 +64,12 @@ class ContractsSDK {
     this.userAddress = userAddress;
 
     this.nft =  new ethers.Contract(
-      '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+      process.env.REACT_APP_NFT_ADDRESS || "",
       nftABI.abi,
       signer
     );
-
     this.marketPlace =  new ethers.Contract(
-      '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
+      process.env.REACT_APP_MARKET_PLACE_ADDRESS || "",
       marketPlaceABI.abi,
       signer
     );

@@ -1,46 +1,99 @@
-# Advanced Sample Hardhat Project
+# NFT Marketplace LimeBlock
 
 This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+The goal of this project is to create an NFT marketplace. The NFT marketplace should allow users to create, view, and trade their NFTs. In the NFT marketplace, the users should be able to create collections and mint NFTs from these collections. The users should also be able to see their profile (or that of another user denoted by their address). Any owner should be able to list their NFT or make an offer to buy an NFT to another user.
 
-Try running some of the following tasks:
+# Test coverage
+   ![break](./src//assets//test-coverage.png)
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
+# Before deployment
+  1. Install all packages
+
+  ```Example
+    npm install
+  ```
+2. Set the environment variable of the account in `.env` file. The owner wallet private key could be obtained from `hardhat` accounts or Metamask
+
+```Example
+  WALLET_PRIVATE_KEY=// The account wallet private key
 ```
 
-# Etherscan verification
-
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
-
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
-
-```shell
-hardhat run --network ropsten scripts/deploy.ts
+# Live Deployment
+  1. Log In or Register at https://infura.io/.
+  2. Set the Rinkeby or Ropsten environment variables in `.env` file
+```Example
+  ROPSTEN_URL=https://ropsten.infura.io/v3/<INFURA_ID>
+  RINKEBY_URL=https://rinkeby.infura.io/v3<INFURA_ID>
+  WALLET_PRIVATE_KEY=// The account wallet private key from Metamask
+  ETHERSCAN_API_KEY=// Optional
+```
+  3. Compile the contracts
+```Example
+  npx hardhat compile
+```
+  4. Deploy Contracts on Rinkeby/Ropsten
+```Example
+  npx hardhat run --network rinkeby/ropsten ./scripts/deploy.ts
+```
+  5. Check the console. The output should be:
+```Example
+  NFT deployed to: 0x...
+  MarketPlace deployed to: 0x...
+```
+  6. Add the contracts addresses after being deployed to the `.env` file in order to start the project.
+```Example
+  REACT_APP_NFT_ADDRESS=// Copy from the console and paste it here
+  REACT_APP_MARKET_PLACE_ADDRESS=// Copy from the console and paste it here
 ```
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
-
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
+**Optional: Verify contracts deployment**
+- Add `ETHERSCAN_API_KEY` in `.env` file
+- Verify deployment:
+```Example
+  npx hardhat verify --network rinkeby/ropsten <NFT_ADDRESS> <MARKET_ADDRESS>
 ```
 
-# Performance optimizations
+  7. Start the React app
+```Example
+  npm run start
+```
 
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+# Development
+  1. Start hardhat node
+```Example
+  npx hardhat node
+```
+  2. Write down the the private key from the first account from the console in order to use it later in the steps
+```Example
+Private Key: 0x...
+```
+
+  2. Deploy Contracts on localhost
+```Example
+  npx hardhat run --network localhost ./scripts/deploy.ts
+```
+
+  3. Check the console. The output should be
+```Example
+  NFT deployed to: 0x...
+  MarketPlace deployed to: 0x...
+```
+
+  4. Add the contracts addresses after being deployed to the `.env` file in order to start the project.
+```Example
+  REACT_APP_NFT_ADDRESS=// Copy from the console and paste it here
+  REACT_APP_MARKET_PLACE_ADDRESS=// Copy from the console and paste it here
+```
+  5. Start the React App
+```Example
+  npm run start
+```
+
+  6. [Import the account in Metamask](https://metamask.zendesk.com/hc/en-us/articles/360015489331-How-to-import-an-Account) with private key from `npx hardhat node` command.
+
+  7. [Add the network to Metamask](https://metamask.zendesk.com/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC) for Hardhat localhost:8545.
+
+# Bonus
+- If you get error `Nonce too high` in the browser - reset [Metamask Account](https://medium.com/@thelasthash/solved-nonce-too-high-error-with-metamask-and-hardhat-adc66f092cd)
+

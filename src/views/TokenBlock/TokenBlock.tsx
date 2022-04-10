@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
-import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { IToken, TokenStatus } from 'SDK/ContractsSDK';
 import { Button, ImageBlock, Offers, Value } from 'components';
 import PurchaseComponent from './PurchaseComponent';
@@ -9,14 +9,18 @@ import SaleBlock from 'views/SaleBlock';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
-const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
-  const { state } = useContext(AppStateContext);
+const TokenBlock: FC = () => {
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
   const params: { id: string } = useParams();
   const [nftToken, setNFTToken] = useState<IToken | any>();
   const [openSale, setOpenSale] = useState<boolean>(false);
+  const [updateState, setUpdateState] = useState<boolean>(false);
+
   const creatorNode = useRef<HTMLHeadingElement>(null);
+
+  const history = useHistory();
 
   const goToCollection = useCallback(() => {
     history.push(`/collection/${nftToken?.collectionId}`);
@@ -28,9 +32,9 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
   const cancelSale = useCallback(async () => {
       if (connected && contractsSDK) {
-        await contractsSDK.onCancelSale(nftToken?.tokenId);
-        // Remove window reload if possible
-        window.location.reload();
+        setIsLoading(true);
+        await contractsSDK.onCancelSale(nftToken?.tokenId, setUpdateState);
+        setIsLoading(false);
       }
   }, [connected, contractsSDK, nftToken]);
 
@@ -41,17 +45,20 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     const renderNFTItem = async () => {
+      setIsLoading(true);
       const nftItem: IToken = await contractsSDK.getNFTItem(params.id);
       setNFTToken(nftItem);
+      setUpdateState(false);
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {
       renderNFTItem();
     }
-  }, [connected, contractsSDK]);
+  }, [connected, contractsSDK, updateState]);
 
   return (
-    <NFTTokenBlockWrapper>
+    <TokenBlockWrapper>
       <ImageWrapper>
         <ImageBlock
           image={nftToken?.image}
@@ -83,23 +90,38 @@ const NFTTokenBlock: FC<RouteComponentProps> = ({ history }) => {
           <CopyIcon icon={faCopy} onClick={copyToClipboard}/>
         </Owner>
 
-        {nftToken?.creator !== userAddress && <PurchaseComponent nftToken={nftToken} setOpenSale={setOpenSale}/>}
+        {nftToken?.creator !== userAddress &&
+          <PurchaseComponent
+            nftToken={nftToken}
+            setOpenSale={setOpenSale}
+            setUpdateState={setUpdateState}
+          />
+        }
 
-        <Offers tokenId={nftToken?.tokenId} nftCreator={nftToken?.creator}/>
+        <Offers
+          nftToken={nftToken}
+          updateState={updateState}
+          setUpdateState={setUpdateState}
+        />
       </DetailsWrapper>
-      <SaleBlock setOpenSale={setOpenSale} isOpen={openSale} nftToken={nftToken}/>
-    </NFTTokenBlockWrapper>
+      <SaleBlock
+        isOpen={openSale}
+        nftToken={nftToken}
+        setOpenSale={setOpenSale}
+        setUpdateState={setUpdateState}
+      />
+    </TokenBlockWrapper>
   )
 };
 
-export default withRouter(NFTTokenBlock);
+export default TokenBlock;
 
 const fadeIn = keyframes`
   0% { opacity: 0; }
   100% { opacity: 1; }
 `;
 
-const NFTTokenBlockWrapper = styled.div`
+const TokenBlockWrapper = styled.div`
   position: relative;
   animation: ${fadeIn} 0.5s ease-out;
   display: flex;
@@ -121,9 +143,11 @@ const NFTTokenBlockWrapper = styled.div`
 `;
 
 const ImageWrapper = styled.div`
-  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 500px;
   max-width: 100%;
-  border: 1px solid rgb(229, 232, 235);
   border-radius: 10px;
   flex-shrink: 0;
   margin: 0 10px 0 20px;

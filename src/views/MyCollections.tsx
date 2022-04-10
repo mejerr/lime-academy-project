@@ -6,7 +6,7 @@ import { AppStateContext, IConnectData } from '../AppContextWrapper';
 import { useParams } from 'react-router-dom';
 
 const MyCollections: FC = () => {
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress, userBalance }: IConnectData = state;
   const [activeTab, setActiveTab] = useState<string>("Tokens");
   const [collections, setCollections] = useState<ICollection[]>([]);
@@ -16,24 +16,30 @@ const MyCollections: FC = () => {
   const params: { id: string } = useParams();
   const myAddress = params.id === userAddress ? userAddress : params.id ? params.id : userAddress;
 
-  const changeTab = useCallback((tab) => {
+  const changeTab = useCallback((tab: string) => {
     setActiveTab(tab);
-  }, [setActiveTab]);
+  }, []);
 
   useEffect(() => {
     const renderUserInfo = async () => {
+      setIsLoading(true);
       const result: ICreator = await contractsSDK.onGetCreatorInfo(myAddress);
       setUserInfo(result);
+      setIsLoading(false);
     }
 
     const renderCollections = async () => {
+      setIsLoading(true);
       const result = await contractsSDK.getUserCollections(myAddress);
       setCollections(result);
+      setIsLoading(false);
     }
 
     const renderTokens = async () => {
+      setIsLoading(true);
       const result = await contractsSDK.getUserNFTs(myAddress);
       setTokens(result);
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {
@@ -52,9 +58,9 @@ const MyCollections: FC = () => {
         showCreator={false}
       />
       <ActiveContent>
-        <NFTTokensTab active={activeTab === "Tokens"} onClick={() => changeTab("Tokens")}>
+        <TokensTab active={activeTab === "Tokens"} onClick={() => changeTab("Tokens")}>
           {"Tokens"}
-        </NFTTokensTab>
+        </TokensTab>
         <CollectionsTab active={activeTab === "Collections"} onClick={() => changeTab("Collections")}>
           {"Collections"}
         </CollectionsTab>
@@ -91,7 +97,7 @@ const ActiveContent = styled.div`
   border-bottom: 1px solid black;
 `;
 
-const NFTTokensTab = styled.div<{ active: boolean }>`
+const TokensTab = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
   padding: 10px;
@@ -104,15 +110,6 @@ const NFTTokensTab = styled.div<{ active: boolean }>`
   transition: background-color .3s ease;
 `;
 
-const CollectionsTab = styled(NFTTokensTab as any)`
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  margin: 0 5px;
-  height: 40px;
-  cursor: pointer;
+const CollectionsTab = styled(TokensTab as any)`
   text-align: left;
-  background-color: ${({ active }) => active && 'rgba(0, 0, 0, 0.1)'};
-  border-radius: 10px;
-  transition: background-color .3s ease;
 `;

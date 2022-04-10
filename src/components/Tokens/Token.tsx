@@ -1,13 +1,13 @@
 import React, { FC, useCallback, useContext } from 'react';
 import styled from 'styled-components';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'components';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
 import { TokenStatus } from 'SDK/ContractsSDK';
 import { ellipseAddress } from 'helpers/utilities';
 import Value from 'components/Value';
 
-interface IProps extends RouteComponentProps {
+interface IProps {
   collectionId: string;
   tokenId: string;
   creator: string;
@@ -18,7 +18,6 @@ interface IProps extends RouteComponentProps {
 }
 
 const Token: FC<IProps> = ({
-  history,
   collectionId,
   tokenId,
   creator,
@@ -29,6 +28,8 @@ const Token: FC<IProps> = ({
 }) => {
   const { state } = useContext(AppStateContext);
   const { userAddress }: IConnectData = state;
+
+  const history = useHistory();
 
   const onClick = useCallback(() => {
     history.push(`/collection/${collectionId}/token/${tokenId}`);
@@ -71,7 +72,7 @@ const Token: FC<IProps> = ({
   );
 };
 
-export default withRouter(Token);
+export default Token;
 
 const TokenWrapper = styled.div`
   width: 100%;

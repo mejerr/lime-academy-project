@@ -7,6 +7,7 @@ import { ethers } from 'ethers';
 import { getChainData } from 'helpers/utilities';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { Web3Provider } from '@ethersproject/providers';
+import Loader from 'components/Loader';
 
 interface IProps {
   children: ReactChild | ReactChildren;
@@ -37,13 +38,15 @@ const INITIAL_STATE: IConnectData = {
 export const AppStateContext = React.createContext({
   state: INITIAL_STATE,
   killSession: ({ onSuccess = (): void => {} }): void => {},
-  onConnect: ({ onSuccess = (): void => {} }): void => {}
+  onConnect: ({ onSuccess = (): void => {} }): void => {},
+  setIsLoading: (loading: boolean) => {},
 });
 
 const AppContextWrapper: FC<IProps> = ({ children }) => {
   const [provider, setProvider] = useState<any | ethers.providers.Provider>(null);
   const [web3Modal, setWeb3Modal] = useState<any>({});
   const [state, setState] = useState<IConnectData>(INITIAL_STATE);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getNetwork = () => getChainData(state.chainId || 0).network;
 
@@ -174,9 +177,11 @@ const AppContextWrapper: FC<IProps> = ({ children }) => {
       value={{
         state,
         killSession: ({ onSuccess }) => resetApp({ onSuccess }),
-        onConnect: ({ onSuccess }) => onConnect({ onSuccess })
+        onConnect: ({ onSuccess }) => onConnect({ onSuccess }),
+        setIsLoading: (loading: boolean) => setIsLoading(loading)
     }}>
       {children}
+      <Loader isLoading={isLoading}/>
     </AppStateContext.Provider>
   );
 };

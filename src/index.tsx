@@ -2,6 +2,8 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter } from 'react-router-dom';
 import { createGlobalStyle } from "styled-components";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import App from "./App";
 import { globalStyle } from "./styles";
@@ -25,6 +27,7 @@ declare global {
 ReactDOM.render(
   <BrowserRouter>
     <App />
+    <ToastContainer style={{ width: "500px" }} position={toast.POSITION.TOP_CENTER} />
     <GlobalStyle />
   </BrowserRouter>,
   document.getElementById("root")

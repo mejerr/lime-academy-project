@@ -12,10 +12,11 @@ interface IProps {
   nftToken: IToken;
   isOpen: boolean;
   setOpenSale: Dispatch<SetStateAction<boolean>>;
+  setUpdateState: Dispatch<SetStateAction<boolean>>;
 }
 
-const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
-  const { state } = useContext(AppStateContext);
+const SaleBlock: FC<IProps> = ({ isOpen, nftToken, setOpenSale, setUpdateState }) => {
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
   const buttonTitle = nftToken?.status === TokenStatus.ForSale ? nftToken?.creator === userAddress ? "Cancel Sale" : "Buy" : "Sell";
   const [price, setPrice] = useState<number>(0);
@@ -26,15 +27,17 @@ const SaleBlock: FC<IProps> = ({ isOpen, setOpenSale, nftToken }) => {
 
   const onSellClick = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onCreateSale(nftToken?.tokenId, price)
-      window.location.reload();
+      setIsLoading(true);
+      await contractsSDK.onCreateSale(nftToken?.tokenId, price, setUpdateState, setOpenSale);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK, price, nftToken]);
 
   const onBuyClick = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onBuyMarketItem(nftToken?.tokenId)
-      window.location.reload();
+      setIsLoading(true);
+      await contractsSDK.onBuyMarketItem(nftToken?.tokenId, setUpdateState, setOpenSale);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK, nftToken]);
 

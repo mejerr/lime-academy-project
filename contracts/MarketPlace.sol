@@ -75,14 +75,7 @@ contract MarketPlace is Ownable, ReentrancyGuard, IMarketPlace {
     }
 
     /* Get listing fee */
-    function getListingFee()
-        external
-        view
-        virtual
-        override
-        onlyOwner
-        returns (uint256)
-    {
+    function getListingFee() external view virtual override returns (uint256) {
         return LISTING_FEE;
     }
 

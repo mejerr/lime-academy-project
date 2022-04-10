@@ -3,9 +3,6 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faAngleUp,
-  faAngleDown,
-  IconDefinition,
   faCopy,
   faEdit,
   faCancel,
@@ -37,16 +34,16 @@ const BlockHeader: FC<IProps> = ({
   showCreator = true
 }) => {
   const history = useHistory();
-  const { state } = useContext(AppStateContext);
+  const { state, setIsLoading } = useContext(AppStateContext);
   const { connected, contractsSDK, userAddress }: IConnectData = state;
 
-  const [height, setHeight] = useState<string>("120px");
-  const [openDescription, setOpenDescription] = useState<boolean>(false);
   const [creatorName, setCreatorName] = useState<string>('');
   const [creatorImage, setCreatorImage] = useState<string>('');
   const [showInput, setShowInput] = useState<boolean>(false);
   const [listingFee, setListingFee] = useState<number>(0);
-  const descriptionNode = useRef<HTMLHeadingElement>(null);
+  const [marketOwner, setMarketOwner] = useState<string>('');
+  const [updateState, setUpdateState] = useState<boolean>(false);
+
   const creatorNode = useRef<HTMLHeadingElement>(null);
 
   const isCollection = history.location.pathname.startsWith("/collection");
@@ -58,10 +55,6 @@ const BlockHeader: FC<IProps> = ({
     }
     history.push(`/my-collection/${creator}`);
   }, [creator, showCreator]);
-
-  const onOpenDescription = useCallback(() => {
-    setOpenDescription(!openDescription);
-  }, [openDescription]);
 
   const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(creatorNode.current?.innerText ||'');
@@ -78,9 +71,10 @@ const BlockHeader: FC<IProps> = ({
 
   const onChangeNameClick = useCallback(async () => {
     if (connected && contractsSDK && creatorName.length) {
-      await contractsSDK.onChangeCreatorName(creatorName);
+      setIsLoading(true);
+      await contractsSDK.onChangeCreatorName(creatorName, setUpdateState);
       setShowInput(false);
-      window.location.reload();
+      setIsLoading(false);
     }
   }, [connected, contractsSDK, creatorName]);
 
@@ -92,31 +86,33 @@ const BlockHeader: FC<IProps> = ({
 
   const onAcceptPicture = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onChangeCreatorImage(creatorImage);
-      window.location.reload();
+      setIsLoading(true);
+      await contractsSDK.onChangeCreatorImage(creatorImage, setUpdateState);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK, creator, creatorImage]);
 
   const onTransferClick = useCallback(async () => {
     if (connected && contractsSDK) {
-      await contractsSDK.onTransferListingFee();
+      setIsLoading(true);
+      await contractsSDK.onTransferListingFee(setUpdateState);
+      setIsLoading(false);
     }
   }, [connected, contractsSDK]);
 
   useEffect(() => {
-    if (descriptionNode.current) {
-      setHeight(openDescription ? `${descriptionNode.current.scrollHeight - 40}px` : "120px");
-    }
-
-    const initListingFee = async () =>{
+    const initListingFee = async () => {
+      setIsLoading(true);
       const result = await contractsSDK.onGetListingFee();
       setListingFee(result);
+      setMarketOwner(await contractsSDK?.marketPlace.owner());
+      setIsLoading(false);
     }
 
     if (connected && contractsSDK) {
       initListingFee();
     }
-  }, [connected, contractsSDK, openDescription]);
+  }, [connected, contractsSDK, updateState]);
 
   return (
     <BlockHeaderWrapper>
@@ -154,17 +150,19 @@ const BlockHeader: FC<IProps> = ({
         }
       </BlockName>
 
-      <BlockListingFee>
-        <ListingFee>Collected Listing fees: {listingFee}</ListingFee>
-        <TransferButton>
-          <Button
-            title={"Transfer"}
-            width={"100%"}
-            height={"100%"}
-            onClick={onTransferClick}
-          />
-        </TransferButton>
-      </BlockListingFee>
+      {creator === marketOwner && !isCollection &&
+        <BlockListingFee>
+          <ListingFee>Collected Listing fees: {listingFee}</ListingFee>
+          <TransferButton>
+            <Button
+              title={"Transfer"}
+              width={"100%"}
+              height={"100%"}
+              onClick={onTransferClick}
+            />
+          </TransferButton>
+        </BlockListingFee>
+      }
 
       <BlockCreator >
         {showCreator && <div>Created by</div>}
@@ -179,17 +177,11 @@ const BlockHeader: FC<IProps> = ({
       }
       {description && (
         <Fragment>
-          <BlockDescriptionWrapper
-            ref={descriptionNode}
-            style={{ height }}
-            isOpen={openDescription}
-            onClick={onOpenDescription}
-          >
+          <BlockDescriptionWrapper>
             <BlockDescription>
               {description}
             </BlockDescription>
           </BlockDescriptionWrapper>
-          <ArrowIcon icon={openDescription ? faAngleUp : faAngleDown} onClick={onOpenDescription}/>
         </Fragment>
       )}
     </BlockHeaderWrapper>
@@ -343,18 +335,15 @@ const UploadImageButton = styled.div`
   }
 `;
 
-const BlockDescriptionWrapper = styled.div<{ isOpen: boolean }>`
+const BlockDescriptionWrapper = styled.div`
   margin: 20px 0;
   padding: 20px;
   width: 100%;
   max-width: 700px;
   overflow: hidden;
   position: relative;
-  cursor: pointer;
-
-  height: ${({ isOpen }) => isOpen ? "300px" : "120px"};
-  transition: all 0.3s ease-out;
-  mask: ${({ isOpen }) => isOpen ? "initial": "linear-gradient(rgb(255, 255, 255) 45%, transparent)"};
+  max-height: 120px;
+  overflow-y: auto;
 `;
 
 const BlockDescription = styled.div`
@@ -363,14 +352,6 @@ const BlockDescription = styled.div`
   word-break: break-all;
   line-height: 22px;
   color: rgb(112, 122, 131);
-`;
-
-const ArrowIcon = styled(FontAwesomeIcon)<{ icon: IconDefinition }>`
-  width: 12px;
-  height: 12px;
-  position: relative;
-  cursor: pointer;
-  top: ${({ icon }) => icon === faAngleUp ? "-22px" : "-35px"};
 `;
 
 const BalanceWrapper = styled.div`

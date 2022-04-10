@@ -2,7 +2,6 @@ import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { Button } from 'components';
 import { IOption, ICollectionProps } from 'views/Create/RequiredFields';
-import { fadeIn } from 'App';
 
 interface IProps {
   options: IOption;
@@ -62,7 +61,6 @@ export default SelectableMenu;
 
 const SelectableMenuWrapper = styled.div<{ showSelected: boolean }>`
   position: relative;
-  animation: ${fadeIn} 0.5s ease-out;
   width: calc(100% - 40px);
   height: 100%;
 

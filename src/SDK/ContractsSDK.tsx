@@ -1,9 +1,11 @@
 // tslint:disable: no-empty
+import { Dispatch, SetStateAction } from 'react';
 import { ethers } from 'ethers';
-
-import marketItemABI from '../artifacts/contracts/NFT.sol/NFT.json';
-import marketPlaceABI from '../artifacts/contracts/MarketPlace.sol/MarketPlace.json';
+import { toast } from 'react-toastify';
 import axios from 'axios';
+
+import nftABI from '../artifacts/contracts/NFT.sol/NFT.json';
+import marketPlaceABI from '../artifacts/contracts/MarketPlace.sol/MarketPlace.json';
 
 const zeroAddress = '0x0000000000000000000000000000000000000000';
 
@@ -47,7 +49,7 @@ interface IFetchedToken {
   status: TokenStatus;
 }
 
-export interface IToken extends IFetchedToken{
+export interface IToken extends IFetchedToken {
   image: string;
   creator: string;
   collectionName?: string;
@@ -55,229 +57,363 @@ export interface IToken extends IFetchedToken{
 
 class ContractsSDK {
   public marketPlace: ethers.Contract;
-  public marketItem: ethers.Contract;
+  public nft: ethers.Contract;
   public userAddress: string;
 
   constructor(signer: ethers.Signer, userAddress: string) {
     this.userAddress = userAddress;
 
-    this.marketItem =  new ethers.Contract(
-      '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-      marketItemABI.abi,
+    this.nft =  new ethers.Contract(
+      process.env.REACT_APP_NFT_ADDRESS || "",
+      nftABI.abi,
       signer
     );
-
     this.marketPlace =  new ethers.Contract(
-      '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+      process.env.REACT_APP_MARKET_PLACE_ADDRESS || "",
       marketPlaceABI.abi,
       signer
     );
   }
 
-  public async onChangeCreatorName(name: string) {
-    const transanction = await this.marketPlace.changeCreatorName(name);
-    transanction.wait();
+  public async onChangeCreatorName(name: string, setUpdateState: Dispatch<SetStateAction<boolean>>) {
+    try {
+      const transanction = await this.marketPlace.changeCreatorName(name);
+      await transanction.wait();
+      setUpdateState(true);
+    } catch (e: any) {
+      toast.info(e.message)
+    }
   }
 
-  public async onChangeCreatorImage(image: string) {
-    const transanction = await this.marketPlace.changeCreatorImage(image);
-    transanction.wait();
+  public async onChangeCreatorImage(image: string, setUpdateState: Dispatch<SetStateAction<boolean>>) {
+    try {
+      const transanction = await this.marketPlace.changeCreatorImage(image);
+      await transanction.wait();
+      setUpdateState(true);
+    } catch (e: any) {
+      toast.info(e.message)
+    }
   }
 
   public async onGetCreatorInfo(creatorAddress: string) {
-    const { name, image }: ICreator = await this.marketPlace.creatorsInfo(creatorAddress);
+    try {
+      const { name, image }: ICreator = await this.marketPlace.creatorsInfo(creatorAddress);
 
-    return {
-      name,
-      image
+      return { name, image };
+    } catch (e: any) {
+      toast.info(e.message);
+      return {};
     }
   }
 
   public async getCollections() {
-    const collectionLength = Number((await this.marketPlace.getCollectionLength()).toString());
-    const collectionIds: ICollection[] = [];
+    try {
+      const collectionLength = Number((await this.marketPlace.getCollectionLength()).toString());
+      const collectionIds: ICollection[] = [];
 
-    for (let i = 1; i <= collectionLength; i++) {
-      const collection = this.marketPlace.collections(i);
-      collectionIds.push(collection);
-    };
+      for (let i = 1; i <= collectionLength; i++) {
+        const collection = this.marketPlace.collections(i);
+        collectionIds.push(collection);
+      };
 
-    const result = await Promise.all(collectionIds).then(collections => (
-      collections.map(({ collectionId, name, description, creator, image }): ICollection => ({
+      const result = await Promise.all(collectionIds).then(collections => (
+        collections.map(({ collectionId, name, description, creator, image }): ICollection => ({
+          collectionId: Number(collectionId.toString()),
+          name,
+          description,
+          creator,
+          image
+        }))
+      ));
+
+      return result;
+    } catch (e: any) {
+      toast.info(e.message);
+      return [];
+    }
+  }
+
+  public async getCollection(id: number) {
+    try {
+      const { collectionId, name, description, creator, image }: ICollection = await this.marketPlace.collections(id);
+      return {
         collectionId: Number(collectionId.toString()),
         name,
         description,
         creator,
         image
-      }))
-    ));
-
-    return result;
-  }
-
-  public async getCollection(id: number) {
-    const { collectionId, name, description, creator, image }: ICollection = await this.marketPlace.collections(id);
-    return {
-      collectionId: Number(collectionId.toString()),
-      name,
-      description,
-      creator,
-      image
+      }
+    } catch (e: any) {
+      toast.info(e.message);
+      return {};
     }
   }
 
   public async getUserCollections(userAddress: string) {
-    const collections: ICollection[] = await this.getCollections();
-    return collections.filter(({ creator }) => creator === userAddress);
+    try {
+      const collections: ICollection[] = await this.getCollections();
+      return collections.filter(({ creator }) => creator === userAddress);
+    } catch (e: any) {
+      toast.info(e.message);
+      return [];
+    }
   }
 
-  public async createCollection(image: string, name: string, description: string) {
-    const collectionCreation = await this.marketPlace.createCollection(image, name, description);
-    await collectionCreation.wait();
+  public async createCollection(
+    image: string,
+    name: string,
+    description: string,
+    { onSuccess }
+    ) {
+    try {
+      const collectionCreation = await this.marketPlace.createCollection(image, name, description);
+      await collectionCreation.wait();
+      onSuccess();
+    } catch (e: any) {
+      toast.info(e.message);
+    }
   }
 
   public async getNFTs() {
-    const nftItemsLength = Number((await this.marketPlace.getMarketItemsLength()).toString());
-    const nftItemsIds: IFetchedToken[] = [];
+    try {
+      const nftItemsLength = Number((await this.marketPlace.getMarketItemsLength()).toString());
+      const nftItemsIds: IFetchedToken[] = [];
 
-    for (let i = 1; i <= nftItemsLength; i++) {
-      const nftItem: IFetchedToken = this.marketPlace.marketItems(i);
-      nftItemsIds.push(nftItem);
-    };
+      for (let i = 1; i <= nftItemsLength; i++) {
+        const nftItem: IFetchedToken = this.marketPlace.marketItems(i);
+        nftItemsIds.push(nftItem);
+      };
 
-    const result = Promise.all(nftItemsIds).then((nftItems) => {
-      return Promise.all(nftItems.map(async ({ tokenId, name, description, price, collectionId, status }): Promise<IToken> => {
-        const tokenUri = await this.marketItem.tokenURI(tokenId)
-        const meta = await axios.get(tokenUri);
-        const parsedPrice = ethers.utils.formatUnits(price.toString(), 'ether');
+      const result = Promise.all(nftItemsIds).then((nftItems) => {
+        return Promise.all(nftItems.map(async ({ tokenId, name, description, price, collectionId, status }): Promise<IToken> => {
+          const tokenUri = await this.nft.tokenURI(tokenId)
+          const meta = await axios.get(tokenUri);
+          const parsedPrice = ethers.utils.formatUnits(price.toString(), 'ether');
 
-        return {
-          tokenId: Number(tokenId.toString()),
-          name,
-          description,
-          price: +parsedPrice,
-          collectionId: Number(collectionId.toString()),
-          status,
-          creator: await this.marketItem.ownerOf(tokenId),
-          image: meta.data.image
-        }
-      }))
-    });
+          return {
+            tokenId: Number(tokenId.toString()),
+            name,
+            description,
+            price: +parsedPrice,
+            collectionId: Number(collectionId.toString()),
+            status,
+            creator: await this.nft.ownerOf(tokenId),
+            image: meta.data.image
+          }
+        }))
+      });
 
-    return result;
+      return result;
+    } catch (e: any) {
+      toast.info(e.message);
+      return [];
+    }
   }
 
   public async getCollectionNFTs(collectionId: number) {
-    const nfts = await this.getNFTs();
-    return nfts.filter(nft => nft.collectionId === collectionId);
+    try {
+      const nfts = await this.getNFTs();
+      return nfts.filter(nft => nft.collectionId === collectionId);
+    } catch (e: any) {
+      toast.info(e.message);
+      return [];
+    }
   }
 
   public async getUserNFTs(userAddress: string) {
-    const nfts = await this.getNFTs();
-    return nfts.filter(nft => nft.creator === userAddress);
+    try {
+      const nfts = await this.getNFTs();
+      return nfts.filter(nft => nft.creator === userAddress);
+    } catch (e: any) {
+      toast.info(e.message);
+      return [];
+    }
   }
 
   public async getNFTItem(tokenId: number) {
-    const { name, description, price, collectionId, status }: IToken = await this.marketPlace.marketItems(tokenId);
-    const parsedPrice = ethers.utils.formatUnits(price.toString(), 'ether');
-    const tokenUri = await this.marketItem.tokenURI(tokenId)
-    const meta = await axios.get(tokenUri);
-    const { name: collectionName } = await this.marketPlace.collections(collectionId);
+    try {
+      const { name, description, price, collectionId, status }: IToken = await this.marketPlace.marketItems(tokenId);
+      const parsedPrice = ethers.utils.formatUnits(price.toString(), 'ether');
+      const tokenUri = await this.nft.tokenURI(tokenId)
+      const meta = await axios.get(tokenUri);
+      const { name: collectionName } = await this.marketPlace.collections(collectionId);
 
-    return {
-      tokenId: Number(tokenId.toString()),
-      name,
-      description,
-      price: +parsedPrice,
-      collectionId: Number(collectionId.toString()),
-      status,
-      creator: await this.marketItem.ownerOf(tokenId),
-      image: meta.data.image,
-      collectionName
+      return {
+        tokenId: Number(tokenId.toString()),
+        name,
+        description,
+        price: +parsedPrice,
+        collectionId: Number(collectionId.toString()),
+        status,
+        creator: await this.nft.ownerOf(tokenId),
+        image: meta.data.image,
+        collectionName
+      }
+    } catch (e: any) {
+      toast.info(e.message);
+      return {};
     }
   }
 
-  public async createNFTItem(tokenURI: string, name: string, description: string, collectionId: number) {
-    const tokenId = await this.marketPlace.mintToken(tokenURI, name, description, collectionId);
-    await tokenId.wait();
-  }
-
-  public async onCreateSale(tokenId: number, price: number) {
-    const isMarketApproved = await this.marketItem.getApproved(tokenId) === this.marketPlace.address;
-    if (!isMarketApproved) {
-      await this.marketItem.approve(this.marketPlace.address, tokenId);
+  public async createNFTItem(
+    tokenURI: string,
+    name: string,
+    description: string,
+    collectionId: number,
+    { onSuccess }
+    ) {
+    try {
+      const tokenCreation = await this.marketPlace.mintToken(tokenURI, name, description, collectionId);
+      await tokenCreation.wait();
+      onSuccess();
+    } catch (e: any) {
+      toast.info(e.message);
     }
-
-    const listingFee = (await this.marketPlace.getListingFee()).toString();
-    const parsedPrice = ethers.utils.parseEther(price.toString());
-
-    const transaction = await this.marketPlace.createSale(tokenId, parsedPrice, { value: listingFee });
-    await transaction.wait();
   }
 
-  public async onCancelSale(tokenId: string) {
-    await this.marketItem.approve(zeroAddress, tokenId);
+  public async onCreateSale(
+    tokenId: number,
+    price: number,
+    setUpdateState: Dispatch<SetStateAction<boolean>>,
+    setOpenSale: Dispatch<SetStateAction<boolean>>
+    ) {
+    try {
+      const isMarketApproved = await this.nft.getApproved(tokenId) === this.marketPlace.address;
+      if (!isMarketApproved) {
+        await this.nft.approve(this.marketPlace.address, tokenId);
+      }
+      const listingFee = (await this.marketPlace.getListingFee()).toString();
+      const parsedPrice = ethers.utils.parseEther(price.toString());
 
-    const transaction = await this.marketPlace.cancelSale(tokenId);
-    transaction.wait();
+      const transaction = await this.marketPlace.createSale(tokenId, parsedPrice, { value: listingFee });
+      await transaction.wait();
+      setUpdateState(true);
+      setOpenSale(false);
+    } catch (e: any) {
+      toast.info(e.message);
+    }
   }
 
-  public async onBuyMarketItem(tokenId: string) {
-    const price = (await this.marketPlace.marketItems(tokenId)).price;
-    const transaction = await this.marketPlace.buyMarketItem(tokenId, { value: price });
-    transaction.wait();
+  public async onCancelSale(tokenId: string, setUpdateState: Dispatch<SetStateAction<boolean>>) {
+    try {
+      await this.nft.approve(zeroAddress, tokenId);
+
+      const transaction = await this.marketPlace.cancelSale(tokenId);
+      await transaction.wait();
+      setUpdateState(true)
+    } catch (e: any) {
+      toast.info(e.message);
+    }
+  }
+
+  public async onBuyMarketItem(
+    tokenId: string,
+    setUpdateState: Dispatch<SetStateAction<boolean>>,
+    setOpenSale: Dispatch<SetStateAction<boolean>>
+    ) {
+    try {
+      const price = (await this.marketPlace.marketItems(tokenId)).price;
+      const transaction = await this.marketPlace.buyMarketItem(tokenId, { value: price });
+      await transaction.wait();
+      setUpdateState(true);
+      setOpenSale(false);
+    } catch (e: any) {
+      toast.info(e.message);
+    }
   }
 
   public async onGetItemOffers(tokenId: string) {
-    const bidsLength = Number((await this.marketPlace.getItemBidsLength()).toString());
-    const bidsIds: IBid[] = [];
+    try {
+      const bidsLength = Number((await this.marketPlace.getItemBidsLength()).toString());
+      const bidsIds: IBid[] = [];
 
-    for (let i = 1; i <= bidsLength; i++) {
-      const bid = await this.marketPlace.itemBids(tokenId, i);
-      bidsIds.push(bid);
-    };
+      for (let i = 1; i <= bidsLength; i++) {
+        const bid = await this.marketPlace.itemBids(tokenId, i);
+        bidsIds.push(bid);
+      };
 
-    const result = await Promise.all(bidsIds).then(bids => (
-      bids.map(({ bidId, amount, status, bidder }): IBid => ({
-        bidId: Number(bidId.toString()),
-        amount: ethers.utils.formatUnits(amount.toString(), 'ether'),
-        status,
-        bidder
-      }))
-    ));
+      const result = await Promise.all(bidsIds).then(bids => (
+        bids.map(({ bidId, amount, status, bidder }): IBid => ({
+          bidId: Number(bidId.toString()),
+          amount: ethers.utils.formatUnits(amount.toString(), 'ether'),
+          status,
+          bidder
+        }))
+      ));
 
-    return result;
-  }
-
-  public async onBidOnItem(tokenId: number, amount: string) {
-    const parsedPrice = ethers.utils.parseEther(amount);
-    const transaction = await this.marketPlace.bidMarketItem(tokenId, { value: parsedPrice });
-    transaction.wait();
-  }
-
-  public async onAcceptBid(tokenId: number, bidId: number) {
-    const isMarketApproved = await this.marketItem.getApproved(tokenId) === this.marketPlace.address;
-    if (!isMarketApproved) {
-      await this.marketItem.approve(this.marketPlace.address, tokenId);
+      return result;
+    } catch (e: any) {
+      toast.info(e.message);
+      return {};
     }
-
-    const transaction = await this.marketPlace.acceptBid(tokenId, bidId);
-    transaction.wait();
   }
 
-  public async onCancelBid(tokenId: number, bidId: number) {
-    const transaction = await this.marketPlace.rejectBid(tokenId, bidId);
-    transaction.wait();
+  public async onBidOnItem(
+    tokenId: number,
+    amount: string,
+    setUpdateState: Dispatch<SetStateAction<boolean>>
+    ) {
+    try {
+      const parsedPrice = ethers.utils.parseEther(amount);
+      const transaction = await this.marketPlace.bidMarketItem(tokenId, { value: parsedPrice });
+      await transaction.wait();
+      setUpdateState(true);
+    } catch (e: any) {
+      toast.info(e.message);
+    }
+  }
+
+  public async onAcceptBid(
+    tokenId: number,
+    bidId: number,
+    setUpdateState: Dispatch<SetStateAction<boolean>>
+    ) {
+    try {
+      const isMarketApproved = await this.nft.getApproved(tokenId) === this.marketPlace.address;
+      if (!isMarketApproved) {
+        await this.nft.approve(this.marketPlace.address, tokenId);
+      }
+
+      const transaction = await this.marketPlace.acceptBid(tokenId, bidId);
+      await transaction.wait();
+      setUpdateState(true);
+    } catch (e: any) {
+      toast.info(e.message);
+    }
+  }
+
+  public async onCancelBid(
+    tokenId: number,
+    bidId: number,
+    setUpdateState: Dispatch<SetStateAction<boolean>>
+    ) {
+    try {
+      const transaction = await this.marketPlace.rejectBid(tokenId, bidId);
+      await transaction.wait();
+      setUpdateState(true);
+    } catch (e: any) {
+      toast.info(e.message);
+    }
   }
 
   public async onGetListingFee() {
-    const listingFee = await this.marketPlace.getCollectedListingFee();
-    return ethers.utils.formatUnits(listingFee.toString(), 'ether');
+    try {
+      const listingFee = await this.marketPlace.getCollectedListingFee();
+      return ethers.utils.formatUnits(listingFee.toString(), 'ether');
+    } catch (e: any) {
+      toast.info(e.message);
+      return '';
+    }
   }
 
-  public async onTransferListingFee() {
-    const transaction = await this.marketPlace.transferListingFee();
-    transaction.wait();
+  public async onTransferListingFee(setUpdateState: Dispatch<SetStateAction<boolean>>) {
+    try {
+      const transaction = await this.marketPlace.transferListingFee();
+      await transaction.wait();
+      setUpdateState(true);
+    } catch (e: any) {
+      toast.info(e.message);
+    }
   }
 }
 

@@ -402,25 +402,6 @@ describe("MarketPlace contract", () => {
       await expect(marketPlace.connect(owner).acceptBid(tokenId, 2)).to.be.revertedWith("Marketplace: no such bid");
     });
 
-    // it('Should fail to accept bid if contract has not enough wei', async () => {
-    //   const collectionTxn = await marketPlace.connect(owner).createCollection('image1', 'name2', 'description1');
-    //   const collectionTx = await collectionTxn.wait();
-    //   const collectionId = collectionTx.events[0].args.collectionId.toNumber();
-
-    //   const tokenTxn = await marketPlace.connect(owner).mintToken('tokenURI', 'name', 'description', collectionId);
-    //   const tokenTx = await tokenTxn.wait();
-    //   const tokenId = tokenTx.events[1].args.tokenId.toNumber();
-
-    //   const bidTxn = await marketPlace.connect(addr1).bidMarketItem(tokenId, { value: 1000 });
-    //   const bidTx = await bidTxn.wait();
-    //   const bidId = bidTx.events[0].args.bidId.toNumber();
-
-    //   const approveTxn = await nft.connect(owner).approve(marketPlaceContractAddress, tokenId);
-    //   await approveTxn.wait();
-
-    //   await expect(marketPlace.connect(owner).acceptBid(tokenId, bidId)).to.be.revertedWith("Marketplace: you can not bid your own item");
-    // });
-
     it('Should be able to reject bid on market item', async () => {
       const collectionTxn = await marketPlace.connect(owner).createCollection('image1', 'name2', 'description1');
       const collectionTx = await collectionTxn.wait();

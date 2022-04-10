@@ -1,10 +1,9 @@
 import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
-import { RouteComponentProps } from 'react-router';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { ellipseAddress } from 'helpers/utilities';
 
-interface IProps extends RouteComponentProps {
+interface IProps {
   id: number;
   image: string;
   smallImage: string;
@@ -14,7 +13,6 @@ interface IProps extends RouteComponentProps {
 }
 
 const Collection: FC<IProps> = ({
-  history,
   id,
   image,
   smallImage,
@@ -22,6 +20,7 @@ const Collection: FC<IProps> = ({
   creator,
   description
 }) => {
+  const history = useHistory();
   const onClick = useCallback(() => {
     history.push(`/collection/${id}`);
   }, []);
@@ -39,7 +38,7 @@ const Collection: FC<IProps> = ({
   )
 };
 
-export default withRouter(Collection);
+export default Collection;
 
 const CollectionWrapper = styled.div`
   width: 100%;

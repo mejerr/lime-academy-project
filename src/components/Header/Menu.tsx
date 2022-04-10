@@ -53,7 +53,7 @@ const Menu: FC<IProps> = ({ onSearchClick } ) => {
      }
 
      onSearchPathClick(pathId);
-  }, [connected]);
+  }, [connected, onConnect]);
 
   const OPTIONS = {
     width: "100%",

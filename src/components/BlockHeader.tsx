@@ -113,6 +113,7 @@ const BlockHeader: FC<IProps> = ({
       initListingFee();
     }
   }, [connected, contractsSDK, updateState]);
+
   return (
     <BlockHeaderWrapper>
       <ImageWrapper>
@@ -149,7 +150,7 @@ const BlockHeader: FC<IProps> = ({
         }
       </BlockName>
 
-      {userAddress === marketOwner && !isCollection &&
+      {creator === marketOwner && !isCollection &&
         <BlockListingFee>
           <ListingFee>Collected Listing fees: {listingFee}</ListingFee>
           <TransferButton>

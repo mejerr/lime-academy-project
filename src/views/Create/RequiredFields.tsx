@@ -22,7 +22,17 @@ export interface ICollectionProps {
 
 const RequiredFields: FC = () => {
   const {
-    state: { name, description, inputName, inputDescription, fileUrl, activeBlock },
+    state: {
+      name,
+      description,
+      inputName,
+      inputDescription,
+      fileUrl,
+      activeBlock,
+      emptyName,
+      emptyDescription,
+      emptyCollection
+    },
     onNameChange,
     onDescriptionChange,
     onImageChange,
@@ -73,6 +83,7 @@ const RequiredFields: FC = () => {
 
         <SectionWrapper>
           <Section>{"Name"}</Section>
+          {emptyName && <InputError>{"You have to enter a name"}</InputError>}
           <NameInput
             placeholder={name}
             value={inputName}
@@ -82,6 +93,7 @@ const RequiredFields: FC = () => {
 
         <SectionWrapper>
           <Section>{"Description"}</Section>
+          {emptyDescription && <InputError>{"You have to enter a description"}</InputError>}
           <DescriptionInput
             placeholder={description}
             value={inputDescription}
@@ -92,6 +104,7 @@ const RequiredFields: FC = () => {
         {activeBlock === 1 && (
           <SectionWrapper>
             <Section>{"Choose Collection"}</Section>
+            {emptyCollection && <InputError>{"You have to choose a collection"}</InputError>}
             <SelectableMenu collectionProps={collectionProps} options={OPTIONS}/>
           </SectionWrapper>
         )}
@@ -141,7 +154,7 @@ const ImageWrapper = styled.div`
   align-items: center;
 
   :hover {
-    background-color: rgba(55, 55, 55, 0.1);
+    background-color: rgba(55, 55, 55, 0.2);
     transition: background-color 0.3s ease;
   }
 
@@ -160,16 +173,6 @@ const Image = styled.img`
 const EmptyIcon = styled(FontAwesomeIcon)`
   width: 100px;
   height: 100px;
-`;
-
-const ImageInput = styled.input`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
-  cursor: pointer;
 `;
 
 const SectionWrapper = styled.div`
@@ -194,6 +197,16 @@ const Section = styled.div`
     content: "*";
     color: rgb(235, 87, 87);
   }
+`;
+
+const ImageInput = styled.input`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
 `;
 
 const NameInput = styled.input`
@@ -225,3 +238,11 @@ const DescriptionInput = styled.textarea`
     box-shadow: rgb(4 17 29 / 25%) 0px 0px 8px 0px;
   }
 `;
+
+const InputError = styled.div`
+  font-size: 12px;
+  color: red;
+  line-height: 16px;
+  margin: 0 20px;
+`;
+

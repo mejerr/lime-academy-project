@@ -1,6 +1,6 @@
 // tslint:disable: no-empty
 import React, { FC, Suspense, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 
 import Homepage from './views/Homepage';
@@ -16,41 +16,39 @@ const App: FC = () => {
   const history = useHistory();
 
   const routes = () => (
-    <StyledContent>
-      <Switch>
-        <Route
-          path='/home'
-          component={Homepage}
-        />
-        <Route
-          path='/collection/:id/token/:id'
-          component={TokenBlock}
-        />
-        <Route
-          path='/collection/:id'
-          component={CollectionBlock}
-        />
-        <Route
-          path='/marketplace'
-          component={Marketplace}
-        />
-        <Route
-          path='/create'
-          component={CreateBlock}
-        />
-        <Route
-          path='/my-collection/:id'
-          component={MyCollections}
-        />
-        <Route
-          path='/my-collection'
-          exact
-          component={MyCollections}
-        />
-        <Route path='/' exact component={Homepage} />
-        <Redirect to='/' />
-      </Switch>
-    </StyledContent>
+    <Switch>
+      <Route
+        path='/home'
+        component={Homepage}
+      />
+      <Route
+        path='/collection/:id/token/:id'
+        component={TokenBlock}
+      />
+      <Route
+        path='/collection/:id'
+        component={CollectionBlock}
+      />
+      <Route
+        path='/marketplace'
+        component={Marketplace}
+      />
+      <Route
+        path='/create'
+        component={CreateBlock}
+      />
+      <Route
+        path='/my-collection/:id'
+        component={MyCollections}
+      />
+      <Route
+        path='/my-collection'
+        exact
+        component={MyCollections}
+      />
+      <Route path='/' exact component={Homepage} />
+      <Redirect to='/' />
+    </Switch>
   );
 
   useEffect(() => {
@@ -75,14 +73,6 @@ const App: FC = () => {
 
 export default App;
 
-export const fadeIn = keyframes`
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-`;
-
 const StyledApp = styled.div`
   width: 100%;
-`;
-
-const StyledContent = styled.div`
 `;

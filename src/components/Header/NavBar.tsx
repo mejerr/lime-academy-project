@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useContext } from 'react';
 import styled from 'styled-components';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
-import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Button from '../Button';
 
 interface INavButtons {
@@ -11,7 +11,7 @@ interface INavButtons {
   onClick: () => void
 }
 
-interface IProps extends RouteComponentProps {
+interface IProps {
   onSearchClick: (open: boolean) => void;
 }
 
@@ -28,7 +28,7 @@ const NavBar: FC<IProps> = ({  onSearchClick }) => {
      }
 
      history.push(pathname);
-  }, [onConnect, connected]);
+  }, [onConnect, connected, history]);
 
   const NAV_BUTTONS: INavButtons[] =  [
     {
@@ -74,7 +74,7 @@ const NavBar: FC<IProps> = ({  onSearchClick }) => {
   )
 }
 
-export default withRouter(NavBar);
+export default NavBar;
 
 const NavBarWrapper = styled.div`
   display: flex;

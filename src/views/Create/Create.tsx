@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Button} from 'components';
 import RequiredFields from './RequiredFields';
-import { fadeIn } from 'App';
 
 interface IProps {
   header: string;
@@ -33,7 +32,6 @@ const Create: FC<IProps> = ({
 export default Create;
 
 const CreateWrapper = styled.div`
-  animation: ${fadeIn} 0.5s ease-out;
   padding-bottom: 20px;
 `;
 
@@ -51,7 +49,7 @@ const CreateButtonWrapper = styled.div`
   border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
-  margin: 0 10px;
+  margin: 0 20px;
   border-radius: 10px;
   border: 1px solid #024bb0;
   cursor: pointer;

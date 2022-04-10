@@ -1,5 +1,5 @@
 // tslint:disable: no-empty
-import React, { ChangeEvent, FC, useCallback, useContext, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useContext, useEffect, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { AppStateContext, IConnectData } from 'AppContextWrapper';
@@ -14,6 +14,9 @@ interface ICreateState {
   fileUrl: string;
   selectedCollectionId: number;
   activeBlock: number;
+  emptyName: boolean;
+  emptyDescription: boolean;
+  emptyCollection: boolean;
 }
 
 const INITIAL_STATE: ICreateState = {
@@ -23,7 +26,10 @@ const INITIAL_STATE: ICreateState = {
   inputDescription: '',
   fileUrl: '',
   selectedCollectionId: 1,
-  activeBlock: 1
+  activeBlock: 1,
+  emptyName: false,
+  emptyDescription: false,
+  emptyCollection: false
 };
 
 export const CreateStateContext = React.createContext({
@@ -46,6 +52,9 @@ const CreateBlock: FC = () => {
   const [itemDescription, setItemDescription] = useState<string>("");
   const [collectionName, setCollectionName] = useState<string>("");
   const [collectionDescription, setCollectionDescription] = useState<string>("");
+  const [emptyName, setEmptyName] = useState<boolean>(false);
+  const [emptyDescription, setEmptyDescription] = useState<boolean>(false);
+  const [emptyCollection, setEmptyCollection] = useState<boolean>(false);
 
   const history = useHistory();
 
@@ -79,7 +88,11 @@ const CreateBlock: FC = () => {
   }, [activeBlock]);
 
   const onCreateItem = useCallback(async () => {
-    if (!itemName.length || !itemDescription.length || !nftFileUrl.length || !contractsSDK || !selectedCollectionId) {
+    setEmptyName(!itemName.length ? true : false);
+    setEmptyDescription(!itemDescription.length ? true : false);
+    setEmptyCollection(!selectedCollectionId ? true : false);
+
+    if (!contractsSDK || !nftFileUrl.length) {
       return;
     }
 
@@ -96,7 +109,10 @@ const CreateBlock: FC = () => {
   }, [itemName, itemDescription, nftFileUrl, contractsSDK, selectedCollectionId]);
 
   const onCreateCollection = useCallback(async () => {
-    if (!contractsSDK || !collectionName.length || !collectionDescription.length || !collectionFileUrl.length) {
+    setEmptyName(!collectionName.length ? true : false);
+    setEmptyDescription(!collectionDescription.length ? true : false);
+
+    if (!contractsSDK || !collectionFileUrl.length) {
       return;
     }
 
@@ -110,6 +126,12 @@ const CreateBlock: FC = () => {
     setIsLoading(false);
   }, [collectionName, collectionDescription, contractsSDK, collectionFileUrl]);
 
+  useEffect(() => {
+    setEmptyName(false);
+    setEmptyDescription(false);
+    setEmptyCollection(false);
+  }, [activeBlock]);
+
   return (
     <CreateStateContext.Provider
       value={{
@@ -120,7 +142,10 @@ const CreateBlock: FC = () => {
           inputDescription: activeBlock === 1 ? itemDescription : collectionDescription,
           fileUrl: activeBlock === 1 ? nftFileUrl : collectionFileUrl,
           selectedCollectionId,
-          activeBlock
+          activeBlock,
+          emptyName,
+          emptyDescription,
+          emptyCollection
         },
         onNameChange: (e: ChangeEvent<HTMLInputElement>) =>
           activeBlock === 1 ? onItemNameChange(e) : onCollectionNameChange(e),

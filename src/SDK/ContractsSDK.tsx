@@ -166,7 +166,7 @@ class ContractsSDK {
     { onSuccess }
     ) {
     try {
-      const collectionCreation = await this.marketPlace.onCreateCollection(image, name, description);
+      const collectionCreation = await this.marketPlace.createCollection(image, name, description);
       await collectionCreation.wait();
       onSuccess();
     } catch (e: any) {
